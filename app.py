@@ -70,25 +70,44 @@ def extract_features_full(seq):
 # Streamlit UI
 # -----------------------------
 st.title("HPV Epitope Prediction Tool")
-st.write("Enter a 9-mer peptide sequence to predict epitope probability.")
 
-sequence = st.text_input("Enter 9-mer Peptide:")
+sequence = st.text_input("Enter peptide (8–15 amino acids):")
 
 if st.button("Predict"):
     
-    if len(sequence) != 9:
-        st.error("Please enter exactly 9 amino acids.")
+    sequence = sequence.upper().strip()
     
-    elif not all(c.upper() in aa_list for c in sequence):
+    if len(sequence) < 8 or len(sequence) > 15:
+        st.error("Please enter peptide length between 8 and 15 amino acids.")
+    
+    elif not all(c in aa_list for c in sequence):
         st.error("Invalid amino acid characters detected.")
     
     else:
-        features = extract_features_full(sequence)
-        prob = model.predict_proba([features])[0][1]
+        if len(sequence) == 9:
+            features = extract_features_full(sequence)
+            prob = model.predict_proba([features])[0][1]
+            best_window = sequence
         
-        threshold = 0.261  # Your optimized threshold
+        else:
+            # Sliding window for longer peptides
+            probs = []
+            windows = []
+            
+            for i in range(len(sequence) - 8):
+                window = sequence[i:i+9]
+                features = extract_features_full(window)
+                prob = model.predict_proba([features])[0][1]
+                
+                probs.append(prob)
+                windows.append(window)
+            
+            prob = max(probs)
+            best_window = windows[probs.index(prob)]
         
+        threshold = 0.261
         prediction = "Epitope" if prob >= threshold else "Non-Epitope"
         
         st.success(f"Prediction: {prediction}")
+        st.write(f"Best 9-mer Window: {best_window}")
         st.write(f"Probability Score: {round(prob, 3)}")
