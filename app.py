@@ -4,14 +4,15 @@ import joblib
 from itertools import product
 from collections import Counter
 import math
+import pandas as pd
 
 # -----------------------------
-# Load model
+# Load trained model
 # -----------------------------
 model = joblib.load("hpv_epitope_model.pkl")
 
 # -----------------------------
-# Amino acid definitions
+# Amino acid setup
 # -----------------------------
 aa_list = list("ACDEFGHIKLMNPQRSTVWY")
 aa_index = {aa:i for i,aa in enumerate(aa_list)}
@@ -29,85 +30,91 @@ aa_weight = {
 }
 
 # -----------------------------
-# Feature extraction function
+# Feature extraction
 # -----------------------------
 def extract_features_full(seq):
     seq = seq.upper()
     length = len(seq)
-    
-    # Position encoding
+
     pos_encoding = np.zeros((9,20))
     for pos, aa in enumerate(seq):
         if aa in aa_index:
             pos_encoding[pos, aa_index[aa]] = 1
     pos_encoding = pos_encoding.flatten()
-    
-    # Dipeptide
+
     di_count = Counter([seq[i:i+2] for i in range(len(seq)-1)])
     di_features = np.array([di_count[dp]/8 for dp in dipeptides])
-    
-    # Physicochemical
+
     aa_count = Counter(seq)
     hydro_frac = sum(a in hydrophobic for a in seq)/length
     arom_frac = sum(a in aromatic for a in seq)/length
     pos_frac = sum(a in positive for a in seq)/length
     neg_frac = sum(a in negative for a in seq)/length
     net_charge = pos_frac - neg_frac
-    
+
     entropy = -sum((aa_count[a]/length)*math.log2(aa_count[a]/length)
                    for a in aa_count)
-    
+
     avg_weight = sum(aa_weight[a] for a in seq)/length
-    
+
     global_features = np.array([
         hydro_frac, arom_frac, pos_frac,
         neg_frac, net_charge, entropy, avg_weight
     ])
-    
+
     return np.concatenate([pos_encoding, di_features, global_features])
 
 # -----------------------------
 # Streamlit UI
 # -----------------------------
-st.title("HPV Epitope Prediction Tool")
+st.title("HPV Protein Epitope Prediction Server")
 
-sequence = st.text_input("Enter peptide (8–15 amino acids):")
+st.write("Paste a full HPV protein FASTA sequence below.")
 
-if st.button("Predict"):
-    
-    sequence = sequence.upper().strip()
-    
-    if len(sequence) < 8 or len(sequence) > 15:
-        st.error("Please enter peptide length between 8 and 15 amino acids.")
-    
-    elif not all(c in aa_list for c in sequence):
-        st.error("Invalid amino acid characters detected.")
-    
+fasta_input = st.text_area("Paste FASTA sequence here:")
+
+threshold = 0.261
+
+if st.button("Predict Epitopes"):
+
+    if not fasta_input:
+        st.error("Please enter a FASTA sequence.")
     else:
-        if len(sequence) == 9:
-            features = extract_features_full(sequence)
-            prob = model.predict_proba([features])[0][1]
-            best_window = sequence
-        
+        # Remove FASTA header
+        lines = fasta_input.strip().split("\n")
+        sequence = "".join([l.strip() for l in lines if not l.startswith(">")])
+        sequence = sequence.upper()
+
+        if not all(c in aa_list for c in sequence):
+            st.error("Invalid amino acid characters detected.")
+        elif len(sequence) < 9:
+            st.error("Protein sequence must be at least 9 amino acids.")
         else:
-            # Sliding window for longer peptides
-            probs = []
-            windows = []
-            
+            results = []
+
             for i in range(len(sequence) - 8):
-                window = sequence[i:i+9]
-                features = extract_features_full(window)
+                peptide = sequence[i:i+9]
+                features = extract_features_full(peptide)
                 prob = model.predict_proba([features])[0][1]
-                
-                probs.append(prob)
-                windows.append(window)
-            
-            prob = max(probs)
-            best_window = windows[probs.index(prob)]
-        
-        threshold = 0.261
-        prediction = "Epitope" if prob >= threshold else "Non-Epitope"
-        
-        st.success(f"Prediction: {prediction}")
-        st.write(f"Best 9-mer Window: {best_window}")
-        st.write(f"Probability Score: {round(prob, 3)}")
+
+                if prob >= threshold:
+                    results.append({
+                        "Start_Position": i+1,
+                        "Peptide": peptide,
+                        "Probability": round(prob,3)
+                    })
+
+            if results:
+                df = pd.DataFrame(results)
+                st.success(f"{len(df)} predicted epitopes found.")
+                st.dataframe(df)
+
+                csv = df.to_csv(index=False).encode("utf-8")
+                st.download_button(
+                    "Download Results as CSV",
+                    csv,
+                    "predicted_epitopes.csv",
+                    "text/csv"
+                )
+            else:
+                st.warning("No epitopes predicted above threshold.")
