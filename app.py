@@ -5,9 +5,18 @@ from itertools import product
 from collections import Counter
 import math
 import pandas as pd
+import matplotlib.pyplot as plt
 
 # -----------------------------
-# Load trained model
+# Page config
+# -----------------------------
+st.set_page_config(
+    page_title="HPV Epitope Prediction Server",
+    layout="wide"
+)
+
+# -----------------------------
+# Load model
 # -----------------------------
 model = joblib.load("hpv_epitope_model.pkl")
 
@@ -65,22 +74,20 @@ def extract_features_full(seq):
     return np.concatenate([pos_encoding, di_features, global_features])
 
 # -----------------------------
-# Streamlit UI
+# UI
 # -----------------------------
-st.title("HPV Protein Epitope Prediction Server")
-
-st.write("Paste a full HPV protein FASTA sequence below.")
-
-fasta_input = st.text_area("Paste FASTA sequence here:")
+st.title("🧬 HPV Protein Epitope Prediction Server")
+st.markdown("Upload or paste an HPV protein FASTA sequence to identify potential 9-mer epitopes.")
 
 threshold = 0.261
 
-if st.button("Predict Epitopes"):
+fasta_input = st.text_area("Paste FASTA sequence below:", height=200)
+
+if st.button("🔍 Scan Protein for Epitopes"):
 
     if not fasta_input:
         st.error("Please enter a FASTA sequence.")
     else:
-        # Remove FASTA header
         lines = fasta_input.strip().split("\n")
         sequence = "".join([l.strip() for l in lines if not l.startswith(">")])
         sequence = sequence.upper()
@@ -88,33 +95,62 @@ if st.button("Predict Epitopes"):
         if not all(c in aa_list for c in sequence):
             st.error("Invalid amino acid characters detected.")
         elif len(sequence) < 9:
-            st.error("Protein sequence must be at least 9 amino acids.")
+            st.error("Protein must be at least 9 amino acids long.")
         else:
-            results = []
+            all_results = []
 
             for i in range(len(sequence) - 8):
                 peptide = sequence[i:i+9]
                 features = extract_features_full(peptide)
                 prob = model.predict_proba([features])[0][1]
 
-                if prob >= threshold:
-                    results.append({
-                        "Start_Position": i+1,
-                        "Peptide": peptide,
-                        "Probability": round(prob,3)
-                    })
+                # Confidence categories
+                if prob >= 0.60:
+                    confidence = "High"
+                elif prob >= threshold:
+                    confidence = "Moderate"
+                else:
+                    confidence = "Low"
 
-            if results:
-                df = pd.DataFrame(results)
-                st.success(f"{len(df)} predicted epitopes found.")
-                st.dataframe(df)
+                all_results.append({
+                    "Start_Position": i+1,
+                    "Peptide": peptide,
+                    "Probability": round(prob,3),
+                    "Confidence": confidence
+                })
 
-                csv = df.to_csv(index=False).encode("utf-8")
-                st.download_button(
-                    "Download Results as CSV",
-                    csv,
-                    "predicted_epitopes.csv",
-                    "text/csv"
-                )
-            else:
-                st.warning("No epitopes predicted above threshold.")
+            df_all = pd.DataFrame(all_results)
+
+            predicted_df = df_all[df_all["Probability"] >= threshold]
+
+            st.subheader("📊 Prediction Summary")
+            st.write(f"Protein Length: {len(sequence)} amino acids")
+            st.write(f"Total 9-mers Scanned: {len(df_all)}")
+            st.write(f"Predicted Epitopes (≥ {threshold}): {len(predicted_df)}")
+
+            # -----------------------------
+            # Probability Plot
+            # -----------------------------
+            st.subheader("📈 Epitope Probability Across Protein Length")
+
+            plt.figure(figsize=(12,4))
+            plt.plot(df_all["Start_Position"], df_all["Probability"])
+            plt.axhline(y=threshold, linestyle='--')
+            plt.xlabel("Protein Position")
+            plt.ylabel("Epitope Probability")
+            plt.title("Sliding Window Epitope Probability")
+            st.pyplot(plt)
+
+            # -----------------------------
+            # Show Table
+            # -----------------------------
+            st.subheader("🧾 Predicted Epitopes")
+            st.dataframe(predicted_df)
+
+            csv = predicted_df.to_csv(index=False).encode("utf-8")
+            st.download_button(
+                "Download Predicted Epitopes (CSV)",
+                csv,
+                "predicted_epitopes.csv",
+                "text/csv"
+            )
