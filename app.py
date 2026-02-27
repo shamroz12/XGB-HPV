@@ -266,9 +266,7 @@ page = st.sidebar.radio("Select Module:",
 # HOME PAGE (Premium Landing)
 # ==========================================
 if page == "Home":
-
 st.markdown("""
-
 <div class="hero">
     <div class="glass">
         <h1 style="font-size:60px;">HPV-EPIPRED</h1>
