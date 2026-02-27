@@ -32,42 +32,66 @@ body {
     background-color: #f4f7fb;
 }
 
+/* HERO SECTION */
 .hero {
-    background: linear-gradient(90deg, #0f172a, #1e3a8a);
-    padding: 60px;
-    border-radius: 15px;
+    position: relative;
+    background: linear-gradient(120deg, #0f172a, #1e3a8a, #0f172a);
+    padding: 80px;
+    border-radius: 20px;
     color: white;
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
+    overflow: hidden;
+}
+
+/* FLOATING MOLECULAR GLOW */
+.hero::before, .hero::after {
+    content: "";
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(59,130,246,0.25) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: float 18s infinite ease-in-out;
+}
+
+.hero::before {
+    top: -200px;
+    left: -200px;
+}
+
+.hero::after {
+    bottom: -200px;
+    right: -200px;
+    animation-delay: 8s;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(40px) rotate(20deg); }
+    100% { transform: translateY(0px) rotate(0deg); }
 }
 
 .section-card {
     background: white;
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0px 8px 20px rgba(0,0,0,0.05);
-    margin-bottom: 25px;
+    padding: 30px;
+    border-radius: 18px;
+    box-shadow: 0px 10px 30px rgba(0,0,0,0.06);
+    margin-bottom: 30px;
 }
 
 .stButton>button {
     background-color: #2563eb;
     color: white;
-    border-radius: 10px;
-    padding: 0.6em 1.2em;
-    font-weight: 600;
-}
-
-.metric-container {
-    background: white;
-    padding: 20px;
     border-radius: 12px;
-    box-shadow: 0px 4px 12px rgba(0,0,0,0.04);
+    padding: 0.7em 1.4em;
+    font-weight: 600;
 }
 
 footer {
     text-align:center;
-    padding:20px;
-    color:#64748b;
+    padding:25px;
+    color:#94a3b8;
     font-size:14px;
 }
 
