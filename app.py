@@ -1,4 +1,17 @@
 import streamlit as st
+
+if "theme" not in st.session_state:
+    st.session_state.theme = "dark"
+
+theme_toggle = st.toggle("🌗 Toggle Dark / Light Mode")
+
+if theme_toggle:
+    st.session_state.theme = "light"
+else:
+    st.session_state.theme = "dark"
+
+theme = st.session_state.theme
+
 import numpy as np
 import pandas as pd
 import joblib
@@ -25,99 +38,124 @@ st.set_page_config(
 # ==========================================
 # PREMIUM BIOTECH STYLING
 # ==========================================
-st.markdown("""
+st.markdown(f"""
 <style>
 
-/* Remove top spacing */
-.block-container {
-    padding-top: 1rem;
-}
+/* THEME COLORS */
+:root {{
+    --bg-dark: #0f172a;
+    --bg-light: #f4f7fb;
+    --card-dark: rgba(255,255,255,0.08);
+    --card-light: rgba(255,255,255,0.6);
+    --text-dark: white;
+    --text-light: #111827;
+}}
 
-/* Animated gradient background */
-@keyframes gradientMove {
-    0% {background-position: 0% 50%;}
-    50% {background-position: 100% 50%;}
-    100% {background-position: 0% 50%;}
-}
+body {{
+    background-color: { "#0f172a" if theme=="dark" else "#f4f7fb" };
+}}
 
-.hero {
+/* PARTICLE CANVAS */
+#particles {{
+    position: fixed;
     width: 100%;
-    min-height: 70vh;
-    border-radius: 30px;
-    background: linear-gradient(-45deg, #0f172a, #1e3a8a, #1e40af, #0f172a);
-    background-size: 400% 400%;
-    animation: gradientMove 12s ease infinite;
-    color: white;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}}
+
+/* HERO */
+.hero {{
+    min-height: 75vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
+    color: { "white" if theme=="dark" else "#111827" };
+    animation: fadeIn 1.5s ease-out;
+}}
 
-    box-shadow: 0px 20px 60px rgba(0,0,0,0.2);
-}
-
-/* Fade-in animation */
-@keyframes fadeIn {
-    from {opacity:0; transform: translateY(20px);}
-    to {opacity:1; transform: translateY(0);}
-}
-
-.hero h1 {
-    font-size: 60px;
-    margin-bottom: 10px;
-    animation: fadeIn 1.2s ease-out;
-}
-
-/* Subtle glow */
-@keyframes glow {
-    from {text-shadow: 0 0 10px rgba(59,130,246,0.6);}
-    to {text-shadow: 0 0 25px rgba(59,130,246,0.9);}
-}
-
-.hero h1 {
-    animation: glow 3s ease-in-out infinite alternate;
-}
-
-.hero h3 {
-    font-weight: 400;
-    opacity: 0.9;
-    animation: fadeIn 1.8s ease-out;
-}
-
-.hero p {
-    max-width: 700px;
-    opacity: 0.85;
-    animation: fadeIn 2.2s ease-out;
-}
-
-/* Card styling */
-.section-card {
-    background: white;
-    padding: 30px;
+/* Glassmorphism Panels */
+.glass {{
+    background: { "rgba(255,255,255,0.08)" if theme=="dark" else "rgba(255,255,255,0.6)" };
+    backdrop-filter: blur(15px);
     border-radius: 20px;
-    box-shadow: 0px 10px 30px rgba(0,0,0,0.05);
-    margin-bottom: 30px;
-}
+    padding: 40px;
+    box-shadow: 0px 8px 32px rgba(0,0,0,0.15);
+    animation: fadeUp 1.5s ease-out;
+}}
 
-/* Button */
-.stButton>button {
-    background-color: #2563eb;
-    color: white;
-    border-radius: 12px;
-    padding: 0.8em 1.5em;
-    font-weight: 600;
-}
+/* Animations */
+@keyframes fadeIn {{
+    from {{opacity:0;}}
+    to {{opacity:1;}}
+}}
 
-footer {
-    text-align:center;
-    padding:25px;
-    color:#94a3b8;
-    font-size:14px;
-}
+@keyframes fadeUp {{
+    from {{opacity:0; transform: translateY(40px);}}
+    to {{opacity:1; transform: translateY(0);}}
+}}
 
 </style>
 """, unsafe_allow_html=True)
+
+st.components.v1.html("""
+<canvas id="particles"></canvas>
+<script>
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+
+for (let i = 0; i < 60; i++) {
+    particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5
+    });
+}
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (let i = 0; i < particles.length; i++) {
+        let p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(59,130,246,0.6)";
+        ctx.fill();
+
+        for (let j = i + 1; j < particles.length; j++) {
+            let p2 = particles[j];
+            let dx = p.x - p2.x;
+            let dy = p.y - p2.y;
+            let dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < 120) {
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.strokeStyle = "rgba(59,130,246,0.1)";
+                ctx.stroke();
+            }
+        }
+    }
+    requestAnimationFrame(animate);
+}
+animate();
+</script>
+""", height=0)
 
 # ==========================================
 # LOAD MODEL
@@ -229,26 +267,17 @@ page = st.sidebar.radio("Select Module:",
 # ==========================================
 if page == "Home":
 
-    st.markdown("""
+st.markdown("""
 <div class="hero">
-    <h1>HPV-EPIPRED</h1>
-    <h3>HPV-Specific MHC Class I Epitope Prediction Platform</h3>
-    <p>
+    <div class="glass">
+        <h1 style="font-size:60px;">HPV-EPIPRED</h1>
+        <h3>HPV-Specific MHC Class I Epitope Prediction Platform</h3>
+        <p style="max-width:700px;">
         Machine Learning–Driven Immunogenic Hotspot Identification
-    </p>
+        </p>
+    </div>
 </div>
 """, unsafe_allow_html=True)
-    
-    st.markdown("""
-    <div class="section-card">
-    <h3>Key Features</h3>
-    • Sliding window epitope scanning  
-    • Interactive probability landscape  
-    • Immunogenic hotspot detection  
-    • Ranked vaccine candidate selection  
-    • Downloadable PDF research reports  
-    </div>
-    """, unsafe_allow_html=True)
 
 # ==========================================
 # EPITOPE SCANNER
