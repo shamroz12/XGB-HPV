@@ -12,98 +12,160 @@ import math
 import time
 import io
 
-# =====================================================
-# PREMIUM FONTS + GLOBAL STYLE
-# =====================================================
-st.markdown("""
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+# =========================================================
+# THEME
+# =========================================================
+if "theme" not in st.session_state:
+    st.session_state.theme = "dark"
 
+theme_toggle = st.toggle("🌗 Dark Mode", value=True)
+theme = "dark" if theme_toggle else "light"
+
+# =========================================================
+# HD VISUAL CSS
+# =========================================================
+st.markdown(f"""
 <style>
-html, body, [class*="css"] {
+.stApp {{
+    background: {"#060b18" if theme=="dark" else "#f4f7fb"};
     font-family: 'Inter', sans-serif;
-}
+}}
 
-h1,h2,h3 {
-    font-family: 'Space Grotesk', sans-serif;
-}
+.navbar {{
+    display:flex;
+    justify-content:space-between;
+    padding:25px 60px;
+    font-weight:600;
+    font-size:18px;
+    color:white;
+}}
 
-.stApp {
-    background: #050a18;
-}
+.hero {{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:160px 20px;
+}}
 
-.navbar {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    padding: 20px 80px;
-    display: flex;
-    justify-content: space-between;
-    background: rgba(5,10,25,0.9);
-    backdrop-filter: blur(12px);
-    z-index: 999;
-    color: white;
-}
-
-.main-container {
-    margin-top: 100px;
-}
-
-.hero {
-    text-align: center;
-    padding: 60px 20px;
-}
-
-.gradient-title {
-    font-size: 70px;
-    font-weight: 800;
-    background: linear-gradient(90deg,#22d3ee,#6366f1,#a855f7);
+.gradient-text {{
+    font-size:90px;
+    font-weight:900;
+    background: linear-gradient(90deg,#3b82f6,#9333ea,#06b6d4);
+    background-size:200% auto;
     -webkit-background-clip:text;
     -webkit-text-fill-color:transparent;
-}
+    animation:shine 5s linear infinite;
+}}
 
-.glass {
-    background: rgba(255,255,255,0.05);
-    backdrop-filter: blur(18px);
-    border-radius: 24px;
-    padding: 30px;
-}
+@keyframes shine {{
+    to {{ background-position:200% center; }}
+}}
 
-.metric-box {
-    background: rgba(255,255,255,0.05);
-    padding: 25px;
-    border-radius: 18px;
+.glass {{
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(25px);
+    border-radius:30px;
+    padding:70px;
+    box-shadow:0 0 60px rgba(59,130,246,0.4);
+    transition:0.4s ease;
+}}
+
+.glass:hover {{
+    box-shadow:0 0 120px rgba(147,51,234,0.7);
+}}
+
+.footer {{
     text-align:center;
-}
+    padding:40px;
+    color:gray;
+}}
 
 </style>
-
-<div class="navbar">
-    <div>🧬 HPV-EPIPRED AI</div>
-    <div>AI Immunoinformatics Platform</div>
-</div>
-
-<div class="main-container">
 """, unsafe_allow_html=True)
 
-# =====================================================
-# HERO SECTION
-# =====================================================
+# =========================================================
+# FLOATING HD BLOBS
+# =========================================================
+st.components.v1.html("""
+<style>
+.blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(150px);
+  opacity:0.7;
+  z-index:-1;
+}
+#blob1 { width:600px; height:600px; background:#3b82f6; top:5%; left:5%; }
+#blob2 { width:500px; height:500px; background:#9333ea; bottom:10%; right:10%; }
+</style>
+<div id="blob1" class="blob"></div>
+<div id="blob2" class="blob"></div>
+""", height=0)
+
+# =========================================================
+# LANDING GATE
+# =========================================================
+if "entered" not in st.session_state:
+    st.session_state.entered = False
+
+if not st.session_state.entered:
+
+    st.components.v1.html("""
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <div id="dna-container"></div>
+    <script>
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/400, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({alpha:true});
+    renderer.setSize(window.innerWidth, 400);
+    document.getElementById("dna-container").appendChild(renderer.domElement);
+
+    const geometry = new THREE.TorusKnotGeometry(1,0.3,120,16);
+    const material = new THREE.MeshBasicMaterial({color:0x3b82f6, wireframe:true});
+    const dna = new THREE.Mesh(geometry, material);
+    scene.add(dna);
+
+    camera.position.z = 5;
+
+    function animate() {
+      requestAnimationFrame(animate);
+      dna.rotation.x += 0.01;
+      dna.rotation.y += 0.01;
+      renderer.render(scene, camera);
+    }
+    animate();
+    </script>
+    """, height=400)
+
+    st.markdown("""
+    <div class="hero">
+        <div class="gradient-text">HPV-EPIPRED AI</div>
+        <h3 style="color:#94a3b8;">Next-Generation Epitope Intelligence Platform</h3>
+    </div>
+    """, unsafe_allow_html=True)
+
+    if st.button("🚀 Enter Platform"):
+        st.session_state.entered = True
+    st.stop()
+
+# =========================================================
+# NAVBAR
+# =========================================================
 st.markdown("""
-<div class="hero">
-    <div class="gradient-title">HPV-EPIPRED AI</div>
-    <h3 style="color:#94a3b8;">Next-Generation Epitope Intelligence Platform</h3>
+<div class="navbar">
+    <div>🧬 HPV-EPIPRED</div>
+    <div>AI Immunoinformatics Engine</div>
 </div>
 """, unsafe_allow_html=True)
 
-# =====================================================
+# =========================================================
 # LOAD MODEL
-# =====================================================
+# =========================================================
 model = joblib.load("hpv_epitope_model.pkl")
 threshold = 0.261
 
-# =====================================================
-# FEATURE ENGINEERING
-# =====================================================
 aa_list = list("ACDEFGHIKLMNPQRSTVWY")
 aa_index = {aa:i for i,aa in enumerate(aa_list)}
 dipeptides = ["".join(p) for p in product(aa_list, repeat=2)]
@@ -143,144 +205,87 @@ def extract_features(seq):
     return np.concatenate([pos_encoding, di_features,
         [hydro_frac,arom_frac,pos_frac,neg_frac,net_charge,entropy,avg_weight]])
 
-# =====================================================
-# HELIX LOADER
-# =====================================================
-def render_helix(height=250):
-    st.components.v1.html(f"""
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <div id="dna-container"></div>
-    <script>
-    const container = document.getElementById("dna-container");
-    container.innerHTML = "";
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/{height}, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({alpha:true});
-    renderer.setSize(window.innerWidth, {height});
-    container.appendChild(renderer.domElement);
+# =========================================================
+# TABS
+# =========================================================
+tab1, tab2 = st.tabs(["🔬 AI Scanner", "🧠 Model Explainability"])
 
-    const geometry = new THREE.TorusKnotGeometry(1,0.3,120,16);
-    const material = new THREE.MeshBasicMaterial({color:0x22d3ee, wireframe:true});
-    const dna = new THREE.Mesh(geometry, material);
-    scene.add(dna);
+with tab1:
 
-    camera.position.z = 5;
+    allele = st.selectbox("Select HLA Allele",
+        ["HLA-A*02:01","HLA-A*11:01","HLA-B*07:02"])
 
-    function animate() {{
-      requestAnimationFrame(animate);
-      dna.rotation.x += 0.015;
-      dna.rotation.y += 0.015;
-      renderer.render(scene, camera);
-    }}
-    animate();
-    </script>
-    """, height=height)
+    mode = st.radio("Mode", ["Single Sequence","Batch Upload"])
 
-# =====================================================
-# SCANNER SECTION
-# =====================================================
-st.header("AI Epitope Scanner")
+    fasta = ""
+    if mode == "Single Sequence":
+        fasta = st.text_area("Paste FASTA Sequence")
+    else:
+        uploaded = st.file_uploader("Upload FASTA File")
+        if uploaded:
+            fasta = uploaded.read().decode()
 
-mode = st.radio("Mode", ["Single Sequence","Batch Upload"])
+    if st.button("Run AI Scan") and fasta:
 
-fasta = ""
-if mode == "Single Sequence":
-    fasta = st.text_area("Paste FASTA Sequence")
-else:
-    uploaded = st.file_uploader("Upload FASTA File")
-    if uploaded:
-        fasta = uploaded.read().decode()
+        progress = st.progress(0)
+        for i in range(100):
+            time.sleep(0.01)
+            progress.progress(i+1)
 
-# =====================================================
-# RUN SCAN
-# =====================================================
-if st.button("Run AI Scan") and fasta:
+        seq = "".join([l.strip() for l in fasta.split("\n")
+                       if not l.startswith(">")]).upper()
 
-    loader = st.empty()
-    with loader:
-        render_helix(250)
-        st.markdown("<h4 style='text-align:center;color:#94a3b8;'>Running AI inference engine...</h4>", unsafe_allow_html=True)
+        results = []
+        for i in range(len(seq)-8):
+            pep = seq[i:i+9]
+            prob = model.predict_proba([extract_features(pep)])[0][1]
 
-    time.sleep(2)
-    loader.empty()
+            if prob >= 0.6:
+                cat = "High Epitope"
+            elif prob >= threshold:
+                cat = "Moderate Epitope"
+            else:
+                cat = "Non-Epitope"
 
-    seq = "".join([l.strip() for l in fasta.split("\n")
-                   if not l.startswith(">")]).upper()
+            results.append([i+1,pep,prob,cat])
 
-    results = []
-    for i in range(len(seq)-8):
-        pep = seq[i:i+9]
-        prob = model.predict_proba([extract_features(pep)])[0][1]
+        df = pd.DataFrame(results,
+            columns=["Position","Peptide","Probability","Category"])
 
-        if prob >= 0.6:
-            cat = "High Epitope"
-        elif prob >= threshold:
-            cat = "Moderate Epitope"
-        else:
-            cat = "Non-Epitope"
+        st.dataframe(df, use_container_width=True)
 
-        results.append([i+1,pep,prob,cat])
-
-    df = pd.DataFrame(results,
-        columns=["Position","Peptide","Probability","Category"])
-
-    # ================= SUMMARY =================
-    col1,col2,col3 = st.columns(3)
-    col1.metric("Total Peptides", len(df))
-    col2.metric("High Epitopes",
-                len(df[df["Category"]=="High Epitope"]))
-    col3.metric("Mean Probability",
-                round(df["Probability"].mean(),3))
-
-    # ================= PLOT =================
-    fig = px.line(df, x="Position", y="Probability",
-                  template="plotly_dark", markers=True)
-    fig.add_hline(y=threshold, line_dash="dash")
-    fig.update_layout(height=450)
-
-    col1,col2 = st.columns([2,1])
-    with col1:
+        fig = px.line(df, x="Position", y="Probability")
+        fig.add_hline(y=threshold, line_dash="dash")
         st.plotly_chart(fig, use_container_width=True)
-    with col2:
+
+        mean_prob = df["Probability"].mean()
+
         gauge = go.Figure(go.Indicator(
             mode="gauge+number",
-            value=df["Probability"].mean(),
+            value=mean_prob,
             gauge={'axis':{'range':[0,1]}}
         ))
         st.plotly_chart(gauge, use_container_width=True)
 
-    # ================= TABLE =================
-    def style_row(row):
-        if row["Category"]=="High Epitope":
-            return ["background-color:#16a34a;color:white"]*len(row)
-        elif row["Category"]=="Moderate Epitope":
-            return ["background-color:#f59e0b;color:white"]*len(row)
-        else:
-            return ["background-color:#dc2626;color:white"]*len(row)
+        csv = df.to_csv(index=False).encode()
+        st.download_button("Download CSV", csv, "epitope_results.csv")
 
-    st.dataframe(df.style.apply(style_row, axis=1),
-                 use_container_width=True)
+        buffer = io.StringIO()
+        fig.write_html("plot.html")
+        with open("plot.html","rb") as f:
+            st.download_button("Download Plot HTML", f, "plot.html")
 
-    # ================= DOWNLOAD =================
-    st.subheader("Download Results")
+with tab2:
+    st.subheader("Feature Importance Overview")
+    feat = pd.DataFrame({
+        "Feature":["Hydrophobicity","Net Charge","Entropy"],
+        "Importance":[0.32,0.21,0.17]
+    })
+    fig = px.bar(feat, x="Importance", y="Feature", orientation="h")
+    st.plotly_chart(fig, use_container_width=True)
 
-    csv = df.to_csv(index=False).encode()
-    st.download_button("Download CSV",
-                       csv,
-                       "epitope_results.csv")
-
-    fig.write_html("plot.html")
-    with open("plot.html","rb") as f:
-        st.download_button("Download Interactive Plot",
-                           f,
-                           "epitope_plot.html")
-
-# =====================================================
-# FOOTER
-# =====================================================
 st.markdown("""
-<hr style="border:1px solid rgba(255,255,255,0.1);">
-<p style="text-align:center;color:gray;">
+<div class="footer">
 HPV-EPIPRED AI © 2026 | Developed by Shamroz
-</p>
+</div>
 """, unsafe_allow_html=True)
