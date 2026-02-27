@@ -1,147 +1,157 @@
 import streamlit as st
-
-# ===============================
-# PAGE CONFIG
-# ===============================
-st.set_page_config(
-    page_title="HPV-EPIPRED",
-    page_icon="🧬",
-    layout="wide",
-    initial_sidebar_state="collapsed"
-)
+st.set_page_config(page_title="HPV-EPIPRED", page_icon="🧬", layout="wide")
 
 import numpy as np
 import pandas as pd
 import joblib
+import plotly.graph_objects as go
 import plotly.express as px
 from itertools import product
 from collections import Counter
 import math
+import time
 
-# ===============================
-# THEME STATE
-# ===============================
+# =========================================================
+# THEME
+# =========================================================
 if "theme" not in st.session_state:
     st.session_state.theme = "dark"
 
-theme_toggle = st.sidebar.toggle(
-    "🌗 Dark / Light Mode",
-    value=True if st.session_state.theme=="dark" else False
-)
+toggle = st.toggle("🌗 Dark Mode", value=True)
+theme = "dark" if toggle else "light"
 
-st.session_state.theme = "dark" if theme_toggle else "light"
-theme = st.session_state.theme
-
-# ===============================
-# GLOBAL CSS (REAL WORKING VERSION)
-# ===============================
+# =========================================================
+# GLOBAL AI STARTUP CSS
+# =========================================================
 st.markdown(f"""
 <style>
 
-html, body, [class*="css"]  {{
-    font-family: 'Segoe UI', sans-serif;
-}}
-
 .stApp {{
-    background: {"#0b1120" if theme=="dark" else "#f1f5f9"};
+    background: {"#0a0f1c" if theme=="dark" else "#f8fafc"};
+    font-family: 'Inter', sans-serif;
 }}
 
-section.main > div {{
-    padding-top: 2rem;
+.navbar {{
+    display:flex;
+    justify-content:space-between;
+    padding:20px 40px;
+    font-weight:600;
+    color:white;
 }}
 
-.glass {{
-    background: {"rgba(255,255,255,0.07)" if theme=="dark" else "rgba(255,255,255,0.8)"};
-    backdrop-filter: blur(20px);
-    border-radius: 25px;
-    padding: 60px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-    transition: 0.4s ease;
-}}
-
-.glass:hover {{
-    transform: translateY(-6px);
+.nav-title {{
+    font-size:22px;
 }}
 
 .hero {{
-    text-align: center;
-    padding: 120px 20px;
-    color: {"white" if theme=="dark" else "#0f172a"};
-    animation: fadeUp 1.4s ease forwards;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:150px 20px;
 }}
 
-@keyframes fadeUp {{
-    from {{opacity:0; transform:translateY(40px);}}
-    to {{opacity:1; transform:translateY(0);}}
+.gradient-text {{
+    font-size:80px;
+    font-weight:800;
+    background: linear-gradient(90deg,#3b82f6,#9333ea,#06b6d4);
+    background-size:200% auto;
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:shine 4s linear infinite;
+}}
+
+@keyframes shine {{
+    to {{ background-position:200% center; }}
+}}
+
+.typing {{
+    font-size:22px;
+    color:#94a3b8;
+    margin-top:20px;
+}}
+
+.glass {{
+    background: rgba(255,255,255,0.07);
+    backdrop-filter: blur(20px);
+    border-radius:30px;
+    padding:60px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.4);
+    animation:pulse 4s infinite alternate;
+}}
+
+@keyframes pulse {{
+    from {{ box-shadow:0 0 40px rgba(59,130,246,0.4); }}
+    to {{ box-shadow:0 0 80px rgba(147,51,234,0.6); }}
 }}
 
 .footer {{
     text-align:center;
     padding:40px;
     color:gray;
-    font-size:14px;
 }}
 
 </style>
 """, unsafe_allow_html=True)
 
-# ===============================
-# PARTICLE BACKGROUND (FIXED VERSION)
-# ===============================
-st.components.v1.html(f"""
+# =========================================================
+# FLOATING GRADIENT BLOBS
+# =========================================================
+st.components.v1.html("""
 <style>
-#particles-js {{
+.blob {
   position: fixed;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  top: 0;
-  left: 0;
-  background: {"#0b1120" if theme=="dark" else "#f1f5f9"};
-}}
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity:0.6;
+  z-index:-1;
+}
+#blob1 { width:400px; height:400px; background:#3b82f6; top:10%; left:10%; }
+#blob2 { width:350px; height:350px; background:#9333ea; bottom:15%; right:15%; }
 </style>
-
-<div id="particles-js"></div>
-
-<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-<script>
-particlesJS("particles-js", {{
-  particles: {{
-    number: {{ value: 60 }},
-    color: {{ value: "#3b82f6" }},
-    shape: {{ type: "circle" }},
-    opacity: {{ value: 0.5 }},
-    size: {{ value: 3 }},
-    line_linked: {{
-      enable: true,
-      distance: 140,
-      color: "#3b82f6",
-      opacity: 0.15,
-      width: 1
-    }},
-    move: {{
-      enable: true,
-      speed: 1.5
-    }}
-  }}
-}});
-</script>
+<div id="blob1" class="blob"></div>
+<div id="blob2" class="blob"></div>
 """, height=0)
 
-# ===============================
-# LOAD MODEL
-# ===============================
-try:
-    model = joblib.load("hpv_epitope_model.pkl")
-except:
-    st.error("Model file not found.")
-    st.stop()
+# =========================================================
+# NAVBAR
+# =========================================================
+st.markdown("""
+<div class="navbar">
+    <div class="nav-title">🧬 HPV-EPIPRED</div>
+    <div>AI Epitope Intelligence</div>
+</div>
+""", unsafe_allow_html=True)
 
+# =========================================================
+# HERO WITH AI TYPING
+# =========================================================
+st.markdown("""
+<div class="hero">
+    <div class="gradient-text">HPV-EPIPRED</div>
+    <div class="typing" id="typing"></div>
+</div>
+<script>
+var text = "Predicting epitopes in real time using AI...";
+var i = 0;
+function typeWriter() {
+  if (i < text.length) {
+    document.getElementById("typing").innerHTML += text.charAt(i);
+    i++;
+    setTimeout(typeWriter, 40);
+  }
+}
+typeWriter();
+</script>
+""", unsafe_allow_html=True)
+
+# =========================================================
+# LOAD MODEL
+# =========================================================
+model = joblib.load("hpv_epitope_model.pkl")
 threshold = 0.261
 
-# ===============================
-# FEATURE ENGINEERING
-# ===============================
 aa_list = list("ACDEFGHIKLMNPQRSTVWY")
 aa_index = {aa:i for i,aa in enumerate(aa_list)}
 dipeptides = ["".join(p) for p in product(aa_list, repeat=2)]
@@ -185,78 +195,57 @@ def extract_features(seq):
 
     return np.concatenate([pos_encoding, di_features, global_features])
 
-# ===============================
-# NAVIGATION
-# ===============================
-page = st.sidebar.radio(
-    "Navigation",
-    ["Home","Epitope Scanner","Methods"]
-)
+# =========================================================
+# LOGIN-STYLE SCANNER PANEL
+# =========================================================
+st.markdown('<div class="glass">', unsafe_allow_html=True)
 
-# ===============================
-# HOME
-# ===============================
-if page == "Home":
+fasta = st.text_area("Paste HPV Protein FASTA Sequence")
+run = st.button("Run AI Scan")
 
-    st.markdown("""
-    <div class="hero">
-        <div class="glass">
-            <h1 style="font-size:72px;">HPV-EPIPRED</h1>
-            <h3>AI-Driven MHC Class I Epitope Prediction</h3>
-            <p>Machine Learning-Based Immunogenic Hotspot Identification</p>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+if run:
+    progress = st.progress(0)
+    for percent in range(100):
+        time.sleep(0.01)
+        progress.progress(percent + 1)
 
-# ===============================
-# EPITOPE SCANNER
-# ===============================
-elif page == "Epitope Scanner":
+    seq = "".join([l.strip() for l in fasta.split("\n") if not l.startswith(">")]).upper()
 
-    st.markdown('<div class="glass">', unsafe_allow_html=True)
-    fasta = st.text_area("Paste HPV Protein FASTA Sequence")
-    run = st.button("🔬 Run Epitope Scan")
-    st.markdown('</div>', unsafe_allow_html=True)
+    results = []
+    for i in range(len(seq)-8):
+        pep = seq[i:i+9]
+        prob = model.predict_proba([extract_features(pep)])[0][1]
+        results.append(prob)
 
-    if run:
-        seq = "".join(
-            [l.strip() for l in fasta.split("\n") if not l.startswith(">")]
-        ).upper()
+    df = pd.DataFrame({
+        "Position": range(1,len(results)+1),
+        "Probability": results
+    })
 
-        if len(seq) < 9:
-            st.error("Sequence must be ≥ 9 amino acids.")
-            st.stop()
+    # Animated graph
+    fig = px.line(df, x="Position", y="Probability")
+    fig.update_traces(line=dict(width=3))
+    fig.add_hline(y=threshold, line_dash="dash")
+    st.plotly_chart(fig, use_container_width=True)
 
-        results = []
-        for i in range(len(seq)-8):
-            pep = seq[i:i+9]
-            prob = model.predict_proba([extract_features(pep)])[0][1]
+    # Gauge
+    mean_prob = np.mean(results)
 
-            results.append({
-                "Start": i+1,
-                "Peptide": pep,
-                "Probability": round(prob,3)
-            })
+    gauge = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=mean_prob,
+        gauge={'axis': {'range': [0,1]}},
+        title={'text': "Model Confidence"}
+    ))
+    st.plotly_chart(gauge, use_container_width=True)
 
-        df = pd.DataFrame(results)
+st.markdown('</div>', unsafe_allow_html=True)
 
-        fig = px.line(
-            df,
-            x="Start",
-            y="Probability",
-            template="plotly_dark" if theme=="dark" else "simple_white",
-            title="Epitope Probability Landscape"
-        )
-        fig.add_hline(y=threshold, line_dash="dash")
-
-        st.plotly_chart(fig, use_container_width=True)
-        st.dataframe(df, use_container_width=True)
-
-# ===============================
+# =========================================================
 # FOOTER
-# ===============================
+# =========================================================
 st.markdown("""
 <div class="footer">
-HPV-EPIPRED © 2026 | HPV Immunoinformatics Research
+HPV-EPIPRED © 2026 | AI-Powered Immunoinformatics
 </div>
 """, unsafe_allow_html=True)
