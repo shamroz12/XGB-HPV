@@ -246,6 +246,6 @@ st.markdown('</div>', unsafe_allow_html=True)
 # =========================================================
 st.markdown("""
 <div class="footer">
-HPV-EPIPRED © 2026 | AI-Powered Immunoinformatics
+HPV-EPIPRED © 2026 | Developed by Shamroz
 </div>
 """, unsafe_allow_html=True)
