@@ -36,40 +36,32 @@ body {
 .hero {
     position: relative;
     background: linear-gradient(120deg, #0f172a, #1e3a8a, #0f172a);
-    padding: 80px;
-    border-radius: 20px;
+    padding: 90px;
+    border-radius: 25px;
     color: white;
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 50px;
     overflow: hidden;
 }
 
-/* FLOATING MOLECULAR GLOW */
-.hero::before, .hero::after {
-    content: "";
+/* MOLECULAR PARTICLES */
+.molecule {
     position: absolute;
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, rgba(59,130,246,0.25) 0%, transparent 70%);
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(59,130,246,0.4) 0%, transparent 70%);
     border-radius: 50%;
-    animation: float 18s infinite ease-in-out;
+    animation: float 12s infinite ease-in-out;
 }
 
-.hero::before {
-    top: -200px;
-    left: -200px;
-}
-
-.hero::after {
-    bottom: -200px;
-    right: -200px;
-    animation-delay: 8s;
-}
+.m1 { top: -60px; left: -60px; }
+.m2 { bottom: -60px; right: -60px; animation-delay: 4s; }
+.m3 { top: 40%; left: 60%; animation-delay: 8s; }
 
 @keyframes float {
-    0% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(40px) rotate(20deg); }
-    100% { transform: translateY(0px) rotate(0deg); }
+    0% { transform: translateY(0px) scale(1); }
+    50% { transform: translateY(30px) scale(1.1); }
+    100% { transform: translateY(0px) scale(1); }
 }
 
 .section-card {
@@ -209,21 +201,18 @@ page = st.sidebar.radio("Select Module:",
 if page == "Home":
 
     st.markdown("""
-    <div class="hero">
-        <h1>🧬 HPV-EPIPRED</h1>
-        <h3>HPV-Specific MHC Class I Epitope Prediction Platform</h3>
-        <p>Machine Learning–Driven Immunogenic Hotspot Identification</p>
-    </div>
-    """, unsafe_allow_html=True)
+<div class="hero">
+    <div class="molecule m1"></div>
+    <div class="molecule m2"></div>
+    <div class="molecule m3"></div>
 
-    st.markdown("""
-    <div class="section-card">
-    <h3>About the Platform</h3>
-    HPV-EPIPRED is a dedicated HPV immunoinformatics server designed to identify 
-    MHC Class I (9-mer core) epitopes using a machine learning framework trained 
-    on experimentally validated HPV epitope datasets.
-    </div>
-    """, unsafe_allow_html=True)
+    <h1 style="font-size:52px;">🧬 HPV-EPIPRED</h1>
+    <h3 style="font-weight:400;">HPV-Specific MHC Class I Epitope Prediction Platform</h3>
+    <p style="opacity:0.85;">
+    Machine Learning–Driven Immunogenic Hotspot Identification
+    </p>
+</div>
+""", unsafe_allow_html=True)
 
     st.markdown("""
     <div class="section-card">
