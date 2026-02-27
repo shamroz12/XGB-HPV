@@ -1,28 +1,29 @@
 import streamlit as st
 import numpy as np
+import pandas as pd
 import joblib
 from itertools import product
 from collections import Counter
 import math
-import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.express as px
 
-# -----------------------------
-# Page config
-# -----------------------------
+# -----------------------------------
+# Page Configuration
+# -----------------------------------
 st.set_page_config(
-    page_title="HPV Epitope Prediction Server",
+    page_title="HPV-EPIPRED",
     layout="wide"
 )
 
-# -----------------------------
-# Load model
-# -----------------------------
+# -----------------------------------
+# Load Model
+# -----------------------------------
 model = joblib.load("hpv_epitope_model.pkl")
+threshold = 0.261
 
-# -----------------------------
-# Amino acid setup
-# -----------------------------
+# -----------------------------------
+# Amino Acid Setup
+# -----------------------------------
 aa_list = list("ACDEFGHIKLMNPQRSTVWY")
 aa_index = {aa:i for i,aa in enumerate(aa_list)}
 dipeptides = ["".join(p) for p in product(aa_list, repeat=2)]
@@ -38,9 +39,9 @@ aa_weight = {
 "Q":146,"R":174,"S":105,"T":119,"V":117,"W":204,"Y":181
 }
 
-# -----------------------------
-# Feature extraction
-# -----------------------------
+# -----------------------------------
+# Feature Extraction
+# -----------------------------------
 def extract_features_full(seq):
     seq = seq.upper()
     length = len(seq)
@@ -73,38 +74,106 @@ def extract_features_full(seq):
 
     return np.concatenate([pos_encoding, di_features, global_features])
 
-# -----------------------------
-# UI
-# -----------------------------
-st.title("🧬 HPV Protein Epitope Prediction Server")
-st.markdown("Upload or paste an HPV protein FASTA sequence to identify potential 9-mer epitopes.")
+# -----------------------------------
+# Hotspot Detection
+# -----------------------------------
+def detect_hotspots(df):
+    df_high = df[df["Probability"] >= threshold].sort_values("Start_Position")
+    hotspots = []
 
-threshold = 0.261
+    if df_high.empty:
+        return pd.DataFrame()
 
-fasta_input = st.text_area("Paste FASTA sequence below:", height=200)
+    start = df_high.iloc[0]["Start_Position"]
+    end = start + 8
+    probs = [df_high.iloc[0]["Probability"]]
 
-if st.button("🔍 Scan Protein for Epitopes"):
+    for i in range(1, len(df_high)):
+        current_start = df_high.iloc[i]["Start_Position"]
+        current_end = current_start + 8
 
-    if not fasta_input:
-        st.error("Please enter a FASTA sequence.")
-    else:
+        if current_start <= end:
+            end = max(end, current_end)
+            probs.append(df_high.iloc[i]["Probability"])
+        else:
+            hotspots.append({
+                "Region_Start": start,
+                "Region_End": end,
+                "Mean_Probability": round(np.mean(probs),3),
+                "Peak_Probability": round(max(probs),3)
+            })
+            start = current_start
+            end = current_end
+            probs = [df_high.iloc[i]["Probability"]]
+
+    hotspots.append({
+        "Region_Start": start,
+        "Region_End": end,
+        "Mean_Probability": round(np.mean(probs),3),
+        "Peak_Probability": round(max(probs),3)
+    })
+
+    return pd.DataFrame(hotspots)
+
+# -----------------------------------
+# Sidebar Navigation
+# -----------------------------------
+st.sidebar.title("Navigation")
+page = st.sidebar.radio("Go to:", [
+    "🏠 Home",
+    "🔬 Epitope Scanner",
+    "📊 Hotspot Analysis",
+    "🏆 Top Candidates",
+    "ℹ️ Methods & Model Info"
+])
+
+# -----------------------------------
+# HOME PAGE
+# -----------------------------------
+if page == "🏠 Home":
+    st.title("🧬 HPV-EPIPRED")
+    st.markdown("""
+    **HPV-Specific MHC Class I (9-mer Core) Epitope Prediction Server**
+
+    This tool scans HPV protein sequences using a machine learning model 
+    trained on experimentally validated 9-mer MHC-I epitopes.
+
+    Features:
+    - Sliding window epitope scanning
+    - Interactive probability visualization
+    - Hotspot region detection
+    - Ranked candidate selection
+    - Confidence stratification
+    """)
+
+# -----------------------------------
+# EPITOPE SCANNER
+# -----------------------------------
+elif page == "🔬 Epitope Scanner":
+
+    st.title("Epitope Scanner")
+
+    fasta_input = st.text_area("Paste HPV Protein FASTA Sequence:")
+
+    if st.button("Scan Protein"):
+
         lines = fasta_input.strip().split("\n")
         sequence = "".join([l.strip() for l in lines if not l.startswith(">")])
         sequence = sequence.upper()
 
-        if not all(c in aa_list for c in sequence):
-            st.error("Invalid amino acid characters detected.")
-        elif len(sequence) < 9:
+        if len(sequence) < 9:
             st.error("Protein must be at least 9 amino acids long.")
+        elif not all(c in aa_list for c in sequence):
+            st.error("Invalid amino acid detected.")
         else:
-            all_results = []
 
-            for i in range(len(sequence) - 8):
+            results = []
+
+            for i in range(len(sequence)-8):
                 peptide = sequence[i:i+9]
                 features = extract_features_full(peptide)
                 prob = model.predict_proba([features])[0][1]
 
-                # Confidence categories
                 if prob >= 0.60:
                     confidence = "High"
                 elif prob >= threshold:
@@ -112,45 +181,79 @@ if st.button("🔍 Scan Protein for Epitopes"):
                 else:
                     confidence = "Low"
 
-                all_results.append({
+                results.append({
                     "Start_Position": i+1,
                     "Peptide": peptide,
                     "Probability": round(prob,3),
                     "Confidence": confidence
                 })
 
-            df_all = pd.DataFrame(all_results)
+            df = pd.DataFrame(results)
+            st.session_state["results"] = df
 
-            predicted_df = df_all[df_all["Probability"] >= threshold]
+            st.success("Scanning Complete.")
 
-            st.subheader("📊 Prediction Summary")
-            st.write(f"Protein Length: {len(sequence)} amino acids")
-            st.write(f"Total 9-mers Scanned: {len(df_all)}")
-            st.write(f"Predicted Epitopes (≥ {threshold}): {len(predicted_df)}")
+            fig = px.line(df, x="Start_Position", y="Probability",
+                          title="Epitope Probability Landscape")
+            fig.add_hline(y=threshold, line_dash="dash")
+            st.plotly_chart(fig, use_container_width=True)
 
-            # -----------------------------
-            # Probability Plot
-            # -----------------------------
-            st.subheader("📈 Epitope Probability Across Protein Length")
+            st.dataframe(df)
 
-            plt.figure(figsize=(12,4))
-            plt.plot(df_all["Start_Position"], df_all["Probability"])
-            plt.axhline(y=threshold, linestyle='--')
-            plt.xlabel("Protein Position")
-            plt.ylabel("Epitope Probability")
-            plt.title("Sliding Window Epitope Probability")
-            st.pyplot(plt)
+# -----------------------------------
+# HOTSPOT ANALYSIS
+# -----------------------------------
+elif page == "📊 Hotspot Analysis":
 
-            # -----------------------------
-            # Show Table
-            # -----------------------------
-            st.subheader("🧾 Predicted Epitopes")
-            st.dataframe(predicted_df)
+    st.title("Predicted Immunogenic Hotspots")
 
-            csv = predicted_df.to_csv(index=False).encode("utf-8")
-            st.download_button(
-                "Download Predicted Epitopes (CSV)",
-                csv,
-                "predicted_epitopes.csv",
-                "text/csv"
-            )
+    if "results" in st.session_state:
+        df = st.session_state["results"]
+        hotspot_df = detect_hotspots(df)
+
+        if hotspot_df.empty:
+            st.warning("No hotspot regions detected.")
+        else:
+            st.dataframe(hotspot_df)
+    else:
+        st.warning("Please run Epitope Scanner first.")
+
+# -----------------------------------
+# TOP CANDIDATES
+# -----------------------------------
+elif page == "🏆 Top Candidates":
+
+    st.title("Top 10 Ranked Epitopes")
+
+    if "results" in st.session_state:
+        df = st.session_state["results"]
+        top_df = df.sort_values("Probability", ascending=False).head(10)
+        top_df.insert(0, "Rank", range(1, len(top_df)+1))
+        st.dataframe(top_df)
+    else:
+        st.warning("Please run Epitope Scanner first.")
+
+# -----------------------------------
+# METHODS PAGE
+# -----------------------------------
+elif page == "ℹ️ Methods & Model Info":
+
+    st.title("Model Information")
+
+    st.markdown(f"""
+    **Model Type:** XGBoost  
+    **Epitope Length:** 9-mer (MHC-I core)  
+    **Decision Threshold:** {threshold}  
+    **Feature Types:**
+    - Position-specific one-hot encoding
+    - Dipeptide composition
+    - Physicochemical descriptors  
+
+    **Evaluation:**
+    - Repeated stratified 70/30 splits
+    - Mean ROC-AUC ≈ 0.865
+    - Mean Accuracy ≈ 0.82  
+
+    **Disclaimer:**
+    Predictions are computational and should be experimentally validated.
+    """)
