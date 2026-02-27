@@ -1,8 +1,8 @@
 import streamlit as st
 
-# =====================================================
-# PAGE CONFIG (MUST BE FIRST STREAMLIT COMMAND)
-# =====================================================
+# ===============================
+# PAGE CONFIG
+# ===============================
 st.set_page_config(
     page_title="HPV-EPIPRED",
     page_icon="🧬",
@@ -18,150 +18,130 @@ from itertools import product
 from collections import Counter
 import math
 
-# =====================================================
-# THEME STATE (Stable Toggle)
-# =====================================================
+# ===============================
+# THEME STATE
+# ===============================
 if "theme" not in st.session_state:
     st.session_state.theme = "dark"
 
-def toggle_theme():
-    st.session_state.theme = (
-        "light" if st.session_state.theme == "dark" else "dark"
-    )
+theme_toggle = st.sidebar.toggle(
+    "🌗 Dark / Light Mode",
+    value=True if st.session_state.theme=="dark" else False
+)
 
-st.sidebar.button("🌗 Toggle Dark / Light Mode", on_click=toggle_theme)
-
+st.session_state.theme = "dark" if theme_toggle else "light"
 theme = st.session_state.theme
 
-# =====================================================
-# GLOBAL CSS (Glassmorphism + Layout)
-# =====================================================
+# ===============================
+# GLOBAL CSS (REAL WORKING VERSION)
+# ===============================
 st.markdown(f"""
 <style>
 
+html, body, [class*="css"]  {{
+    font-family: 'Segoe UI', sans-serif;
+}}
+
 .stApp {{
-    background-color: {"#0f172a" if theme=="dark" else "#f4f7fb"};
+    background: {"#0b1120" if theme=="dark" else "#f1f5f9"};
+}}
+
+section.main > div {{
+    padding-top: 2rem;
 }}
 
 .glass {{
-    background: {"rgba(255,255,255,0.08)" if theme=="dark" else "rgba(255,255,255,0.7)"};
-    backdrop-filter: blur(18px);
+    background: {"rgba(255,255,255,0.07)" if theme=="dark" else "rgba(255,255,255,0.8)"};
+    backdrop-filter: blur(20px);
     border-radius: 25px;
-    padding: 50px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-    margin-bottom: 40px;
+    padding: 60px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    transition: 0.4s ease;
+}}
+
+.glass:hover {{
+    transform: translateY(-6px);
 }}
 
 .hero {{
-    text-align:center;
-    padding:120px 20px;
+    text-align: center;
+    padding: 120px 20px;
     color: {"white" if theme=="dark" else "#0f172a"};
+    animation: fadeUp 1.4s ease forwards;
 }}
 
-.metric-card {{
-    text-align:center;
-    padding:20px;
+@keyframes fadeUp {{
+    from {{opacity:0; transform:translateY(40px);}}
+    to {{opacity:1; transform:translateY(0);}}
 }}
 
 .footer {{
     text-align:center;
-    padding:30px;
-    font-size:14px;
+    padding:40px;
     color:gray;
+    font-size:14px;
 }}
 
 </style>
 """, unsafe_allow_html=True)
 
-# =====================================================
-# PARTICLE NETWORK BACKGROUND
-# =====================================================
+# ===============================
+# PARTICLE BACKGROUND (FIXED VERSION)
+# ===============================
 st.components.v1.html(f"""
-<canvas id="particles"></canvas>
 <style>
-#particles {{
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    background: {"#0f172a" if theme=="dark" else "#f4f7fb"};
+#particles-js {{
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  background: {"#0b1120" if theme=="dark" else "#f1f5f9"};
 }}
 </style>
 
+<div id="particles-js"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 <script>
-const canvas = document.getElementById('particles');
-const ctx = canvas.getContext('2d');
-
-function resize() {{
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}}
-resize();
-window.addEventListener("resize", resize);
-
-let particles = [];
-for (let i = 0; i < 70; i++) {{
-    particles.push({{
-        x: Math.random()*canvas.width,
-        y: Math.random()*canvas.height,
-        vx: (Math.random()-0.5)*0.4,
-        vy: (Math.random()-0.5)*0.4
-    }});
-}}
-
-function animate() {{
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    particles.forEach(p => {{
-        p.x += p.vx;
-        p.y += p.vy;
-
-        if(p.x<0||p.x>canvas.width) p.vx*=-1;
-        if(p.y<0||p.y>canvas.height) p.vy*=-1;
-
-        ctx.beginPath();
-        ctx.arc(p.x,p.y,2,0,Math.PI*2);
-        ctx.fillStyle = "rgba(59,130,246,0.6)";
-        ctx.fill();
-    }});
-
-    for(let i=0;i<particles.length;i++){{
-        for(let j=i+1;j<particles.length;j++){{
-            let dx = particles[i].x - particles[j].x;
-            let dy = particles[i].y - particles[j].y;
-            let dist = Math.sqrt(dx*dx + dy*dy);
-            if(dist<120){{
-                ctx.beginPath();
-                ctx.moveTo(particles[i].x,particles[i].y);
-                ctx.lineTo(particles[j].x,particles[j].y);
-                ctx.strokeStyle="rgba(59,130,246,0.08)";
-                ctx.stroke();
-            }}
-        }}
+particlesJS("particles-js", {{
+  particles: {{
+    number: {{ value: 60 }},
+    color: {{ value: "#3b82f6" }},
+    shape: {{ type: "circle" }},
+    opacity: {{ value: 0.5 }},
+    size: {{ value: 3 }},
+    line_linked: {{
+      enable: true,
+      distance: 140,
+      color: "#3b82f6",
+      opacity: 0.15,
+      width: 1
+    }},
+    move: {{
+      enable: true,
+      speed: 1.5
     }}
-
-    requestAnimationFrame(animate);
-}}
-animate();
+  }}
+}});
 </script>
 """, height=0)
 
-# =====================================================
+# ===============================
 # LOAD MODEL
-# =====================================================
+# ===============================
 try:
     model = joblib.load("hpv_epitope_model.pkl")
 except:
-    st.error("Model file not found. Upload hpv_epitope_model.pkl")
+    st.error("Model file not found.")
     st.stop()
 
 threshold = 0.261
 
-# =====================================================
+# ===============================
 # FEATURE ENGINEERING
-# =====================================================
+# ===============================
 aa_list = list("ACDEFGHIKLMNPQRSTVWY")
 aa_index = {aa:i for i,aa in enumerate(aa_list)}
 dipeptides = ["".join(p) for p in product(aa_list, repeat=2)]
@@ -205,32 +185,32 @@ def extract_features(seq):
 
     return np.concatenate([pos_encoding, di_features, global_features])
 
-# =====================================================
+# ===============================
 # NAVIGATION
-# =====================================================
+# ===============================
 page = st.sidebar.radio(
     "Navigation",
     ["Home","Epitope Scanner","Methods"]
 )
 
-# =====================================================
-# HOME PAGE
-# =====================================================
+# ===============================
+# HOME
+# ===============================
 if page == "Home":
 
     st.markdown("""
     <div class="hero">
         <div class="glass">
-            <h1 style="font-size:70px;">HPV-EPIPRED</h1>
+            <h1 style="font-size:72px;">HPV-EPIPRED</h1>
             <h3>AI-Driven MHC Class I Epitope Prediction</h3>
-            <p>Machine Learning–Based Immunogenic Hotspot Identification</p>
+            <p>Machine Learning-Based Immunogenic Hotspot Identification</p>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-# =====================================================
+# ===============================
 # EPITOPE SCANNER
-# =====================================================
+# ===============================
 elif page == "Epitope Scanner":
 
     st.markdown('<div class="glass">', unsafe_allow_html=True)
@@ -247,16 +227,10 @@ elif page == "Epitope Scanner":
             st.error("Sequence must be ≥ 9 amino acids.")
             st.stop()
 
-        if not all(c in aa_list for c in seq):
-            st.error("Invalid amino acid detected.")
-            st.stop()
-
         results = []
         for i in range(len(seq)-8):
             pep = seq[i:i+9]
-            prob = model.predict_proba(
-                [extract_features(pep)]
-            )[0][1]
+            prob = model.predict_proba([extract_features(pep)])[0][1]
 
             results.append({
                 "Start": i+1,
@@ -266,10 +240,6 @@ elif page == "Epitope Scanner":
 
         df = pd.DataFrame(results)
 
-        col1, col2 = st.columns(2)
-        col1.metric("Protein Length", len(seq))
-        col2.metric("Total 9-mers", len(df))
-
         fig = px.line(
             df,
             x="Start",
@@ -278,35 +248,35 @@ elif page == "Epitope Scanner":
             title="Epitope Probability Landscape"
         )
         fig.add_hline(y=threshold, line_dash="dash")
-        st.plotly_chart(fig, use_container_width=True)
 
+        st.plotly_chart(fig, use_container_width=True)
         st.dataframe(df, use_container_width=True)
 
-# =====================================================
+# ===============================
 # METHODS
-# =====================================================
+# ===============================
 elif page == "Methods":
 
     st.markdown('<div class="glass">', unsafe_allow_html=True)
     st.markdown("""
     ### Model Architecture
     - Model: XGBoost  
-    - Epitope Length: 9-mer  
+    - 9-mer epitope core  
     - Threshold: 0.261  
     - Features:
-        - Position-specific encoding
-        - Dipeptide composition
-        - Physicochemical descriptors
-    - Validation:
+        - Position-specific encoding  
+        - Dipeptide composition  
+        - Physicochemical descriptors  
+    - Evaluation:
         - Repeated stratified 70/30 splits
     """)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# =====================================================
+# ===============================
 # FOOTER
-# =====================================================
+# ===============================
 st.markdown("""
 <div class="footer">
-HPV-EPIPRED © 2026 | Developed for HPV Immunoinformatics Research
+HPV-EPIPRED © 2026 | HPV Immunoinformatics Research
 </div>
 """, unsafe_allow_html=True)
