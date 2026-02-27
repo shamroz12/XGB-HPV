@@ -28,55 +28,93 @@ st.set_page_config(
 st.markdown("""
 <style>
 
-body {
-    background-color: #f4f7fb;
+/* Remove Streamlit padding for cinematic hero */
+.block-container {
+    padding-top: 1rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
 }
 
-/* HERO SECTION */
+/* Fade-in animation */
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(20px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+/* HERO FULL WIDTH */
 .hero {
     position: relative;
+    width: 100%;
+    min-height: 75vh;
     background: linear-gradient(120deg, #0f172a, #1e3a8a, #0f172a);
-    padding: 90px;
-    border-radius: 25px;
+    border-radius: 30px;
     color: white;
     text-align: center;
-    margin-bottom: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     overflow: hidden;
+    animation: fadeIn 1.5s ease-out;
 }
 
-/* MOLECULAR PARTICLES */
-.molecule {
+/* Glowing Logo */
+.hero h1 {
+    font-size: 60px;
+    animation: glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 0 0 10px rgba(59,130,246,0.6),
+                     0 0 20px rgba(59,130,246,0.4);
+    }
+    to {
+        text-shadow: 0 0 20px rgba(59,130,246,0.9),
+                     0 0 40px rgba(59,130,246,0.7);
+    }
+}
+
+/* DNA SVG animation */
+.dna {
     position: absolute;
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(circle, rgba(59,130,246,0.4) 0%, transparent 70%);
-    border-radius: 50%;
-    animation: float 12s infinite ease-in-out;
+    width: 250px;
+    opacity: 0.15;
+    animation: spin 20s linear infinite;
 }
 
-.m1 { top: -60px; left: -60px; }
-.m2 { bottom: -60px; right: -60px; animation-delay: 4s; }
-.m3 { top: 40%; left: 60%; animation-delay: 8s; }
-
-@keyframes float {
-    0% { transform: translateY(0px) scale(1); }
-    50% { transform: translateY(30px) scale(1.1); }
-    100% { transform: translateY(0px) scale(1); }
+.dna.left {
+    left: -80px;
+    top: 20%;
 }
 
+.dna.right {
+    right: -80px;
+    bottom: 20%;
+    animation-direction: reverse;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Cards */
 .section-card {
     background: white;
     padding: 30px;
-    border-radius: 18px;
+    border-radius: 20px;
     box-shadow: 0px 10px 30px rgba(0,0,0,0.06);
     margin-bottom: 30px;
+    animation: fadeIn 1.5s ease-out;
 }
 
+/* Buttons */
 .stButton>button {
     background-color: #2563eb;
     color: white;
     border-radius: 12px;
-    padding: 0.7em 1.4em;
+    padding: 0.8em 1.5em;
     font-weight: 600;
 }
 
@@ -201,16 +239,33 @@ page = st.sidebar.radio("Select Module:",
 if page == "Home":
 
     st.markdown("""
+st.markdown("""
 <div class="hero">
-    <div class="molecule m1"></div>
-    <div class="molecule m2"></div>
-    <div class="molecule m3"></div>
 
-    <h1 style="font-size:52px;">🧬 HPV-EPIPRED</h1>
-    <h3 style="font-weight:400;">HPV-Specific MHC Class I Epitope Prediction Platform</h3>
-    <p style="opacity:0.85;">
-    Machine Learning–Driven Immunogenic Hotspot Identification
+    <!-- Left DNA -->
+    <svg class="dna left" viewBox="0 0 100 300">
+        <path d="M50 0 Q90 50 50 100 Q10 150 50 200 Q90 250 50 300"
+              stroke="white" fill="none" stroke-width="3"/>
+        <path d="M30 0 Q70 50 30 100 Q70 150 30 200 Q70 250 30 300"
+              stroke="white" fill="none" stroke-width="2"/>
+    </svg>
+
+    <!-- Right DNA -->
+    <svg class="dna right" viewBox="0 0 100 300">
+        <path d="M50 0 Q90 50 50 100 Q10 150 50 200 Q90 250 50 300"
+              stroke="white" fill="none" stroke-width="3"/>
+        <path d="M30 0 Q70 50 30 100 Q70 150 30 200 Q70 250 30 300"
+              stroke="white" fill="none" stroke-width="2"/>
+    </svg>
+
+    <h1>🧬 HPV-EPIPRED</h1>
+    <h3 style="font-weight:400;">
+        HPV-Specific MHC Class I Epitope Prediction Platform
+    </h3>
+    <p style="opacity:0.85; max-width:700px;">
+        Machine Learning–Driven Immunogenic Hotspot Identification
     </p>
+
 </div>
 """, unsafe_allow_html=True)
 
