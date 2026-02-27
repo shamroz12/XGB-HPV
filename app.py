@@ -268,6 +268,7 @@ page = st.sidebar.radio("Select Module:",
 if page == "Home":
 
 st.markdown("""
+
 <div class="hero">
     <div class="glass">
         <h1 style="font-size:60px;">HPV-EPIPRED</h1>
