@@ -239,7 +239,6 @@ page = st.sidebar.radio("Select Module:",
 if page == "Home":
 
     st.markdown("""
-st.markdown("""
 <div class="hero">
 
     <!-- Left DNA -->
@@ -258,7 +257,7 @@ st.markdown("""
               stroke="white" fill="none" stroke-width="2"/>
     </svg>
 
-    <h1>🧬 HPV-EPIPRED</h1>
+    <h1>HPV-EPIPRED</h1>
     <h3 style="font-weight:400;">
         HPV-Specific MHC Class I Epitope Prediction Platform
     </h3>
