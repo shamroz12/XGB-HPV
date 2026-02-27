@@ -28,88 +28,79 @@ st.set_page_config(
 st.markdown("""
 <style>
 
-/* Remove Streamlit padding for cinematic hero */
+/* Remove top spacing */
 .block-container {
     padding-top: 1rem;
-    padding-left: 2rem;
-    padding-right: 2rem;
 }
 
-/* Fade-in animation */
-@keyframes fadeIn {
-    from {opacity: 0; transform: translateY(20px);}
-    to {opacity: 1; transform: translateY(0);}
+/* Animated gradient background */
+@keyframes gradientMove {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
 }
 
-/* HERO FULL WIDTH */
 .hero {
-    position: relative;
     width: 100%;
-    min-height: 75vh;
-    background: linear-gradient(120deg, #0f172a, #1e3a8a, #0f172a);
+    min-height: 70vh;
     border-radius: 30px;
+    background: linear-gradient(-45deg, #0f172a, #1e3a8a, #1e40af, #0f172a);
+    background-size: 400% 400%;
+    animation: gradientMove 12s ease infinite;
     color: white;
-    text-align: center;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
-    animation: fadeIn 1.5s ease-out;
+    text-align: center;
+
+    box-shadow: 0px 20px 60px rgba(0,0,0,0.2);
 }
 
-/* Glowing Logo */
+/* Fade-in animation */
+@keyframes fadeIn {
+    from {opacity:0; transform: translateY(20px);}
+    to {opacity:1; transform: translateY(0);}
+}
+
 .hero h1 {
     font-size: 60px;
+    margin-bottom: 10px;
+    animation: fadeIn 1.2s ease-out;
+}
+
+/* Subtle glow */
+@keyframes glow {
+    from {text-shadow: 0 0 10px rgba(59,130,246,0.6);}
+    to {text-shadow: 0 0 25px rgba(59,130,246,0.9);}
+}
+
+.hero h1 {
     animation: glow 3s ease-in-out infinite alternate;
 }
 
-@keyframes glow {
-    from {
-        text-shadow: 0 0 10px rgba(59,130,246,0.6),
-                     0 0 20px rgba(59,130,246,0.4);
-    }
-    to {
-        text-shadow: 0 0 20px rgba(59,130,246,0.9),
-                     0 0 40px rgba(59,130,246,0.7);
-    }
+.hero h3 {
+    font-weight: 400;
+    opacity: 0.9;
+    animation: fadeIn 1.8s ease-out;
 }
 
-/* DNA SVG animation */
-.dna {
-    position: absolute;
-    width: 250px;
-    opacity: 0.15;
-    animation: spin 20s linear infinite;
+.hero p {
+    max-width: 700px;
+    opacity: 0.85;
+    animation: fadeIn 2.2s ease-out;
 }
 
-.dna.left {
-    left: -80px;
-    top: 20%;
-}
-
-.dna.right {
-    right: -80px;
-    bottom: 20%;
-    animation-direction: reverse;
-}
-
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-/* Cards */
+/* Card styling */
 .section-card {
     background: white;
     padding: 30px;
     border-radius: 20px;
-    box-shadow: 0px 10px 30px rgba(0,0,0,0.06);
+    box-shadow: 0px 10px 30px rgba(0,0,0,0.05);
     margin-bottom: 30px;
-    animation: fadeIn 1.5s ease-out;
 }
 
-/* Buttons */
+/* Button */
 .stButton>button {
     background-color: #2563eb;
     color: white;
@@ -240,34 +231,14 @@ if page == "Home":
 
     st.markdown("""
 <div class="hero">
-
-    <!-- Left DNA -->
-    <svg class="dna left" viewBox="0 0 100 300">
-        <path d="M50 0 Q90 50 50 100 Q10 150 50 200 Q90 250 50 300"
-              stroke="white" fill="none" stroke-width="3"/>
-        <path d="M30 0 Q70 50 30 100 Q70 150 30 200 Q70 250 30 300"
-              stroke="white" fill="none" stroke-width="2"/>
-    </svg>
-
-    <!-- Right DNA -->
-    <svg class="dna right" viewBox="0 0 100 300">
-        <path d="M50 0 Q90 50 50 100 Q10 150 50 200 Q90 250 50 300"
-              stroke="white" fill="none" stroke-width="3"/>
-        <path d="M30 0 Q70 50 30 100 Q70 150 30 200 Q70 250 30 300"
-              stroke="white" fill="none" stroke-width="2"/>
-    </svg>
-
     <h1>HPV-EPIPRED</h1>
-    <h3 style="font-weight:400;">
-        HPV-Specific MHC Class I Epitope Prediction Platform
-    </h3>
-    <p style="opacity:0.85; max-width:700px;">
+    <h3>HPV-Specific MHC Class I Epitope Prediction Platform</h3>
+    <p>
         Machine Learning–Driven Immunogenic Hotspot Identification
     </p>
-
 </div>
 """, unsafe_allow_html=True)
-
+    
     st.markdown("""
     <div class="section-card">
     <h3>Key Features</h3>
