@@ -13,29 +13,70 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import pagesizes
 from reportlab.platypus import TableStyle
 
-# ===============================
+# ==========================================
 # PAGE CONFIG
-# ===============================
-st.set_page_config(page_title="HPV-EPIPRED", layout="wide")
+# ==========================================
+st.set_page_config(
+    page_title="HPV-EPIPRED",
+    page_icon="🧬",
+    layout="wide"
+)
 
-# ===============================
-# CLEAN PROFESSIONAL STYLING
-# ===============================
+# ==========================================
+# PREMIUM BIOTECH STYLING
+# ==========================================
 st.markdown("""
 <style>
-.main {background-color: #f8fafc;}
-h1,h2,h3 {color:#1f2937;}
-.stButton>button {
-    background-color:#2563eb;
-    color:white;
-    border-radius:8px;
+
+body {
+    background-color: #f4f7fb;
 }
+
+.hero {
+    background: linear-gradient(90deg, #0f172a, #1e3a8a);
+    padding: 60px;
+    border-radius: 15px;
+    color: white;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.section-card {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0px 8px 20px rgba(0,0,0,0.05);
+    margin-bottom: 25px;
+}
+
+.stButton>button {
+    background-color: #2563eb;
+    color: white;
+    border-radius: 10px;
+    padding: 0.6em 1.2em;
+    font-weight: 600;
+}
+
+.metric-container {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.04);
+}
+
+footer {
+    text-align:center;
+    padding:20px;
+    color:#64748b;
+    font-size:14px;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
-# ===============================
-# LOAD MODEL SAFELY
-# ===============================
+# ==========================================
+# LOAD MODEL
+# ==========================================
 try:
     model = joblib.load("hpv_epitope_model.pkl")
 except:
@@ -44,9 +85,9 @@ except:
 
 threshold = 0.261
 
-# ===============================
-# AMINO ACIDS & FEATURES
-# ===============================
+# ==========================================
+# FEATURE DEFINITIONS
+# ==========================================
 aa_list = list("ACDEFGHIKLMNPQRSTVWY")
 aa_index = {aa:i for i,aa in enumerate(aa_list)}
 dipeptides = ["".join(p) for p in product(aa_list, repeat=2)]
@@ -80,10 +121,8 @@ def extract_features_full(seq):
     pos_frac = sum(a in positive for a in seq)/length
     neg_frac = sum(a in negative for a in seq)/length
     net_charge = pos_frac - neg_frac
-
     entropy = -sum((aa_count[a]/length)*math.log2(aa_count[a]/length)
                    for a in aa_count)
-
     avg_weight = sum(aa_weight[a] for a in seq)/length
 
     global_features = np.array([
@@ -93,9 +132,9 @@ def extract_features_full(seq):
 
     return np.concatenate([pos_encoding, di_features, global_features])
 
-# ===============================
+# ==========================================
 # HOTSPOT DETECTION
-# ===============================
+# ==========================================
 def detect_hotspots(df):
     df_high = df[df["Probability"] >= threshold].sort_values("Start")
     hotspots = []
@@ -133,60 +172,57 @@ def detect_hotspots(df):
 
     return pd.DataFrame(hotspots)
 
-# ===============================
-# PDF REPORT
-# ===============================
-def generate_pdf(df, protein_len):
-    buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=pagesizes.A4)
-    elements = []
-    styles = getSampleStyleSheet()
-
-    elements.append(Paragraph("HPV-EPIPRED Report", styles["Title"]))
-    elements.append(Spacer(1, 12))
-    elements.append(Paragraph(f"Protein Length: {protein_len}", styles["Normal"]))
-    elements.append(Spacer(1, 12))
-
-    top_df = df.sort_values("Probability", ascending=False).head(10)
-
-    data = [["Rank","Start","Peptide","Probability","Confidence"]]
-
-    for i, row in enumerate(top_df.itertuples(),1):
-        data.append([i,row.Start,row.Peptide,row.Probability,row.Confidence])
-
-    table = Table(data)
-    table.setStyle(TableStyle([
-        ('BACKGROUND',(0,0),(-1,0),colors.grey),
-        ('GRID',(0,0),(-1,-1),0.5,colors.black)
-    ]))
-
-    elements.append(table)
-    doc.build(elements)
-    buffer.seek(0)
-    return buffer
-
-# ===============================
+# ==========================================
 # SIDEBAR NAVIGATION
-# ===============================
+# ==========================================
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to:",
+page = st.sidebar.radio("Select Module:",
     ["Home","Epitope Scanner","Hotspot Analysis","Methods"])
 
-# ===============================
-# HOME
-# ===============================
+# ==========================================
+# HOME PAGE (Premium Landing)
+# ==========================================
 if page == "Home":
-    st.title("🧬 HPV-EPIPRED")
-    st.write("HPV-specific MHC-I (9-mer core) epitope prediction server.")
 
-# ===============================
+    st.markdown("""
+    <div class="hero">
+        <h1>🧬 HPV-EPIPRED</h1>
+        <h3>HPV-Specific MHC Class I Epitope Prediction Platform</h3>
+        <p>Machine Learning–Driven Immunogenic Hotspot Identification</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="section-card">
+    <h3>About the Platform</h3>
+    HPV-EPIPRED is a dedicated HPV immunoinformatics server designed to identify 
+    MHC Class I (9-mer core) epitopes using a machine learning framework trained 
+    on experimentally validated HPV epitope datasets.
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="section-card">
+    <h3>Key Features</h3>
+    • Sliding window epitope scanning  
+    • Interactive probability landscape  
+    • Immunogenic hotspot detection  
+    • Ranked vaccine candidate selection  
+    • Downloadable PDF research reports  
+    </div>
+    """, unsafe_allow_html=True)
+
+# ==========================================
 # EPITOPE SCANNER
-# ===============================
+# ==========================================
 elif page == "Epitope Scanner":
 
+    st.markdown('<div class="section-card">', unsafe_allow_html=True)
     fasta = st.text_area("Paste HPV Protein FASTA Sequence")
+    run = st.button("Run Epitope Scan")
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    if st.button("Run Scan"):
+    if run:
 
         lines = fasta.split("\n")
         seq = "".join([l.strip() for l in lines if not l.startswith(">")]).upper()
@@ -219,60 +255,58 @@ elif page == "Epitope Scanner":
             })
 
         df=pd.DataFrame(results)
-
-        if df.empty:
-            st.error("No peptides generated.")
-            st.stop()
-
         df=df.reset_index(drop=True)
         st.session_state["results"]=df
 
-        st.metric("Protein Length",len(seq))
-        st.metric("Total 9-mers",len(df))
+        col1,col2,col3=st.columns(3)
+        col1.metric("Protein Length",len(seq))
+        col2.metric("Total 9-mers",len(df))
+        col3.metric("High Confidence Hits",len(df[df["Confidence"]=="High"]))
 
-        # SAFE PLOTTING
-        if "Start" in df.columns and "Probability" in df.columns:
-            fig = px.line(
-                df,
-                x="Start",
-                y="Probability",
-                title="Epitope Probability Landscape"
-            )
-            fig.add_hline(y=threshold, line_dash="dash")
-            st.plotly_chart(fig, use_container_width=True)
+        fig = px.line(df,x="Start",y="Probability",
+                      title="Epitope Probability Landscape",
+                      template="simple_white")
+        fig.add_hline(y=threshold,line_dash="dash")
+        st.plotly_chart(fig,use_container_width=True)
 
         st.dataframe(df)
 
-        pdf = generate_pdf(df,len(seq))
-        st.download_button(
-            "Download PDF Report",
-            pdf,
-            file_name="HPV_EPIPRED_Report.pdf"
-        )
-
-# ===============================
-# HOTSPOT ANALYSIS
-# ===============================
+# ==========================================
+# HOTSPOT PAGE
+# ==========================================
 elif page == "Hotspot Analysis":
-    if "results" in st.session_state:
-        df = st.session_state["results"]
-        hotspot_df = detect_hotspots(df)
 
-        if hotspot_df.empty:
-            st.warning("No hotspots detected.")
-        else:
-            st.dataframe(hotspot_df)
+    if "results" in st.session_state:
+        df=st.session_state["results"]
+        hotspot_df=detect_hotspots(df)
+
+        st.markdown('<div class="section-card">', unsafe_allow_html=True)
+        st.write("Predicted Immunogenic Hotspots")
+        st.dataframe(hotspot_df)
+        st.markdown('</div>', unsafe_allow_html=True)
     else:
         st.warning("Run Epitope Scanner first.")
 
-# ===============================
+# ==========================================
 # METHODS
-# ===============================
+# ==========================================
 elif page == "Methods":
-    st.write("""
-    Model: XGBoost  
-    Epitope Length: 9-mer core  
-    Threshold: 0.261  
-    Features: Positional encoding + Dipeptide + Physicochemical  
-    Evaluation: Repeated 70/30 splits  
-    """)
+    st.markdown("""
+    <div class="section-card">
+    <h3>Model Architecture</h3>
+    • Model: XGBoost  
+    • Epitope Length: 9-mer core  
+    • Threshold: 0.261  
+    • Features: Position-specific encoding, dipeptide composition, physicochemical descriptors  
+    • Evaluation: Repeated stratified 70/30 splits  
+    </div>
+    """, unsafe_allow_html=True)
+
+# ==========================================
+# FOOTER
+# ==========================================
+st.markdown("""
+<footer>
+HPV-EPIPRED © 2026 | Developed for HPV Immunoinformatics Research
+</footer>
+""", unsafe_allow_html=True)
