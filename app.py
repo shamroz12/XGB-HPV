@@ -253,26 +253,6 @@ elif page == "Epitope Scanner":
         st.dataframe(df, use_container_width=True)
 
 # ===============================
-# METHODS
-# ===============================
-elif page == "Methods":
-
-    st.markdown('<div class="glass">', unsafe_allow_html=True)
-    st.markdown("""
-    ### Model Architecture
-    - Model: XGBoost  
-    - 9-mer epitope core  
-    - Threshold: 0.261  
-    - Features:
-        - Position-specific encoding  
-        - Dipeptide composition  
-        - Physicochemical descriptors  
-    - Evaluation:
-        - Repeated stratified 70/30 splits
-    """)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# ===============================
 # FOOTER
 # ===============================
 st.markdown("""
