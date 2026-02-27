@@ -34,14 +34,9 @@ h1,h2,h3 {color:#1f2937;}
 """, unsafe_allow_html=True)
 
 # ===============================
-# LOAD MODEL SAFELY
+# LOAD MODEL
 # ===============================
-try:
-    model = joblib.load("hpv_epitope_model.pkl")
-except:
-    st.error("Model file not found. Please ensure hpv_epitope_model.pkl is in repository.")
-    st.stop()
-
+model = joblib.load("hpv_epitope_model.pkl")
 threshold = 0.261
 
 # ===============================
@@ -66,6 +61,7 @@ aa_weight = {
 # FEATURE EXTRACTION
 # ===============================
 def extract_features_full(seq):
+    seq = seq.upper()
     pos_encoding = np.zeros((9,20))
     for pos, aa in enumerate(seq):
         if aa in aa_index:
@@ -134,6 +130,13 @@ def detect_hotspots(df):
     return pd.DataFrame(hotspots)
 
 # ===============================
+# CONSERVATION CHECK
+# ===============================
+def conservation_check(peptide, sequences):
+    count = sum(peptide in seq for seq in sequences)
+    return round((count/len(sequences))*100,1)
+
+# ===============================
 # PDF REPORT
 # ===============================
 def generate_pdf(df, protein_len):
@@ -148,10 +151,10 @@ def generate_pdf(df, protein_len):
     elements.append(Spacer(1, 12))
 
     top_df = df.sort_values("Probability", ascending=False).head(10)
-    data = [["Rank","Start","Peptide","Prob","Conf"]]
+    data = [["Rank","Start","Peptide","Prob","Conf","Conservation%"]]
 
     for i, row in enumerate(top_df.itertuples(),1):
-        data.append([i,row.Start,row.Peptide,row.Probability,row.Confidence])
+        data.append([i,row.Start,row.Peptide,row.Probability,row.Confidence,row.Conservation])
 
     table = Table(data)
     table.setStyle(TableStyle([
@@ -169,14 +172,16 @@ def generate_pdf(df, protein_len):
 # ===============================
 st.sidebar.title("Navigation")
 page = st.sidebar.radio("Go to:",
-    ["Home","Epitope Scanner","Hotspot Analysis","Methods"])
+    ["Home","Epitope Scanner","Hotspot Analysis",
+     "Mutation Simulator","Multi-Strain Comparison",
+     "Manuscript Figures","Methods"])
 
 # ===============================
 # HOME
 # ===============================
 if page=="Home":
     st.title("HPV-EPIPRED")
-    st.write("HPV-specific MHC-I (9-mer core) epitope prediction server.")
+    st.write("HPV-specific MHC-I (9-mer core) epitope prediction server with conservation and mutation analysis.")
 
 # ===============================
 # EPITOPE SCANNER
@@ -185,18 +190,20 @@ elif page=="Epitope Scanner":
 
     fasta = st.text_area("Paste FASTA Sequence")
 
+    uploaded = st.file_uploader("Upload comparison strain FASTA (optional)", type=["fasta","txt"], accept_multiple_files=True)
+
     if st.button("Run Scan"):
 
         lines = fasta.split("\n")
         seq = "".join([l.strip() for l in lines if not l.startswith(">")]).upper()
 
-        if len(seq) < 9:
-            st.error("Sequence must be ≥ 9 amino acids.")
-            st.stop()
-
-        if not all(c in aa_list for c in seq):
-            st.error("Invalid amino acid detected.")
-            st.stop()
+        strain_sequences=[]
+        if uploaded:
+            for file in uploaded:
+                content = file.read().decode()
+                lines = content.split("\n")
+                s = "".join([l.strip() for l in lines if not l.startswith(">")]).upper()
+                strain_sequences.append(s)
 
         results=[]
         for i in range(len(seq)-8):
@@ -210,33 +217,27 @@ elif page=="Epitope Scanner":
             else:
                 conf="Low"
 
+            cons = conservation_check(pep,strain_sequences) if strain_sequences else 0
+
             results.append({
                 "Start":i+1,
                 "Peptide":pep,
                 "Probability":round(prob,3),
-                "Confidence":conf
+                "Confidence":conf,
+                "Conservation":cons
             })
 
         df=pd.DataFrame(results)
-
-        if df.empty:
-            st.error("No peptides generated.")
-            st.stop()
-
-        df=df.reset_index(drop=True)
         st.session_state["results"]=df
+        st.session_state["protein"]=seq
 
         st.metric("Protein Length",len(seq))
-        st.metric("Total 9-mers",len(df))
+        st.metric("Total Windows",len(df))
 
-        # SAFE PLOTTING
-        if "Start" in df.columns and "Probability" in df.columns:
-            fig=px.line(df,x="Start",y="Probability",
-                        title="Epitope Probability Landscape")
-            fig.add_hline(y=threshold,line_dash="dash")
-            st.plotly_chart(fig,use_container_width=True)
-        else:
-            st.warning("Plotting skipped due to missing columns.")
+        fig=px.line(df,x="Start",y="Probability",
+                    title="Epitope Probability Landscape")
+        fig.add_hline(y=threshold,line_dash="dash")
+        st.plotly_chart(fig,use_container_width=True)
 
         st.dataframe(df)
 
@@ -250,11 +251,60 @@ elif page=="Epitope Scanner":
 elif page=="Hotspot Analysis":
     if "results" in st.session_state:
         df=st.session_state["results"]
-        hotspot_df=detect_hotspots(df)
-        if hotspot_df.empty:
-            st.warning("No hotspots detected.")
-        else:
-            st.dataframe(hotspot_df)
+        st.dataframe(detect_hotspots(df))
+    else:
+        st.warning("Run scan first.")
+
+# ===============================
+# MUTATION SIMULATOR
+# ===============================
+elif page=="Mutation Simulator":
+
+    if "results" in st.session_state:
+
+        df=st.session_state["results"]
+        peptide=st.selectbox("Select Peptide",df["Peptide"])
+        pos=st.slider("Mutation Position (1-9)",1,9,1)
+        new_res=st.selectbox("New Residue",aa_list)
+
+        if st.button("Simulate Mutation"):
+            mutated=list(peptide)
+            mutated[pos-1]=new_res
+            mutated="".join(mutated)
+
+            orig_prob=model.predict_proba([extract_features_full(peptide)])[0][1]
+            mut_prob=model.predict_proba([extract_features_full(mutated)])[0][1]
+
+            st.write("Original:",peptide,round(orig_prob,3))
+            st.write("Mutated:",mutated,round(mut_prob,3))
+    else:
+        st.warning("Run scan first.")
+
+# ===============================
+# MULTI-STRAIN COMPARISON
+# ===============================
+elif page=="Multi-Strain Comparison":
+    if "results" in st.session_state:
+        df=st.session_state["results"]
+        st.write("Top conserved epitopes:")
+        st.dataframe(df.sort_values("Conservation",ascending=False).head(10))
+    else:
+        st.warning("Run scan first.")
+
+# ===============================
+# MANUSCRIPT FIGURES
+# ===============================
+elif page=="Manuscript Figures":
+    if "results" in st.session_state:
+        df=st.session_state["results"]
+        fig=px.line(df,x="Start",y="Probability",
+                    title="Manuscript-Ready Probability Plot")
+        fig.update_layout(template="simple_white")
+        st.plotly_chart(fig)
+
+        st.download_button("Download CSV Data",
+                           df.to_csv(index=False),
+                           file_name="HPV_EPIPRED_Data.csv")
     else:
         st.warning("Run scan first.")
 
@@ -263,8 +313,9 @@ elif page=="Hotspot Analysis":
 # ===============================
 elif page=="Methods":
     st.write("""
-    Model: XGBoost  
-    Epitope Length: 9-mer core  
-    Threshold: 0.261  
-    Features: Positional encoding + Dipeptide + Physicochemical  
+    Model: XGBoost
+    Epitope Length: 9-mer core
+    Threshold: 0.261
+    Features: Positional encoding + Dipeptide + Physicochemical
+    Evaluation: Repeated 70/30 splits
     """)
