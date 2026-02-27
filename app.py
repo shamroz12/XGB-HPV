@@ -266,18 +266,19 @@ page = st.sidebar.radio("Select Module:",
 # HOME PAGE (Premium Landing)
 # ==========================================
 if page == "Home":
-st.markdown("""
-<div class="hero">
-    <div class="glass">
-        <h1 style="font-size:60px;">HPV-EPIPRED</h1>
-        <h3>HPV-Specific MHC Class I Epitope Prediction Platform</h3>
-        <p style="max-width:700px;">
-        Machine Learning–Driven Immunogenic Hotspot Identification
-        </p>
-    </div>
-</div>
-""", unsafe_allow_html=True)
 
+    st.markdown("""
+    <div class="hero">
+        <div class="glass">
+            <h1 style="font-size:60px;">HPV-EPIPRED</h1>
+            <h3>HPV-Specific MHC Class I Epitope Prediction Platform</h3>
+            <p style="max-width:700px;">
+            Machine Learning–Driven Immunogenic Hotspot Identification
+            </p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
 # ==========================================
 # EPITOPE SCANNER
 # ==========================================
