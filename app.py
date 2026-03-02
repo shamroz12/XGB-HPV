@@ -15,68 +15,21 @@ import io
 # PREMIUM GLOBAL FONT SYSTEM
 # =========================================================
 st.markdown("""
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-
 <style>
-html, body, [class*="css"]  {
-    font-family: 'DM Sans', 'Inter', sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&family=Sora:wght@600;700&display=swap');
+
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif !important;
 }
 
-h1, h2, h3, h4 {
-    font-family: 'Space Grotesk', sans-serif;
-    letter-spacing: -0.5px;
+h1, h2, h3 {
+    font-family: 'Sora', sans-serif !important;
+    letter-spacing: -1px;
+    font-weight: 700 !important;
 }
 
-/* AUTO DARK / LIGHT */
-@media (prefers-color-scheme: dark) {
-    .stApp {
-        background: linear-gradient(
-            135deg,
-            #111827 0%,
-            #0f172a 40%,
-            #0b1220 100%
-        );
-        color: #e2e8f0;
-    }
-}
-
-@media (prefers-color-scheme: light) {
-    .stApp {
-        background: linear-gradient(
-            135deg,
-            #f8fafc 0%,
-            #e2e8f0 50%,
-            #f1f5f9 100%
-        );
-        color: #0f172a;
-    }
-}
-
-/* Subtle Noise Overlay */
-body::after {
-    content: "";
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background-image: url("https://www.transparenttextures.com/patterns/asfalt-dark.png");
-    opacity: 0.04;
-    z-index: -6;
-}
-
-/* Glass Card */
-.glass-card {
-    background: rgba(255,255,255,0.07);
-    backdrop-filter: blur(24px);
-    border-radius: 18px;
-    padding: 35px;
-    border: 1px solid rgba(255,255,255,0.12);
-    box-shadow: 0 10px 40px rgba(0,0,0,0.25);
-    margin-top: 40px;
-}
-
-/* Smooth Scroll */
-html {
-    scroll-behavior: smooth;
+p, label, span, div {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -165,28 +118,41 @@ animateNetwork();
 </script>
 """, height=0)
 
+st.markdown("""
+<style>
+/* Force background on Streamlit containers */
+
+.stApp, .main, .block-container {
+    background: linear-gradient(
+        135deg,
+        #eef2ff 0%,
+        #e0e7ff 40%,
+        #dbeafe 100%
+    ) !important;
+}
+
+/* Remove excess padding to reduce height */
+.block-container {
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # =========================================================
 # INTERACTIVE 3D HELIX WITH DEPTH FOG
 # =========================================================
 st.components.v1.html("""
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-<canvas id="dna-canvas" style="
+style="
 position:fixed;
 top:0;
 left:0;
 width:100%;
 height:100%;
-z-index:-2;"></canvas>
-
-<script>
-const canvas = document.getElementById("dna-canvas");
-
-const renderer = new THREE.WebGLRenderer({
-    canvas: canvas,
-    alpha:true,
-    antialias:true
-});
+z-index:0;
+pointer-events:none;"
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -280,6 +246,15 @@ window.addEventListener("resize", ()=>{
 });
 </script>
 """, height=0)
+
+st.markdown("""
+<style>
+.block-container {
+    position: relative;
+    z-index: 10;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # =========================================================
 # HERO SECTION
