@@ -13,149 +13,127 @@ import time
 import io
 
 # =========================================================
-# THEME
+# PREMIUM FONTS
 # =========================================================
-if "theme" not in st.session_state:
-    st.session_state.theme = "dark"
+st.markdown("""
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
 
-theme_toggle = st.toggle("🌗 Dark Mode", value=True)
-theme = "dark" if theme_toggle else "light"
-
-# =========================================================
-# HD VISUAL CSS
-# =========================================================
-st.markdown(f"""
 <style>
-.stApp {{
-    background: {"#060b18" if theme=="dark" else "#f4f7fb"};
+html, body, [class*="css"]  {
     font-family: 'Inter', sans-serif;
-}}
+}
 
-.navbar {{
-    display:flex;
-    justify-content:space-between;
-    padding:25px 60px;
-    font-weight:600;
-    font-size:18px;
-    color:white;
-}}
+h1,h2,h3 {
+    font-family: 'Manrope', sans-serif;
+}
 
-.hero {{
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    text-align:center;
-    padding:160px 20px;
-}}
+.stApp {
+    background: radial-gradient(circle at 20% 30%, #0f172a 0%, #060b18 50%, #030712 100%);
+    color: white;
+}
 
-.gradient-text {{
-    font-size:90px;
-    font-weight:900;
-    background: linear-gradient(90deg,#3b82f6,#9333ea,#06b6d4);
-    background-size:200% auto;
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-    animation:shine 5s linear infinite;
-}}
-
-@keyframes shine {{
-    to {{ background-position:200% center; }}
-}}
-
-.glass {{
-    background: rgba(255,255,255,0.06);
+/* Glass Card */
+.glass-card {
+    background: rgba(255,255,255,0.05);
     backdrop-filter: blur(25px);
-    border-radius:30px;
-    padding:70px;
-    box-shadow:0 0 60px rgba(59,130,246,0.4);
-    transition:0.4s ease;
-}}
+    border-radius: 24px;
+    padding: 40px;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 0 60px rgba(59,130,246,0.25);
+    transition: 0.4s ease;
+}
 
-.glass:hover {{
-    box-shadow:0 0 120px rgba(147,51,234,0.7);
-}}
+.glass-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 120px rgba(147,51,234,0.4);
+}
 
-.footer {{
-    text-align:center;
-    padding:40px;
-    color:gray;
-}}
+/* Fade Animation */
+.fade-in {
+    animation: fadeUp 1.2s ease forwards;
+}
+
+@keyframes fadeUp {
+    from { opacity:0; transform: translateY(40px);}
+    to { opacity:1; transform: translateY(0);}
+}
 </style>
 """, unsafe_allow_html=True)
 
 # =========================================================
-# FLOATING BLOBS
+# FULL SCREEN ROTATING DNA BACKGROUND
 # =========================================================
 st.components.v1.html("""
-<style>
-.blob {
-  position: fixed;
-  border-radius: 50%;
-  filter: blur(150px);
-  opacity:0.7;
-  z-index:-1;
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<canvas id="dna-bg"></canvas>
+
+<script>
+const canvas = document.getElementById("dna-bg");
+canvas.style.position = "fixed";
+canvas.style.top = "0";
+canvas.style.left = "0";
+canvas.style.zIndex = "-2";
+
+const renderer = new THREE.WebGLRenderer({canvas: canvas, alpha: true});
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth/window.innerHeight,
+    0.1,
+    1000
+);
+
+camera.position.z = 12;
+
+const group = new THREE.Group();
+
+for (let i = 0; i < 100; i++) {
+    const geometry = new THREE.SphereGeometry(0.2, 16, 16);
+    const material1 = new THREE.MeshBasicMaterial({color: 0x3b82f6});
+    const material2 = new THREE.MeshBasicMaterial({color: 0x9333ea});
+
+    const sphere1 = new THREE.Mesh(geometry, material1);
+    const sphere2 = new THREE.Mesh(geometry, material2);
+
+    const angle = i * 0.3;
+    const radius = 3;
+
+    sphere1.position.set(
+        Math.cos(angle) * radius,
+        i * 0.15 - 7,
+        Math.sin(angle) * radius
+    );
+
+    sphere2.position.set(
+        Math.cos(angle + Math.PI) * radius,
+        i * 0.15 - 7,
+        Math.sin(angle + Math.PI) * radius
+    );
+
+    group.add(sphere1);
+    group.add(sphere2);
 }
-#blob1 { width:600px; height:600px; background:#3b82f6; top:5%; left:5%; }
-#blob2 { width:500px; height:500px; background:#9333ea; bottom:10%; right:10%; }
-</style>
-<div id="blob1" class="blob"></div>
-<div id="blob2" class="blob"></div>
+
+scene.add(group);
+
+function animate() {
+    requestAnimationFrame(animate);
+    group.rotation.y += 0.003;
+    renderer.render(scene, camera);
+}
+animate();
+</script>
 """, height=0)
-
-# =========================================================
-# LANDING GATE
-# =========================================================
-if "entered" not in st.session_state:
-    st.session_state.entered = False
-
-if not st.session_state.entered:
-
-    st.components.v1.html("""
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <div id="dna-container"></div>
-    <script>
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/400, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({alpha:true});
-    renderer.setSize(window.innerWidth, 400);
-    document.getElementById("dna-container").appendChild(renderer.domElement);
-
-    const geometry = new THREE.TorusKnotGeometry(1,0.3,120,16);
-    const material = new THREE.MeshBasicMaterial({color:0x3b82f6, wireframe:true});
-    const dna = new THREE.Mesh(geometry, material);
-    scene.add(dna);
-
-    camera.position.z = 5;
-
-    function animate() {
-      requestAnimationFrame(animate);
-      dna.rotation.x += 0.01;
-      dna.rotation.y += 0.01;
-      renderer.render(scene, camera);
-    }
-    animate();
-    </script>
-    """, height=400)
-
-    st.markdown("""
-    <div class="hero">
-        <div class="gradient-text">HPV-EPIPRED AI</div>
-        <h3 style="color:#94a3b8;">Next-Generation Epitope Intelligence Platform</h3>
-    </div>
-    """, unsafe_allow_html=True)
-
-    if st.button("🚀 Enter Platform"):
-        st.session_state.entered = True
-    st.stop()
 
 # =========================================================
 # NAVBAR
 # =========================================================
 st.markdown("""
-<div class="navbar">
-    <div>🧬 HPV-EPIPRED</div>
-    <div>AI Immunoinformatics Engine</div>
+<div style="padding:30px 80px; font-weight:600; font-size:20px;">
+🧬 HPV-EPIPRED AI — AI-Driven Epitope Intelligence
 </div>
 """, unsafe_allow_html=True)
 
@@ -211,6 +189,8 @@ tab1, tab2 = st.tabs(["🔬 AI Scanner", "🧠 Model Explainability"])
 
 with tab1:
 
+    st.markdown('<div class="glass-card fade-in">', unsafe_allow_html=True)
+
     mode = st.radio("Mode", ["Single Sequence","Batch Upload"])
     fasta = ""
 
@@ -223,60 +203,46 @@ with tab1:
 
     if st.button("Run AI Scan") and fasta:
 
-        progress = st.progress(0)
-        for i in range(100):
-            time.sleep(0.01)
-            progress.progress(i+1)
+        with st.spinner("Running AI inference engine..."):
+            seq = "".join([l.strip() for l in fasta.split("\n")
+                           if not l.startswith(">")]).upper()
 
-        seq = "".join([l.strip() for l in fasta.split("\n")
-                       if not l.startswith(">")]).upper()
+            results = []
 
-        results = []
+            for i in range(len(seq)-8):
+                pep = seq[i:i+9]
+                prob = model.predict_proba([extract_features(pep)])[0][1]
 
-        for i in range(len(seq)-8):
-            pep = seq[i:i+9]
-            prob = model.predict_proba([extract_features(pep)])[0][1]
+                if prob >= threshold:
+                    cat = "Epitope"
+                else:
+                    cat = "Non-Epitope"
 
-            if prob >= 0.6:
-                cat = "High Epitope"
-            elif prob >= threshold:
-                cat = "Moderate Epitope"
-            else:
-                cat = "Non-Epitope"
+                results.append([i+1,pep,prob,cat])
 
-            results.append([i+1,pep,prob,cat])
+            df = pd.DataFrame(results,
+                columns=["Position","Peptide","Probability","Category"])
 
-        df = pd.DataFrame(results,
-            columns=["Position","Peptide","Probability","Category"])
-
-        # ===== CATEGORY TABLES =====
-        st.subheader("🔴 High Confidence Epitopes")
-        high_df = df[df["Category"]=="High Epitope"] \
+        # ================= TABLE =================
+        st.subheader("Predicted Epitopes")
+        epi_df = df[df["Category"]=="Epitope"] \
                     .sort_values(by="Probability", ascending=False)
-        st.dataframe(high_df, use_container_width=True)
+        st.dataframe(epi_df, use_container_width=True)
 
-        st.subheader("🟡 Moderate Confidence Epitopes")
-        moderate_df = df[df["Category"]=="Moderate Epitope"] \
-                        .sort_values(by="Probability", ascending=False)
-        st.dataframe(moderate_df, use_container_width=True)
-
-        with st.expander("⚪ View Non-Epitopes"):
-            non_df = df[df["Category"]=="Non-Epitope"] \
-                        .sort_values(by="Probability", ascending=False)
+        with st.expander("View Non-Epitopes"):
+            non_df = df[df["Category"]=="Non-Epitope"]
             st.dataframe(non_df, use_container_width=True)
 
-top_df = epitope_df.sort_values(by="Probability", ascending=False).head(10)
-        top_df.insert(0, "Rank", range(1, len(top_df)+1))
-
-        st.subheader("🏆 Top 10 Epitope Candidates")
-        st.dataframe(top_df, use_container_width=True)
- 
-        # ===== PLOT =====
-        fig = px.line(df, x="Position", y="Probability")
-        fig.add_hline(y=threshold, line_dash="dash")
+        # ================= PLOT =================
+        fig = px.line(df, x="Position", y="Probability",
+                      template="plotly_dark", markers=True)
+        fig.add_hline(y=threshold, line_dash="dash", line_color="red")
+        fig.update_layout(height=520,
+                          plot_bgcolor="rgba(0,0,0,0)",
+                          paper_bgcolor="rgba(0,0,0,0)")
         st.plotly_chart(fig, use_container_width=True)
 
-        # ===== GAUGE =====
+        # ================= GAUGE =================
         mean_prob = df["Probability"].mean()
         gauge = go.Figure(go.Indicator(
             mode="gauge+number",
@@ -285,7 +251,7 @@ top_df = epitope_df.sort_values(by="Probability", ascending=False).head(10)
         ))
         st.plotly_chart(gauge, use_container_width=True)
 
-        # ===== DOWNLOAD =====
+        # ================= DOWNLOAD =================
         csv = df.to_csv(index=False).encode()
         st.download_button("Download CSV", csv, "epitope_results.csv")
 
@@ -293,17 +259,22 @@ top_df = epitope_df.sort_values(by="Probability", ascending=False).head(10)
         with open("plot.html","rb") as f:
             st.download_button("Download Plot HTML", f, "plot.html")
 
+    st.markdown('</div>', unsafe_allow_html=True)
+
 with tab2:
+    st.markdown('<div class="glass-card fade-in">', unsafe_allow_html=True)
     st.subheader("Feature Importance Overview")
     feat = pd.DataFrame({
         "Feature":["Hydrophobicity","Net Charge","Entropy"],
         "Importance":[0.32,0.21,0.17]
     })
-    fig = px.bar(feat, x="Importance", y="Feature", orientation="h")
+    fig = px.bar(feat, x="Importance", y="Feature",
+                 orientation="h", template="plotly_dark")
     st.plotly_chart(fig, use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown("""
-<div class="footer">
-HPV-EPIPRED AI © 2026 | Developed by Shamroz
+<div style="text-align:center;padding:40px;color:gray;">
+HPV-EPIPRED AI © 2026 | Academic Research Platform
 </div>
 """, unsafe_allow_html=True)
