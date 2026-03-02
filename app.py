@@ -456,12 +456,13 @@ with tab1:
         else:
             st.info("No epitopes detected above threshold.")
 
-        st.markdown("### ⚪ Predicted Non-Epitopes")
-        with st.expander("View Non-Epitope Predictions"):
-            if not non_df.empty:
-                st.dataframe(non_df, use_container_width=True)
-            else:
-                st.info("All peptides classified as epitopes.")
+        st.markdown("## ⚪ Predicted Non-Epitopes")
+
+with st.expander("🔍 View Non-Epitope Predictions"):
+    if not non_df.empty:
+        st.dataframe(non_df, use_container_width=True)
+    else:
+        st.info("All peptides classified as epitopes.")
 
         fig = px.line(
             df,
