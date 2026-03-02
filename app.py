@@ -66,15 +66,61 @@ h1,h2,h3 {
 st.components.v1.html("""
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-<canvas id="dna-bg"></canvas>
+<style>
+#hero-container {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+}
+
+#dna-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    height: 100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    color:white;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.85));
+}
+
+.hero-title {
+    font-size: 80px;
+    font-weight: 800;
+    background: linear-gradient(90deg,#3b82f6,#9333ea,#06b6d4);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.hero-sub {
+    font-size:22px;
+    margin-top:20px;
+    color:#94a3b8;
+}
+</style>
+
+<div id="hero-container">
+    <canvas id="dna-canvas"></canvas>
+    <div class="hero-content">
+        <div class="hero-title">HPV-EPIPRED AI</div>
+        <div class="hero-sub">
+            AI-Driven MHC Class I Epitope Intelligence Platform
+        </div>
+    </div>
+</div>
 
 <script>
-const canvas = document.getElementById("dna-bg");
-canvas.style.position = "fixed";
-canvas.style.top = "0";
-canvas.style.left = "0";
-canvas.style.zIndex = "-2";
-
+const canvas = document.getElementById("dna-canvas");
 const renderer = new THREE.WebGLRenderer({canvas: canvas, alpha: true});
 renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -86,12 +132,12 @@ const camera = new THREE.PerspectiveCamera(
     1000
 );
 
-camera.position.z = 12;
+camera.position.z = 14;
 
 const group = new THREE.Group();
 
-for (let i = 0; i < 100; i++) {
-    const geometry = new THREE.SphereGeometry(0.2, 16, 16);
+for (let i = 0; i < 120; i++) {
+    const geometry = new THREE.SphereGeometry(0.25, 16, 16);
     const material1 = new THREE.MeshBasicMaterial({color: 0x3b82f6});
     const material2 = new THREE.MeshBasicMaterial({color: 0x9333ea});
 
@@ -99,17 +145,17 @@ for (let i = 0; i < 100; i++) {
     const sphere2 = new THREE.Mesh(geometry, material2);
 
     const angle = i * 0.3;
-    const radius = 3;
+    const radius = 4;
 
     sphere1.position.set(
         Math.cos(angle) * radius,
-        i * 0.15 - 7,
+        i * 0.18 - 10,
         Math.sin(angle) * radius
     );
 
     sphere2.position.set(
         Math.cos(angle + Math.PI) * radius,
-        i * 0.15 - 7,
+        i * 0.18 - 10,
         Math.sin(angle + Math.PI) * radius
     );
 
@@ -121,12 +167,12 @@ scene.add(group);
 
 function animate() {
     requestAnimationFrame(animate);
-    group.rotation.y += 0.003;
+    group.rotation.y += 0.004;
     renderer.render(scene, camera);
 }
 animate();
 </script>
-""", height=0)
+""", height=900)
 
 # =========================================================
 # NAVBAR
