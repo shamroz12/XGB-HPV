@@ -265,6 +265,12 @@ with tab1:
                         .sort_values(by="Probability", ascending=False)
             st.dataframe(non_df, use_container_width=True)
 
+        top_df = epitope_df.sort_values(by="Probability", ascending=False).head(10)
+        top_df.insert(0, "Rank", range(1, len(top_df)+1))
+
+        st.subheader("🏆 Top 10 Epitope Candidates")
+        st.dataframe(top_df, use_container_width=True)
+ 
         # ===== PLOT =====
         fig = px.line(df, x="Position", y="Probability")
         fig.add_hline(y=threshold, line_dash="dash")
