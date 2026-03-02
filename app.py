@@ -145,63 +145,36 @@ st.markdown("""
 st.components.v1.html("""
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-style="
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-z-index:0;
-pointer-events:none;"
+<div id="dna-container" style="width:100%; height:700px;"></div>
 
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(window.devicePixelRatio);
+<script>
+const container = document.getElementById("dna-container");
 
 const scene = new THREE.Scene();
-
-const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-// Dynamic fog for light/dark
-scene.fog = new THREE.Fog(
-    isDark ? 0x0f172a : 0xf8fafc,
-    12,
-    55
-);
-
 const camera = new THREE.PerspectiveCamera(
-75,
-window.innerWidth/window.innerHeight,
-0.1,
-1000
-);
+75, container.clientWidth / 700, 0.1, 1000);
+
+const renderer = new THREE.WebGLRenderer({alpha:true});
+renderer.setSize(container.clientWidth, 700);
+container.appendChild(renderer.domElement);
+
 camera.position.z = 18;
 
 const group = new THREE.Group();
-
-const light = new THREE.PointLight(0xffffff,1.6);
-light.position.set(20,20,20);
+const light = new THREE.PointLight(0xffffff,1.5);
+light.position.set(10,10,10);
 scene.add(light);
 
-const ambient = new THREE.AmbientLight(0xffffff,0.6);
-scene.add(ambient);
-
-// Build helix
-for(let i=0;i<140;i++){
-
-    const geometry = new THREE.SphereGeometry(0.28,20,20);
-
-    const material = new THREE.MeshPhongMaterial({
-        color: i%2 ? 0x3b82f6 : 0x9333ea,
-        emissive: i%2 ? 0x1e40af : 0x6b21a8,
-        shininess: 80,
-        transparent:true,
-        opacity:0.85
+for(let i=0;i<120;i++){
+    const geometry=new THREE.SphereGeometry(0.28,16,16);
+    const material=new THREE.MeshPhongMaterial({
+        color:i%2?0x3b82f6:0x9333ea,
+        shininess:80
     });
+    const sphere=new THREE.Mesh(geometry,material);
 
-    const sphere = new THREE.Mesh(geometry, material);
-
-    const angle = i*0.32;
-    const radius = 4.5;
+    const angle=i*0.32;
+    const radius=4.5;
 
     sphere.position.set(
         Math.cos(angle)*radius,
@@ -214,47 +187,14 @@ for(let i=0;i<140;i++){
 
 scene.add(group);
 
-// Mouse interaction
-let mouseX = 0;
-let mouseY = 0;
-
-document.addEventListener("mousemove",(event)=>{
-    mouseX = (event.clientX/window.innerWidth)*2-1;
-    mouseY = (event.clientY/window.innerHeight)*2-1;
-});
-
 function animate(){
     requestAnimationFrame(animate);
-
-    group.rotation.y += 0.0025;
-
-    group.rotation.x = mouseY * 0.35;
-    group.rotation.z = mouseX * 0.35;
-
-    light.intensity = 1.6 + Math.abs(mouseX)*0.6;
-
+    group.rotation.y += 0.003;
     renderer.render(scene,camera);
 }
-
 animate();
-
-// Resize fix
-window.addEventListener("resize", ()=>{
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    camera.aspect = window.innerWidth/window.innerHeight;
-    camera.updateProjectionMatrix();
-});
 </script>
-""", height=0)
-
-st.markdown("""
-<style>
-.block-container {
-    position: relative;
-    z-index: 10;
-}
-</style>
-""", unsafe_allow_html=True)
+""", height=700)
 
 # =========================================================
 # HERO SECTION
