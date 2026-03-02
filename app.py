@@ -530,12 +530,18 @@ if "df" in locals():
 
     st.plotly_chart(gauge, use_container_width=True)
     
-    # ==========================
-    # DOWNLOAD
-    # ==========================
-    if "df" in locals():
+   # ==========================
+# DOWNLOAD (SAFE VERSION)
+# ==========================
+
+if "df" in locals():
     csv = df.to_csv(index=False).encode()
-    st.download_button("Download CSV", csv, "epitope_results.csv")
+
+    st.download_button(
+        "Download CSV",
+        csv,
+        "epitope_results.csv"
+    )
 
 with tab2:
     feat = pd.DataFrame({
