@@ -505,8 +505,11 @@ with tab1:
         st.plotly_chart(fig, use_container_width=True)
     
     # ==========================
-    # GAUGE
-    # ==========================
+# GAUGE (SAFE VERSION)
+# ==========================
+
+if "df" in locals():
+
     mean_prob = df["Probability"].mean()
 
     gauge = go.Figure(go.Indicator(
@@ -526,17 +529,13 @@ with tab1:
     ))
 
     st.plotly_chart(gauge, use_container_width=True)
-
+    
     # ==========================
     # DOWNLOAD
     # ==========================
+    if "df" in locals():
     csv = df.to_csv(index=False).encode()
-
-    st.download_button(
-        "Download CSV",
-        csv,
-        "epitope_results.csv"
-    )
+    st.download_button("Download CSV", csv, "epitope_results.csv")
 
 with tab2:
     feat = pd.DataFrame({
@@ -548,3 +547,17 @@ with tab2:
     st.plotly_chart(fig, use_container_width=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
+
+st.markdown("""
+© 2026 HPV–EPIPRED AI™  
+Precision Immunoinformatics Platform  
+Research Edition v1.0  
+Developed by Shamroz
+All Rights Reserved
+""")
+
+
+
+
+
