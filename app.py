@@ -237,30 +237,147 @@ draw();
 # HERO SECTION
 # =========================================================
 st.markdown("""
-<div style="height:75vh; display:flex; flex-direction:column;
-justify-content:center; align-items:center; text-align:center;">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Plus+Jakarta+Sans:wght@500;600&display=swap" rel="stylesheet">
 
-<div style="position:absolute; width:600px; height:600px;
-background:radial-gradient(circle, rgba(59,130,246,0.25), transparent 70%);
-filter:blur(80px); z-index:-1;"></div>
+<div style="
+position:relative;
+width:100%;
+height:720px;
+overflow:hidden;
+background:linear-gradient(135deg,#eef2ff 0%, #e0e7ff 40%, #dbeafe 100%);
+">
 
-<h1 style="font-size:64px;
+<canvas id="immune-canvas" style="
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+z-index:1;
+"></canvas>
+
+<div style="
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+text-align:center;
+z-index:2;
+">
+
+<h1 style="
+font-family:'Sora', sans-serif;
+font-size:64px;
+font-weight:700;
+letter-spacing:-1px;
 background:linear-gradient(90deg,#3b82f6,#9333ea,#06b6d4);
 -webkit-background-clip:text;
--webkit-text-fill-color:transparent;">
-HPV-EPIPRED AI
+-webkit-text-fill-color:transparent;
+margin-bottom:20px;
+">
+HPV–EPIPRED AI
 </h1>
 
-<p style="font-size:20px; opacity:0.8;">
+<p style="
+font-family:'Plus Jakarta Sans', sans-serif;
+font-size:20px;
+color:#334155;
+margin-bottom:30px;
+">
 AI-Driven MHC Class I Epitope Intelligence Platform
 </p>
 
-<a href="#scanner" style="margin-top:40px;
-color:#3b82f6; text-decoration:none;">
+<a href="#scanner" style="
+font-family:'Plus Jakarta Sans', sans-serif;
+font-size:16px;
+color:#2563eb;
+text-decoration:none;
+font-weight:600;
+">
 ↓ Launch Scanner
 </a>
 
 </div>
+
+</div>
+
+<script>
+const canvas = document.getElementById("immune-canvas");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = 720;
+
+const cells = [];
+const peptides = [];
+
+for(let i=0;i<10;i++){
+    cells.push({
+        x:Math.random()*canvas.width,
+        y:Math.random()*canvas.height,
+        r:60+Math.random()*20,
+        pulse:Math.random()*Math.PI
+    });
+}
+
+for(let i=0;i<50;i++){
+    peptides.push({
+        x:Math.random()*canvas.width,
+        y:Math.random()*canvas.height,
+        vx:(Math.random()-0.5)*1.2,
+        vy:(Math.random()-0.5)*1.2
+    });
+}
+
+function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    cells.forEach(c=>{
+        c.pulse+=0.02;
+        let gradient = ctx.createRadialGradient(
+            c.x,c.y,c.r*0.2,
+            c.x,c.y,c.r
+        );
+        gradient.addColorStop(0,"rgba(139,92,246,0.6)");
+        gradient.addColorStop(1,"rgba(139,92,246,0.05)");
+
+        ctx.beginPath();
+        ctx.arc(c.x,c.y,c.r,0,Math.PI*2);
+        ctx.fillStyle=gradient;
+        ctx.fill();
+    });
+
+    peptides.forEach(p=>{
+        p.x+=p.vx;
+        p.y+=p.vy;
+        if(p.x<0||p.x>canvas.width) p.vx*=-1;
+        if(p.y<0||p.y>canvas.height) p.vy*=-1;
+
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,3,0,Math.PI*2);
+        ctx.fillStyle="rgba(59,130,246,0.9)";
+        ctx.fill();
+    });
+
+    peptides.forEach(p=>{
+        cells.forEach(c=>{
+            let dx=p.x-c.x;
+            let dy=p.y-c.y;
+            let dist=Math.sqrt(dx*dx+dy*dy);
+            if(dist<c.r){
+                ctx.beginPath();
+                ctx.moveTo(p.x,p.y);
+                ctx.lineTo(c.x,c.y);
+                ctx.strokeStyle="rgba(59,130,246,0.12)";
+                ctx.stroke();
+            }
+        });
+    });
+
+    requestAnimationFrame(draw);
+}
+draw();
+</script>
 """, unsafe_allow_html=True)
 
 # =========================================================
