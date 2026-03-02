@@ -426,6 +426,9 @@ with tab1:
 
     if st.button("Run AI Scan") and fasta:
 
+        # ==========================
+        # SEQUENCE CLEANING
+        # ==========================
         seq = "".join([
             l.strip() for l in fasta.split("\n")
             if not l.startswith(">")
@@ -433,9 +436,15 @@ with tab1:
 
         results = []
 
+        # ==========================
+        # PREDICTION LOOP
+        # ==========================
         for i in range(len(seq) - 8):
             pep = seq[i:i+9]
-            prob = model.predict_proba([extract_features(pep)])[0][1]
+            prob = model.predict_proba(
+                [extract_features(pep)]
+            )[0][1]
+
             cat = "Epitope" if prob >= threshold else "Non-Epitope"
             results.append([i+1, pep, prob, cat])
 
@@ -444,26 +453,33 @@ with tab1:
             columns=["Position", "Peptide", "Probability", "Category"]
         )
 
+        # ==========================
+        # SPLIT TABLES
+        # ==========================
         epitope_df = df[df["Category"] == "Epitope"] \
             .sort_values(by="Probability", ascending=False)
 
         non_df = df[df["Category"] == "Non-Epitope"] \
             .sort_values(by="Probability", ascending=False)
 
+        # ==========================
+        # DISPLAY TABLES
+        # ==========================
         st.markdown("### 🟢 Predicted Epitopes")
         if not epitope_df.empty:
             st.dataframe(epitope_df, use_container_width=True)
         else:
             st.info("No epitopes detected above threshold.")
 
-        st.markdown("## ⚪ Predicted Non-Epitopes")
+        st.markdown("### ⚪ Predicted Non-Epitopes")
+        if not non_df.empty:
+            st.dataframe(non_df, use_container_width=True)
+        else:
+            st.info("All peptides classified as epitopes.")
 
-with st.expander("🔍 View Non-Epitope Predictions"):
-    if not non_df.empty:
-        st.dataframe(non_df, use_container_width=True)
-    else:
-        st.info("All peptides classified as epitopes.")
-
+        # ==========================
+        # PLOT
+        # ==========================
         fig = px.line(
             df,
             x="Position",
@@ -475,6 +491,9 @@ with st.expander("🔍 View Non-Epitope Predictions"):
         fig.add_hline(y=threshold, line_dash="dash", line_color="red")
         st.plotly_chart(fig, use_container_width=True)
 
+        # ==========================
+        # GAUGE
+        # ==========================
         mean_prob = df["Probability"].mean()
 
         gauge = go.Figure(go.Indicator(
@@ -486,9 +505,15 @@ with st.expander("🔍 View Non-Epitope Predictions"):
 
         st.plotly_chart(gauge, use_container_width=True)
 
+        # ==========================
+        # DOWNLOAD
+        # ==========================
         csv = df.to_csv(index=False).encode()
-        st.download_button("Download CSV", csv, "epitope_results.csv")
-
+        st.download_button(
+            "Download CSV",
+            csv,
+            "epitope_results.csv"
+        )
 with tab2:
     feat = pd.DataFrame({
         "Feature":["Hydrophobicity","Net Charge","Entropy"],
