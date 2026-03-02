@@ -212,10 +212,8 @@ tab1, tab2 = st.tabs(["🔬 AI Scanner", "🧠 Model Explainability"])
 
 with tab1:
 
-    allele = st.selectbox("Select HLA Allele",
-        ["HLA-A*02:01","HLA-A*11:01","HLA-B*07:02"])
+        mode = st.radio("Mode", ["Single Sequence","Batch Upload"])
 
-    mode = st.radio("Mode", ["Single Sequence","Batch Upload"])
 
     fasta = ""
     if mode == "Single Sequence":
