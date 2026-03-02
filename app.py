@@ -223,74 +223,73 @@ with tab1:
 
     if st.button("Run AI Scan") and fasta:
 
-        progress = st.progress(0)
-        for i in range(100):
-            time.sleep(0.01)
-            progress.progress(i+1)
+    progress = st.progress(0)
+    for i in range(100):
+        time.sleep(0.01)
+        progress.progress(i+1)
 
-        seq = "".join([l.strip() for l in fasta.split("\n")
-                       if not l.startswith(">")]).upper()
+    seq = "".join([l.strip() for l in fasta.split("\n")
+                   if not l.startswith(">")]).upper()
 
-        results = []
-        for i in range(len(seq)-8):
-            pep = seq[i:i+9]
-            prob = model.predict_proba([extract_features(pep)])[0][1]
+    results = []
+    for i in range(len(seq)-8):
+        pep = seq[i:i+9]
+        prob = model.predict_proba([extract_features(pep)])[0][1]
 
-            if prob >= 0.6:
-                cat = "High Epitope"
-            elif prob >= threshold:
-                cat = "Moderate Epitope"
-            else:
-                cat = "Non-Epitope"
+        if prob >= 0.6:
+            cat = "High Epitope"
+        elif prob >= threshold:
+            cat = "Moderate Epitope"
+        else:
+            cat = "Non-Epitope"
 
-            results.append([i+1,pep,prob,cat])
+        results.append([i+1,pep,prob,cat])
 
-        df = pd.DataFrame(results,
-            columns=["Position","Peptide","Probability","Category"])
+    df = pd.DataFrame(results,
+        columns=["Position","Peptide","Probability","Category"])
 
-        # ===============================
-# CATEGORY-WISE ORGANIZED TABLE
-# ===============================
+    # ===== CATEGORY TABLES =====
+    st.subheader("🔴 High Confidence Epitopes")
 
-st.subheader("🔴 High Confidence Epitopes")
-
-high_df = df[df["Category"] == "High Epitope"] \
-            .sort_values(by="Probability", ascending=False)
-
-st.dataframe(high_df, use_container_width=True)
-
-st.subheader("🟡 Moderate Confidence Epitopes")
-
-moderate_df = df[df["Category"] == "Moderate Epitope"] \
+    high_df = df[df["Category"] == "High Epitope"] \
                 .sort_values(by="Probability", ascending=False)
 
-st.dataframe(moderate_df, use_container_width=True)
+    st.dataframe(high_df, use_container_width=True)
 
-with st.expander("⚪ View Non-Epitopes"):
-    non_df = df[df["Category"] == "Non-Epitope"] \
-                .sort_values(by="Probability", ascending=False)
-    st.dataframe(non_df, use_container_width=True)
+    st.subheader("🟡 Moderate Confidence Epitopes")
 
-        fig = px.line(df, x="Position", y="Probability")
-        fig.add_hline(y=threshold, line_dash="dash")
-        st.plotly_chart(fig, use_container_width=True)
+    moderate_df = df[df["Category"] == "Moderate Epitope"] \
+                    .sort_values(by="Probability", ascending=False)
 
-        mean_prob = df["Probability"].mean()
+    st.dataframe(moderate_df, use_container_width=True)
 
-        gauge = go.Figure(go.Indicator(
-            mode="gauge+number",
-            value=mean_prob,
-            gauge={'axis':{'range':[0,1]}}
-        ))
-        st.plotly_chart(gauge, use_container_width=True)
+    with st.expander("⚪ View Non-Epitopes"):
+        non_df = df[df["Category"] == "Non-Epitope"] \
+                    .sort_values(by="Probability", ascending=False)
+        st.dataframe(non_df, use_container_width=True)
 
-        csv = df.to_csv(index=False).encode()
-        st.download_button("Download CSV", csv, "epitope_results.csv")
+    # ===== PLOT =====
+    fig = px.line(df, x="Position", y="Probability")
+    fig.add_hline(y=threshold, line_dash="dash")
+    st.plotly_chart(fig, use_container_width=True)
 
-        buffer = io.StringIO()
-        fig.write_html("plot.html")
-        with open("plot.html","rb") as f:
-            st.download_button("Download Plot HTML", f, "plot.html")
+    # ===== GAUGE =====
+    mean_prob = df["Probability"].mean()
+
+    gauge = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=mean_prob,
+        gauge={'axis':{'range':[0,1]}}
+    ))
+    st.plotly_chart(gauge, use_container_width=True)
+
+    # ===== DOWNLOAD =====
+    csv = df.to_csv(index=False).encode()
+    st.download_button("Download CSV", csv, "epitope_results.csv")
+
+    fig.write_html("plot.html")
+    with open("plot.html","rb") as f:
+        st.download_button("Download Plot HTML", f, "plot.html")
 
 with tab2:
     st.subheader("Feature Importance Overview")
