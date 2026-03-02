@@ -85,34 +85,55 @@ html {
 # NEURAL NETWORK ANIMATED BACKGROUND
 # =========================================================
 st.components.v1.html("""
-<canvas id="network-canvas" style="position:fixed; top:0; left:0; z-index:-5;"></canvas>
+<canvas id="network-canvas" style="
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+z-index:-3;
+pointer-events:none;"></canvas>
+
 <script>
 const netCanvas = document.getElementById("network-canvas");
 const netCtx = netCanvas.getContext("2d");
-netCanvas.width = window.innerWidth;
-netCanvas.height = window.innerHeight;
+
+function resizeCanvas(){
+    netCanvas.width = window.innerWidth;
+    netCanvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
 
 let nodes = [];
-for(let i=0;i<50;i++){
+const NODE_COUNT = 65;
+
+for(let i=0;i<NODE_COUNT;i++){
     nodes.push({
-        x:Math.random()*netCanvas.width,
-        y:Math.random()*netCanvas.height,
-        vx:(Math.random()-0.5)*0.4,
-        vy:(Math.random()-0.5)*0.4
+        x:Math.random()*window.innerWidth,
+        y:Math.random()*window.innerHeight,
+        vx:(Math.random()-0.5)*0.6,
+        vy:(Math.random()-0.5)*0.6
     });
 }
 
+const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
 function animateNetwork(){
     netCtx.clearRect(0,0,netCanvas.width,netCanvas.height);
+
     nodes.forEach(n=>{
         n.x+=n.vx;
         n.y+=n.vy;
-        if(n.x<0||n.x>netCanvas.width) n.vx*=-1;
-        if(n.y<0||n.y>netCanvas.height) n.vy*=-1;
+
+        if(n.x<0||n.x>window.innerWidth) n.vx*=-1;
+        if(n.y<0||n.y>window.innerHeight) n.vy*=-1;
 
         netCtx.beginPath();
-        netCtx.arc(n.x,n.y,2,0,Math.PI*2);
-        netCtx.fillStyle="rgba(59,130,246,0.4)";
+        netCtx.arc(n.x,n.y,2.5,0,Math.PI*2);
+        netCtx.fillStyle=isDark?
+            "rgba(99,102,241,0.6)":
+            "rgba(59,130,246,0.6)";
         netCtx.fill();
     });
 
@@ -121,11 +142,17 @@ function animateNetwork(){
             let dx=nodes[i].x-nodes[j].x;
             let dy=nodes[i].y-nodes[j].y;
             let dist=Math.sqrt(dx*dx+dy*dy);
-            if(dist<130){
+
+            if(dist<150){
                 netCtx.beginPath();
                 netCtx.moveTo(nodes[i].x,nodes[i].y);
                 netCtx.lineTo(nodes[j].x,nodes[j].y);
-                netCtx.strokeStyle="rgba(59,130,246,0.08)";
+
+                netCtx.strokeStyle=isDark?
+                    "rgba(99,102,241,0.15)":
+                    "rgba(59,130,246,0.15)";
+
+                netCtx.lineWidth=1;
                 netCtx.stroke();
             }
         }
@@ -133,6 +160,7 @@ function animateNetwork(){
 
     requestAnimationFrame(animateNetwork);
 }
+
 animateNetwork();
 </script>
 """, height=0)
@@ -143,42 +171,75 @@ animateNetwork();
 st.components.v1.html("""
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-<canvas id="dna-canvas" style="position:fixed; top:0; left:0; z-index:-4;"></canvas>
+<canvas id="dna-canvas" style="
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+z-index:-2;"></canvas>
 
 <script>
 const canvas = document.getElementById("dna-canvas");
-const renderer = new THREE.WebGLRenderer({canvas: canvas, alpha:true});
+
+const renderer = new THREE.WebGLRenderer({
+    canvas: canvas,
+    alpha:true,
+    antialias:true
+});
+
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0x0f172a, 10, 50);
+
+const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+// Dynamic fog for light/dark
+scene.fog = new THREE.Fog(
+    isDark ? 0x0f172a : 0xf8fafc,
+    12,
+    55
+);
 
 const camera = new THREE.PerspectiveCamera(
-75, window.innerWidth/window.innerHeight, 0.1, 1000);
-camera.position.z=15;
+75,
+window.innerWidth/window.innerHeight,
+0.1,
+1000
+);
+camera.position.z = 18;
 
 const group = new THREE.Group();
 
-const light = new THREE.PointLight(0xffffff,1);
-light.position.set(10,10,10);
+const light = new THREE.PointLight(0xffffff,1.6);
+light.position.set(20,20,20);
 scene.add(light);
 
-for(let i=0;i<120;i++){
-    const geometry=new THREE.SphereGeometry(0.25,16,16);
-    const material=new THREE.MeshPhongMaterial({
-        color:i%2?0x3b82f6:0x9333ea,
+const ambient = new THREE.AmbientLight(0xffffff,0.6);
+scene.add(ambient);
+
+// Build helix
+for(let i=0;i<140;i++){
+
+    const geometry = new THREE.SphereGeometry(0.28,20,20);
+
+    const material = new THREE.MeshPhongMaterial({
+        color: i%2 ? 0x3b82f6 : 0x9333ea,
+        emissive: i%2 ? 0x1e40af : 0x6b21a8,
+        shininess: 80,
         transparent:true,
-        opacity:0.55
+        opacity:0.85
     });
 
-    const sphere=new THREE.Mesh(geometry,material);
+    const sphere = new THREE.Mesh(geometry, material);
 
-    const angle=i*0.3;
-    const radius=4;
+    const angle = i*0.32;
+    const radius = 4.5;
 
     sphere.position.set(
         Math.cos(angle)*radius,
-        i*0.18-10,
+        i*0.22 - 15,
         Math.sin(angle)*radius
     );
 
@@ -187,21 +248,36 @@ for(let i=0;i<120;i++){
 
 scene.add(group);
 
-let mouseX=0, mouseY=0;
+// Mouse interaction
+let mouseX = 0;
+let mouseY = 0;
+
 document.addEventListener("mousemove",(event)=>{
-    mouseX=(event.clientX/window.innerWidth)*2-1;
-    mouseY=(event.clientY/window.innerHeight)*2-1;
+    mouseX = (event.clientX/window.innerWidth)*2-1;
+    mouseY = (event.clientY/window.innerHeight)*2-1;
 });
 
 function animate(){
     requestAnimationFrame(animate);
-    group.rotation.y+=0.003;
-    group.rotation.x=mouseY*0.25;
-    group.rotation.z=mouseX*0.25;
-    light.intensity=1+Math.abs(mouseX)*0.4;
+
+    group.rotation.y += 0.0025;
+
+    group.rotation.x = mouseY * 0.35;
+    group.rotation.z = mouseX * 0.35;
+
+    light.intensity = 1.6 + Math.abs(mouseX)*0.6;
+
     renderer.render(scene,camera);
 }
+
 animate();
+
+// Resize fix
+window.addEventListener("resize", ()=>{
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+});
 </script>
 """, height=0)
 
