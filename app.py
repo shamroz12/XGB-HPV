@@ -425,67 +425,68 @@ with tab1:
             fasta = uploaded.read().decode()
 
     if st.button("Run AI Scan") and fasta:
-    seq = "".join([
-        l.strip() for l in fasta.split("\n")
-        if not l.startswith(">")
-    ]).upper()
 
-    results = []
+        seq = "".join([
+            l.strip() for l in fasta.split("\n")
+            if not l.startswith(">")
+        ]).upper()
 
-    for i in range(len(seq) - 8):
-        pep = seq[i:i+9]
-        prob = model.predict_proba([extract_features(pep)])[0][1]
-        cat = "Epitope" if prob >= threshold else "Non-Epitope"
-        results.append([i+1, pep, prob, cat])
+        results = []
 
-    df = pd.DataFrame(
-        results,
-        columns=["Position", "Peptide", "Probability", "Category"]
-    )
+        for i in range(len(seq) - 8):
+            pep = seq[i:i+9]
+            prob = model.predict_proba([extract_features(pep)])[0][1]
+            cat = "Epitope" if prob >= threshold else "Non-Epitope"
+            results.append([i+1, pep, prob, cat])
 
-    epitope_df = df[df["Category"] == "Epitope"] \
-        .sort_values(by="Probability", ascending=False)
+        df = pd.DataFrame(
+            results,
+            columns=["Position", "Peptide", "Probability", "Category"]
+        )
 
-    non_df = df[df["Category"] == "Non-Epitope"] \
-        .sort_values(by="Probability", ascending=False)
+        epitope_df = df[df["Category"] == "Epitope"] \
+            .sort_values(by="Probability", ascending=False)
 
-    st.markdown("### 🟢 Predicted Epitopes")
-    if not epitope_df.empty:
-        st.dataframe(epitope_df, use_container_width=True)
-    else:
-        st.info("No epitopes detected above threshold.")
+        non_df = df[df["Category"] == "Non-Epitope"] \
+            .sort_values(by="Probability", ascending=False)
 
-    st.markdown("### ⚪ Predicted Non-Epitopes")
-    with st.expander("View Non-Epitope Predictions"):
-        if not non_df.empty:
-            st.dataframe(non_df, use_container_width=True)
+        st.markdown("### 🟢 Predicted Epitopes")
+        if not epitope_df.empty:
+            st.dataframe(epitope_df, use_container_width=True)
         else:
-            st.info("All peptides classified as epitopes.")
+            st.info("No epitopes detected above threshold.")
 
-    fig = px.line(
-        df,
-        x="Position",
-        y="Probability",
-        template="plotly_dark",
-        markers=True
-    )
+        st.markdown("### ⚪ Predicted Non-Epitopes")
+        with st.expander("View Non-Epitope Predictions"):
+            if not non_df.empty:
+                st.dataframe(non_df, use_container_width=True)
+            else:
+                st.info("All peptides classified as epitopes.")
 
-    fig.add_hline(y=threshold, line_dash="dash", line_color="red")
-    st.plotly_chart(fig, use_container_width=True)
+        fig = px.line(
+            df,
+            x="Position",
+            y="Probability",
+            template="plotly_dark",
+            markers=True
+        )
 
-    mean_prob = df["Probability"].mean()
+        fig.add_hline(y=threshold, line_dash="dash", line_color="red")
+        st.plotly_chart(fig, use_container_width=True)
 
-    gauge = go.Figure(go.Indicator(
-        mode="gauge+number",
-        value=mean_prob,
-        title={'text': "Global Immunogenic Score"},
-        gauge={'axis': {'range': [0, 1]}}
-    ))
+        mean_prob = df["Probability"].mean()
 
-    st.plotly_chart(gauge, use_container_width=True)
+        gauge = go.Figure(go.Indicator(
+            mode="gauge+number",
+            value=mean_prob,
+            title={'text': "Global Immunogenic Score"},
+            gauge={'axis': {'range': [0, 1]}}
+        ))
 
-    csv = df.to_csv(index=False).encode()
-    st.download_button("Download CSV", csv, "epitope_results.csv")
+        st.plotly_chart(gauge, use_container_width=True)
+
+        csv = df.to_csv(index=False).encode()
+        st.download_button("Download CSV", csv, "epitope_results.csv")
 
 with tab2:
     feat = pd.DataFrame({
