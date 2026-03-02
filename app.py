@@ -248,7 +248,28 @@ with tab1:
         df = pd.DataFrame(results,
             columns=["Position","Peptide","Probability","Category"])
 
-        st.dataframe(df, use_container_width=True)
+        # ===============================
+# CATEGORY-WISE ORGANIZED TABLE
+# ===============================
+
+st.subheader("🔴 High Confidence Epitopes")
+
+high_df = df[df["Category"] == "High Epitope"] \
+            .sort_values(by="Probability", ascending=False)
+
+st.dataframe(high_df, use_container_width=True)
+
+st.subheader("🟡 Moderate Confidence Epitopes")
+
+moderate_df = df[df["Category"] == "Moderate Epitope"] \
+                .sort_values(by="Probability", ascending=False)
+
+st.dataframe(moderate_df, use_container_width=True)
+
+with st.expander("⚪ View Non-Epitopes"):
+    non_df = df[df["Category"] == "Non-Epitope"] \
+                .sort_values(by="Probability", ascending=False)
+    st.dataframe(non_df, use_container_width=True)
 
         fig = px.line(df, x="Position", y="Probability")
         fig.add_hline(y=threshold, line_dash="dash")
