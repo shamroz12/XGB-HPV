@@ -538,15 +538,6 @@ with tab1:
         "epitope_results.csv"
     )
 
-        # ==========================
-        # DOWNLOAD
-        # ==========================
-        csv = df.to_csv(index=False).encode()
-        st.download_button(
-            "Download CSV",
-            csv,
-            "epitope_results.csv"
-        )
 with tab2:
     feat = pd.DataFrame({
         "Feature":["Hydrophobicity","Net Charge","Entropy"],
