@@ -143,56 +143,93 @@ st.markdown("""
 # INTERACTIVE 3D HELIX WITH DEPTH FOG
 # =========================================================
 st.components.v1.html("""
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
-<div id="dna-container" style="width:100%; height:700px;"></div>
+<canvas id="immune-canvas" style="width:100%; height:700px;"></canvas>
 
 <script>
-const container = document.getElementById("dna-container");
+const canvas = document.getElementById("immune-canvas");
+const ctx = canvas.getContext("2d");
 
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(
-75, container.clientWidth / 700, 0.1, 1000);
+canvas.width = window.innerWidth;
+canvas.height = 700;
 
-const renderer = new THREE.WebGLRenderer({alpha:true});
-renderer.setSize(container.clientWidth, 700);
-container.appendChild(renderer.domElement);
+const cells = [];
+const peptides = [];
 
-camera.position.z = 18;
-
-const group = new THREE.Group();
-const light = new THREE.PointLight(0xffffff,1.5);
-light.position.set(10,10,10);
-scene.add(light);
-
-for(let i=0;i<120;i++){
-    const geometry=new THREE.SphereGeometry(0.28,16,16);
-    const material=new THREE.MeshPhongMaterial({
-        color:i%2?0x3b82f6:0x9333ea,
-        shininess:80
+for(let i=0;i<12;i++){
+    cells.push({
+        x:Math.random()*canvas.width,
+        y:Math.random()*canvas.height,
+        r:50+Math.random()*20,
+        pulse:Math.random()*Math.PI
     });
-    const sphere=new THREE.Mesh(geometry,material);
-
-    const angle=i*0.32;
-    const radius=4.5;
-
-    sphere.position.set(
-        Math.cos(angle)*radius,
-        i*0.22 - 15,
-        Math.sin(angle)*radius
-    );
-
-    group.add(sphere);
 }
 
-scene.add(group);
-
-function animate(){
-    requestAnimationFrame(animate);
-    group.rotation.y += 0.003;
-    renderer.render(scene,camera);
+for(let i=0;i<60;i++){
+    peptides.push({
+        x:Math.random()*canvas.width,
+        y:Math.random()*canvas.height,
+        vx:(Math.random()-0.5)*1.2,
+        vy:(Math.random()-0.5)*1.2
+    });
 }
-animate();
+
+function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    // Draw cells
+    cells.forEach(c=>{
+        c.pulse += 0.02;
+        let glow = 15 + Math.sin(c.pulse)*5;
+
+        let gradient = ctx.createRadialGradient(
+            c.x,c.y,c.r*0.3,
+            c.x,c.y,c.r
+        );
+
+        gradient.addColorStop(0,"rgba(99,102,241,0.6)");
+        gradient.addColorStop(1,"rgba(147,51,234,0.05)");
+
+        ctx.beginPath();
+        ctx.arc(c.x,c.y,c.r,0,Math.PI*2);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+    });
+
+    // Draw peptides
+    peptides.forEach(p=>{
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if(p.x<0||p.x>canvas.width) p.vx*=-1;
+        if(p.y<0||p.y>canvas.height) p.vy*=-1;
+
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,3,0,Math.PI*2);
+        ctx.fillStyle="rgba(59,130,246,0.9)";
+        ctx.fill();
+    });
+
+    // Immune signaling lines
+    peptides.forEach(p=>{
+        cells.forEach(c=>{
+            let dx = p.x - c.x;
+            let dy = p.y - c.y;
+            let dist = Math.sqrt(dx*dx + dy*dy);
+
+            if(dist < c.r){
+                ctx.beginPath();
+                ctx.moveTo(p.x,p.y);
+                ctx.lineTo(c.x,c.y);
+                ctx.strokeStyle="rgba(59,130,246,0.15)";
+                ctx.stroke();
+            }
+        });
+    });
+
+    requestAnimationFrame(draw);
+}
+
+draw();
 </script>
 """, height=700)
 
