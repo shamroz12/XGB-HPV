@@ -557,10 +557,8 @@ st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 
 st.markdown("""
 © 2026 HPV–EPIPRED AI™  
-Precision Immunoinformatics Platform  
-Research Edition v1.0  
+Immunoinformatics Platform  
 Developed by Shamroz
-All Rights Reserved
 """)
 
 
