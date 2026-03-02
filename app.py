@@ -438,7 +438,28 @@ with tab1:
         df = pd.DataFrame(results,
             columns=["Position","Peptide","Probability","Category"])
 
-        st.dataframe(df, use_container_width=True)
+        # ===== SPLIT RESULTS =====
+
+epitope_df = df[df["Category"] == "Epitope"] \
+                .sort_values(by="Probability", ascending=False)
+
+non_df = df[df["Category"] == "Non-Epitope"] \
+                .sort_values(by="Probability", ascending=False)
+
+st.markdown("### 🟢 Predicted Epitopes")
+
+if not epitope_df.empty:
+    st.dataframe(epitope_df, use_container_width=True)
+else:
+    st.info("No epitopes detected above threshold.")
+
+st.markdown("### ⚪ Predicted Non-Epitopes")
+
+with st.expander("View Non-Epitope Predictions"):
+    if not non_df.empty:
+        st.dataframe(non_df, use_container_width=True)
+    else:
+        st.info("All peptides classified as epitopes.")
 
         fig = px.line(df, x="Position", y="Probability",
                       template="plotly_dark", markers=True)
