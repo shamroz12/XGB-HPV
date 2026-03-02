@@ -236,7 +236,9 @@ draw();
 # =========================================================
 # HERO SECTION
 # =========================================================
-st.markdown("""
+import streamlit.components.v1 as components
+
+components.html("""
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Plus+Jakarta+Sans:wght@500;600&display=swap" rel="stylesheet">
 
 <div style="
@@ -253,8 +255,7 @@ top:0;
 left:0;
 width:100%;
 height:100%;
-z-index:1;
-"></canvas>
+z-index:1;"></canvas>
 
 <div style="
 position:absolute;
@@ -262,8 +263,7 @@ top:50%;
 left:50%;
 transform:translate(-50%,-50%);
 text-align:center;
-z-index:2;
-">
+z-index:2;">
 
 <h1 style="
 font-family:'Sora', sans-serif;
@@ -273,8 +273,7 @@ letter-spacing:-1px;
 background:linear-gradient(90deg,#3b82f6,#9333ea,#06b6d4);
 -webkit-background-clip:text;
 -webkit-text-fill-color:transparent;
-margin-bottom:20px;
-">
+margin-bottom:20px;">
 HPV–EPIPRED AI
 </h1>
 
@@ -282,8 +281,7 @@ HPV–EPIPRED AI
 font-family:'Plus Jakarta Sans', sans-serif;
 font-size:20px;
 color:#334155;
-margin-bottom:30px;
-">
+margin-bottom:30px;">
 AI-Driven MHC Class I Epitope Intelligence Platform
 </p>
 
@@ -292,13 +290,11 @@ font-family:'Plus Jakarta Sans', sans-serif;
 font-size:16px;
 color:#2563eb;
 text-decoration:none;
-font-weight:600;
-">
+font-weight:600;">
 ↓ Launch Scanner
 </a>
 
 </div>
-
 </div>
 
 <script>
@@ -359,26 +355,11 @@ function draw(){
         ctx.fill();
     });
 
-    peptides.forEach(p=>{
-        cells.forEach(c=>{
-            let dx=p.x-c.x;
-            let dy=p.y-c.y;
-            let dist=Math.sqrt(dx*dx+dy*dy);
-            if(dist<c.r){
-                ctx.beginPath();
-                ctx.moveTo(p.x,p.y);
-                ctx.lineTo(c.x,c.y);
-                ctx.strokeStyle="rgba(59,130,246,0.12)";
-                ctx.stroke();
-            }
-        });
-    });
-
     requestAnimationFrame(draw);
 }
 draw();
 </script>
-""", unsafe_allow_html=True)
+""", height=720)
 
 # =========================================================
 # MODEL
