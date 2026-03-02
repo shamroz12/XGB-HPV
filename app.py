@@ -213,8 +213,6 @@ tab1, tab2 = st.tabs(["🔬 AI Scanner", "🧠 Model Explainability"])
 with tab1:
 
         mode = st.radio("Mode", ["Single Sequence","Batch Upload"])
-
-
     fasta = ""
     if mode == "Single Sequence":
         fasta = st.text_area("Paste FASTA Sequence")
