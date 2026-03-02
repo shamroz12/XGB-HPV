@@ -480,8 +480,7 @@ with tab1:
         # ==========================
         # PLOT
         # ==========================
-                
-            fig = px.line(
+        fig = px.line(
             df,
             x="Position",
             y="Probability",
@@ -504,7 +503,6 @@ with tab1:
         )
 
         st.plotly_chart(fig, use_container_width=True)
-
         # ==========================
         # GAUGE
         # ==========================
