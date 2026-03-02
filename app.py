@@ -426,18 +426,23 @@ with tab1:
 
     if st.button("Run AI Scan") and fasta:
 
-    seq = "".join([l.strip() for l in fasta.split("\n")
-                   if not l.startswith(">")]).upper()
+    seq = "".join([
+        l.strip() for l in fasta.split("\n")
+        if not l.startswith(">")
+    ]).upper()
 
     results = []
-    for i in range(len(seq)-8):
+
+    for i in range(len(seq) - 8):
         pep = seq[i:i+9]
         prob = model.predict_proba([extract_features(pep)])[0][1]
         cat = "Epitope" if prob >= threshold else "Non-Epitope"
         results.append([i+1, pep, prob, cat])
 
-    df = pd.DataFrame(results,
-                      columns=["Position", "Peptide", "Probability", "Category"])
+    df = pd.DataFrame(
+        results,
+        columns=["Position", "Peptide", "Probability", "Category"]
+    )
 
     # ===== SPLIT RESULTS =====
     epitope_df = df[df["Category"] == "Epitope"] \
@@ -462,8 +467,13 @@ with tab1:
             st.info("All peptides classified as epitopes.")
 
     # ===== PLOT =====
-    fig = px.line(df, x="Position", y="Probability",
-                  template="plotly_dark", markers=True)
+    fig = px.line(
+        df,
+        x="Position",
+        y="Probability",
+        template="plotly_dark",
+        markers=True
+    )
 
     fig.add_hline(y=threshold, line_dash="dash", line_color="red")
     st.plotly_chart(fig, use_container_width=True)
