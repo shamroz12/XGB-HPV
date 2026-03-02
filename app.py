@@ -503,26 +503,41 @@ with tab1:
         )
 
         st.plotly_chart(fig, use_container_width=True)
-        # ==========================
-        # GAUGE
-        # ==========================
-        gauge = go.Figure(go.Indicator(
-    mode="gauge+number",
-    value=mean_prob,
-    number={'valueformat': ".2f"},
-    title={'text': "Global Immunogenic Score"},
-    gauge={
-        'axis': {'range': [0, 1]},
-        'bar': {'color': "#6366f1"},
-        'steps': [
-            {'range': [0, 0.3], 'color': "#dcfce7"},
-            {'range': [0.3, 0.6], 'color': "#fef9c3"},
-            {'range': [0.6, 1], 'color': "#fee2e2"},
-        ],
-    }
-))
+    
+    # ==========================
+    # GAUGE
+    # ==========================
+    mean_prob = df["Probability"].mean()
 
-st.plotly_chart(gauge, use_container_width=True)
+    gauge = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=mean_prob,
+        number={'valueformat': ".2f"},
+        title={'text': "Global Immunogenic Score"},
+        gauge={
+            'axis': {'range': [0, 1]},
+            'bar': {'color': "#6366f1"},
+            'steps': [
+                {'range': [0, 0.3], 'color': "#dcfce7"},
+                {'range': [0.3, 0.6], 'color': "#fef9c3"},
+                {'range': [0.6, 1], 'color': "#fee2e2"},
+            ],
+        }
+    ))
+
+    st.plotly_chart(gauge, use_container_width=True)
+
+    # ==========================
+    # DOWNLOAD
+    # ==========================
+    csv = df.to_csv(index=False).encode()
+
+    st.download_button(
+        "Download CSV",
+        csv,
+        "epitope_results.csv"
+    )
+
         # ==========================
         # DOWNLOAD
         # ==========================
