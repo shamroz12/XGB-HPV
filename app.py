@@ -221,13 +221,13 @@ with tab1:
         if uploaded:
             fasta = uploaded.read().decode()
 
+
     if st.button("Run AI Scan") and fasta:
 
     progress = st.progress(0)
     for i in range(100):
         time.sleep(0.01)
         progress.progress(i+1)
-
     seq = "".join([l.strip() for l in fasta.split("\n")
                    if not l.startswith(">")]).upper()
 
