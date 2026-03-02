@@ -480,29 +480,30 @@ with tab1:
         # ==========================
         # PLOT
         # ==========================
-        fig = px.line(
-    df,
-    x="Position",
-    y="Probability",
-    markers=True
-)
+                
+            fig = px.line(
+            df,
+            x="Position",
+            y="Probability",
+            markers=True
+        )
 
-fig.update_layout(
-    title="Epitope Probability Across Protein Sequence",
-    xaxis_title="Amino Acid Position",
-    yaxis_title="Predicted Epitope Probability",
-    plot_bgcolor="rgba(0,0,0,0)",
-    paper_bgcolor="rgba(0,0,0,0)"
-)
+        fig.update_layout(
+            title="Epitope Probability Across Protein Sequence",
+            xaxis_title="Amino Acid Position",
+            yaxis_title="Predicted Epitope Probability",
+            plot_bgcolor="rgba(0,0,0,0)",
+            paper_bgcolor="rgba(0,0,0,0)"
+        )
 
-fig.add_hline(
-    y=threshold,
-    line_dash="dash",
-    annotation_text="Decision Threshold",
-    annotation_position="top left"
-)
+        fig.add_hline(
+            y=threshold,
+            line_dash="dash",
+            annotation_text="Decision Threshold",
+            annotation_position="top left"
+        )
 
-st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True)
 
         # ==========================
         # GAUGE
