@@ -223,8 +223,7 @@ with tab1:
 
 
     if st.button("Run AI Scan") and fasta:
-
-    progress = st.progress(0)
+progress = st.progress(0)
     for i in range(100):
         time.sleep(0.01)
         progress.progress(i+1)
