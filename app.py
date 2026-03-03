@@ -1,5 +1,5 @@
 import streamlit as st
-st.set_page_config(page_title="HPV-EPIPRED AI", page_icon="🧬", layout="wide")
+st.set_page_config(page_title="HPV EPIPRED", page_icon="🧬", layout="wide")
 
 import numpy as np
 import pandas as pd
@@ -73,7 +73,7 @@ canvas {
 }
 
 .hero-title {
-    font-size: 100px;
+    font-size: 115px;
     font-family: 'Sora', sans-serif;
     background: linear-gradient(90deg,#60a5fa,#a78bfa,#22d3ee);
     -webkit-background-clip: text;
@@ -87,7 +87,7 @@ canvas {
 
 .cta {
     margin-top: 25px;
-    font-size: 18px;
+    font-size: 20px;
     color: #38bdf8;
     text-decoration: none;
 }
@@ -99,7 +99,7 @@ canvas {
     <canvas id="network"></canvas>
 
     <div class="hero-content">
-        <div class="hero-title">HPV–EPIPRED</div>
+        <div class="hero-title">HPV EPIPRED</div>
         <div class="hero-sub">MHC I Epitope Prediction</div>
         <a href="#scanner" class="cta">↓ Launch Scanner</a>
     </div>
