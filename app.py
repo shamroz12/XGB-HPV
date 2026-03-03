@@ -41,6 +41,9 @@ h1, h2, h3 {
 </style>
 """, unsafe_allow_html=True)
 
+# =========================================================
+# HERO BLOCK
+# =========================================================
 components.html("""
 <style>
 .hero {
@@ -49,21 +52,9 @@ components.html("""
     height: 100vh;
     overflow: hidden;
     background:
-        radial-gradient(circle at 20% 30%, #1e3a8a 0%, transparent 40%),
-        radial-gradient(circle at 80% 70%, #581c87 0%, transparent 40%),
-        linear-gradient(135deg, #020617 0%, #0f172a 50%, #020617 100%);
-}
-
-.texture {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-image: url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=2000&q=80');
-    background-size: cover;
-    background-position: center;
-    opacity: 0.18;
-    filter: blur(2px) contrast(1.2);
-    z-index: 0;
+        radial-gradient(circle at 30% 40%, #3b0764 0%, transparent 45%),
+        radial-gradient(circle at 70% 60%, #1e1b4b 0%, transparent 50%),
+        linear-gradient(135deg, #020617 0%, #0f172a 60%, #020617 100%);
 }
 
 canvas {
@@ -78,7 +69,7 @@ canvas {
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
-    z-index: 5;
+    z-index: 10;
 }
 
 .hero-title {
@@ -104,14 +95,12 @@ canvas {
 
 <div class="hero">
 
-    <div class="texture"></div>
-
     <canvas id="immune"></canvas>
     <canvas id="network"></canvas>
 
     <div class="hero-content">
         <div class="hero-title">HPV–EPIPRED AI</div>
-        <div class="hero-sub">Advanced Immunoinformatics Intelligence Platform</div>
+        <div class="hero-sub">Cinematic Immune Cell Architecture Intelligence</div>
         <a href="#scanner" class="cta">↓ Launch Scanner</a>
     </div>
 
@@ -133,17 +122,20 @@ function resize(){
 resize();
 window.addEventListener("resize", resize);
 
-// ============================
-// HD IMMUNE CELLS
-// ============================
+// =============================
+// TRUE IMMUNE CELLS
+// =============================
 
 let cells = [];
-for(let i=0;i<6;i++){
+
+for(let i=0;i<7;i++){
     cells.push({
         x:Math.random()*window.innerWidth,
         y:Math.random()*window.innerHeight,
-        r:80+Math.random()*40,
-        pulse:Math.random()*Math.PI
+        r:90+Math.random()*40,
+        pulse:Math.random()*Math.PI,
+        driftX:(Math.random()-0.5)*0.3,
+        driftY:(Math.random()-0.5)*0.3
     });
 }
 
@@ -152,24 +144,32 @@ function drawImmune(){
 
     cells.forEach(c=>{
         c.pulse+=0.02;
+        c.x+=c.driftX;
+        c.y+=c.driftY;
 
-        // Outer membrane
+        // Outer membrane glow
         let membrane = ictx.createRadialGradient(
-            c.x,c.y,c.r*0.3,
+            c.x,c.y,c.r*0.2,
             c.x,c.y,c.r
         );
         membrane.addColorStop(0,"rgba(168,85,247,0.8)");
-        membrane.addColorStop(1,"rgba(139,92,246,0.05)");
+        membrane.addColorStop(1,"rgba(168,85,247,0.02)");
 
         ictx.beginPath();
         ictx.arc(c.x,c.y,c.r,0,Math.PI*2);
         ictx.fillStyle=membrane;
         ictx.fill();
 
+        // Cytoplasm
+        ictx.beginPath();
+        ictx.arc(c.x,c.y,c.r*0.65,0,Math.PI*2);
+        ictx.fillStyle="rgba(99,102,241,0.4)";
+        ictx.fill();
+
         // Nucleus
         ictx.beginPath();
-        ictx.arc(c.x,c.y,c.r*0.4,0,Math.PI*2);
-        ictx.fillStyle="rgba(99,102,241,0.7)";
+        ictx.arc(c.x,c.y,c.r*0.3,0,Math.PI*2);
+        ictx.fillStyle="rgba(56,189,248,0.7)";
         ictx.fill();
     });
 
@@ -177,9 +177,9 @@ function drawImmune(){
 }
 drawImmune();
 
-// ============================
-// NEURAL NETWORK
-// ============================
+// =============================
+// AI NEURAL OVERLAY
+// =============================
 
 let nodes=[];
 for(let i=0;i<70;i++){
