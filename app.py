@@ -29,14 +29,24 @@ label {
     font-weight: 500 !important;
 }
 
-/* Tabs styling */
-button[role="tab"] {
-    font-weight: 600 !important;
-    font-size: 16px !important;
+/* Tabs container */
+div[data-baseweb="tab-list"] {
+    gap: 30px;
 }
 
-button[role="tab"][aria-selected="true"] {
+/* Individual tab */
+button[data-baseweb="tab"] {
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 17px !important;
+    color: #64748b !important;
+    border-bottom: 2px solid transparent !important;
+}
+
+/* Active tab */
+button[data-baseweb="tab"][aria-selected="true"] {
     color: #6366f1 !important;
+    border-bottom: 2px solid #6366f1 !important;
 }
 
 textarea {
