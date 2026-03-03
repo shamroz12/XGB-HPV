@@ -55,33 +55,33 @@ textarea {
     border-radius: 12px !important;
 }
 
-/* Target internal dataframe grid */
-div[data-testid="stDataFrame"] div[role="grid"] {
+/* GLOBAL FONT */
+html, body, [class*="css"]  {
     font-family: 'Space Grotesk', sans-serif !important;
 }
 
-/* Cell text */
-div[data-testid="stDataFrame"] div[role="grid"] div {
+/* Data Editor / DataFrame body */
+div[data-testid="stDataFrame"] div[role="grid"] * {
     font-family: 'Space Grotesk', sans-serif !important;
     font-size: 15px !important;
 }
 
-/* Header cells */
-div[data-testid="stDataFrame"] div[role="columnheader"] {
-    font-family: 'Space Grotesk', sans-serif !important;
-    font-weight: 700 !important;
-    font-size: 16px !important;
-}
-
-/* Table header styling */
+/* Table header */
 div[data-testid="stDataFrame"] thead tr th {
     font-weight: 700 !important;
-    font-size: 15px !important;
+    font-size: 16px !important;
+    background: linear-gradient(90deg,#eef2ff,#f5f3ff) !important;
 }
 
-/* Metric font */
-div[data-testid="metric-container"] {
-    font-family: 'Space Grotesk', sans-serif !important;
+/* Section Titles */
+h3 {
+    font-size: 30px !important;
+    letter-spacing: -0.5px;
+}
+
+/* Make probability column bold */
+div[data-testid="stDataFrame"] div[role="gridcell"]:nth-child(4) {
+    font-weight: 600 !important;
 }
 
 /* Download button */
