@@ -275,49 +275,6 @@ def extract_features(seq):
     return np.concatenate([pos_encoding, di_features,
         [hydro_frac,arom_frac,pos_frac,neg_frac,net_charge,entropy,avg_weight]])
 
-
-    def render_probability_plot(df, threshold):
-
-    st.markdown("## 🧬 Epitope Landscape Intelligence")
-
-    colors = [
-        "rgba(56,189,248,0.6)" if p < threshold else "rgba(168,85,247,0.9)"
-        for p in df["Probability"]
-    ]
-
-    fig = go.Figure()
-
-    fig.add_trace(go.Scatter(
-        x=df["Position"],
-        y=df["Probability"],
-        mode="lines+markers",
-        marker=dict(size=6, color=colors),
-        line=dict(width=3, color="#22d3ee"),
-        customdata=df[["Peptide"]],
-        hovertemplate=(
-            "<b>Position:</b> %{x}<br>"
-            "<b>Peptide:</b> %{customdata[0]}<br>"
-            "<b>Probability:</b> %{y:.3f}<br>"
-            "<extra></extra>"
-        )
-    ))
-
-    fig.add_hline(
-        y=threshold,
-        line_dash="dash",
-        line_color="#a855f7"
-    )
-
-    fig.update_layout(
-        plot_bgcolor="rgba(0,0,0,0)",
-        paper_bgcolor="rgba(0,0,0,0)",
-        font=dict(color="white"),
-        height=550
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
-     
-
 # =========================================================
 # SCANNER SECTION (FULL RESTORED VERSION)
 # =========================================================
@@ -393,7 +350,30 @@ with tab1:
         # ==========================
         # PROBABILITY PLOT
         # ==========================
-        render_probability_plot(df, threshold)
+        fig = px.line(
+            df,
+            x="Position",
+            y="Probability",
+            markers=True
+        )
+
+        fig.update_layout(
+            title="Epitope Probability Across Protein Sequence",
+            xaxis_title="Amino Acid Position",
+            yaxis_title="Predicted Epitope Probability",
+            plot_bgcolor="rgba(0,0,0,0)",
+            paper_bgcolor="rgba(0,0,0,0)",
+            font=dict(color="white")
+        )
+
+        fig.add_hline(
+            y=threshold,
+            line_dash="dash",
+            annotation_text="Decision Threshold",
+            annotation_position="top left"
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
 
         # ==========================
         # GAUGE
