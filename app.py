@@ -12,26 +12,48 @@ import math
 import streamlit.components.v1 as components
 
 # =========================================================
-# GLOBAL FONT SYSTEM
+# REMOVE STREAMLIT DEFAULT GAP
 # =========================================================
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Sora:wght@600;700&display=swap');
-
-html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif !important;
-    scroll-behavior: smooth;
+.block-container {
+    padding-top: 0rem !important;
+    padding-bottom: 2rem !important;
 }
 
-h1, h2, h3 {
-    font-family: 'Sora', sans-serif !important;
-    font-weight: 700 !important;
+header {visibility: hidden;}
+
+html {
+    scroll-behavior: smooth;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # =========================================================
-# NEURAL NETWORK BACKGROUND (FULLSCREEN FIXED)
+# PREMIUM GLOBAL FONT SYSTEM
+# =========================================================
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&family=Sora:wght@600;700&display=swap');
+
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif !important;
+}
+
+h1, h2, h3 {
+    font-family: 'Sora', sans-serif !important;
+    letter-spacing: -1px;
+    font-weight: 700 !important;
+}
+
+p, label, span, div {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# =========================================================
+# NEURAL NETWORK BACKGROUND (FIXED)
 # =========================================================
 components.html("""
 <canvas id="network-canvas" style="
@@ -40,7 +62,7 @@ top:0;
 left:0;
 width:100%;
 height:100%;
-z-index:-2;
+z-index:-3;
 pointer-events:none;"></canvas>
 
 <script>
@@ -55,7 +77,7 @@ resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 
 let nodes = [];
-for(let i=0;i<60;i++){
+for(let i=0;i<65;i++){
     nodes.push({
         x:Math.random()*window.innerWidth,
         y:Math.random()*window.innerHeight,
@@ -87,18 +109,73 @@ animateNetwork();
 """, height=0)
 
 # =========================================================
-# HERO SECTION (ONLY ONE CANVAS → NO GAP)
+# INTERACTIVE IMMUNE BACKGROUND SECTION (700px)
 # =========================================================
 components.html("""
-<div style="position:relative;width:100%;height:100vh;overflow:hidden;">
+<canvas id="immune-bg" style="width:100%; height:700px;"></canvas>
 
-<canvas id="immune-canvas" style="
+<script>
+const canvas1 = document.getElementById("immune-bg");
+const ctx1 = canvas1.getContext("2d");
+
+canvas1.width = window.innerWidth;
+canvas1.height = 700;
+
+const cells1 = [];
+
+for(let i=0;i<12;i++){
+    cells1.push({
+        x:Math.random()*canvas1.width,
+        y:Math.random()*canvas1.height,
+        r:50+Math.random()*20,
+        pulse:Math.random()*Math.PI
+    });
+}
+
+function draw1(){
+    ctx1.clearRect(0,0,canvas1.width,canvas1.height);
+
+    cells1.forEach(c=>{
+        c.pulse+=0.02;
+
+        let gradient = ctx1.createRadialGradient(
+            c.x,c.y,c.r*0.3,
+            c.x,c.y,c.r
+        );
+
+        gradient.addColorStop(0,"rgba(99,102,241,0.6)");
+        gradient.addColorStop(1,"rgba(147,51,234,0.05)");
+
+        ctx1.beginPath();
+        ctx1.arc(c.x,c.y,c.r,0,Math.PI*2);
+        ctx1.fillStyle=gradient;
+        ctx1.fill();
+    });
+
+    requestAnimationFrame(draw1);
+}
+draw1();
+</script>
+""", height=700)
+
+# =========================================================
+# HERO SECTION (NO DUPLICATE CANVAS ID)
+# =========================================================
+components.html("""
+<div style="
+position:relative;
+width:100%;
+height:720px;
+overflow:hidden;
+">
+
+<canvas id="immune-hero" style="
 position:absolute;
 top:0;
 left:0;
 width:100%;
 height:100%;
-z-index:1;"></canvas>
+z-index:-1;"></canvas>
 
 <div style="
 position:absolute;
@@ -108,7 +185,11 @@ transform:translate(-50%,-50%);
 text-align:center;
 z-index:2;">
 
-<h1 style="font-size:72px;color:#4f46e5;">
+<h1 style="
+font-size:72px;
+background:linear-gradient(90deg,#3b82f6,#9333ea,#06b6d4);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;">
 HPV–EPIPRED AI
 </h1>
 
@@ -116,7 +197,7 @@ HPV–EPIPRED AI
 AI-Driven MHC Class I Epitope Intelligence Platform
 </p>
 
-<a href="#scanner" style="color:#4f46e5;font-weight:600;">
+<a href="#scanner" style="color:#2563eb;font-weight:600;">
 ↓ Launch Scanner
 </a>
 
@@ -124,52 +205,51 @@ AI-Driven MHC Class I Epitope Intelligence Platform
 </div>
 
 <script>
-const canvas = document.getElementById("immune-canvas");
-const ctx = canvas.getContext("2d");
+const canvas2 = document.getElementById("immune-hero");
+const ctx2 = canvas2.getContext("2d");
 
-function resize(){
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
-resize();
-window.addEventListener("resize", resize);
+canvas2.width = window.innerWidth;
+canvas2.height = 720;
 
-const cells = [];
+const cells2 = [];
+
 for(let i=0;i<10;i++){
-    cells.push({
-        x:Math.random()*window.innerWidth,
-        y:Math.random()*window.innerHeight,
+    cells2.push({
+        x:Math.random()*canvas2.width,
+        y:Math.random()*canvas2.height,
         r:60+Math.random()*20,
         pulse:Math.random()*Math.PI
     });
 }
 
-function draw(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
+function draw2(){
+    ctx2.clearRect(0,0,canvas2.width,canvas2.height);
 
-    cells.forEach(c=>{
+    cells2.forEach(c=>{
         c.pulse+=0.02;
-        let gradient = ctx.createRadialGradient(
+
+        let gradient = ctx2.createRadialGradient(
             c.x,c.y,c.r*0.2,
             c.x,c.y,c.r
         );
+
         gradient.addColorStop(0,"rgba(139,92,246,0.6)");
         gradient.addColorStop(1,"rgba(139,92,246,0.05)");
 
-        ctx.beginPath();
-        ctx.arc(c.x,c.y,c.r,0,Math.PI*2);
-        ctx.fillStyle=gradient;
-        ctx.fill();
+        ctx2.beginPath();
+        ctx2.arc(c.x,c.y,c.r,0,Math.PI*2);
+        ctx2.fillStyle=gradient;
+        ctx2.fill();
     });
 
-    requestAnimationFrame(draw);
+    requestAnimationFrame(draw2);
 }
-draw();
+draw2();
 </script>
-""", height=900)
+""", height=720)
 
 # =========================================================
-# MODEL
+# MODEL + SCANNER (UNCHANGED LOGIC)
 # =========================================================
 model = joblib.load("hpv_epitope_model.pkl")
 threshold = 0.261
@@ -214,14 +294,13 @@ def extract_features(seq):
         [hydro_frac,arom_frac,pos_frac,neg_frac,net_charge,entropy,avg_weight]])
 
 # =========================================================
-# SCANNER
+# SCANNER SECTION
 # =========================================================
 st.markdown('<div id="scanner"></div>', unsafe_allow_html=True)
 
 tab1, tab2 = st.tabs(["🔬 AI Scanner", "🧠 Model Explainability"])
 
 with tab1:
-
     mode = st.radio("Mode", ["Single Sequence","Batch Upload"])
     fasta = ""
 
