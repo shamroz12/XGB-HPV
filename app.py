@@ -350,48 +350,72 @@ with tab1:
         # ==========================
         # PROBABILITY PLOT
         # ==========================
-        fig = px.line(
-            df,
-            x="Position",
-            y="Probability",
-            markers=True
-        )
+        
+import numpy as np
 
-        fig.update_layout(
-            title="Epitope Probability Across Protein Sequence",
-            xaxis_title="Amino Acid Position",
-            yaxis_title="Predicted Epitope Probability",
-            plot_bgcolor="rgba(0,0,0,0)",
-            paper_bgcolor="rgba(0,0,0,0)",
-            font=dict(color="white")
-        )
+# Create smooth interpolation for cinematic curve
+x_vals = df["Position"].values
+y_vals = df["Probability"].values
 
-        fig.add_hline(
-            y=threshold,
-            line_dash="dash",
-            annotation_text="Decision Threshold",
-            annotation_position="top left"
-        )
+# Interpolate for smooth drawing effect
+x_smooth = np.linspace(x_vals.min(), x_vals.max(), 400)
+y_smooth = np.interp(x_smooth, x_vals, y_vals)
 
-        st.plotly_chart(fig, use_container_width=True)
+fig = go.Figure()
 
-        # ==========================
-        # GAUGE
-        # ==========================
-        mean_prob = df["Probability"].mean()
+# Glow layer (wide transparent line behind main line)
+fig.add_trace(go.Scatter(
+    x=x_smooth,
+    y=y_smooth,
+    mode="lines",
+    line=dict(width=10, color="rgba(56,189,248,0.15)"),
+    hoverinfo="skip",
+    showlegend=False
+))
 
-        gauge = go.Figure(go.Indicator(
-            mode="gauge+number",
-            value=mean_prob,
-            number={'valueformat': ".2f"},
-            title={'text': "Global Immunogenic Score"},
-            gauge={
-                'axis': {'range': [0, 1]},
-                'bar': {'color': "#38bdf8"}
-            }
-        ))
+# Main neon line
+fig.add_trace(go.Scatter(
+    x=x_smooth,
+    y=y_smooth,
+    mode="lines",
+    line=dict(width=3, color="#38bdf8"),
+    name="Epitope Probability"
+))
 
-        st.plotly_chart(gauge, use_container_width=True)
+# Markers on actual peptide points
+fig.add_trace(go.Scatter(
+    x=x_vals,
+    y=y_vals,
+    mode="markers",
+    marker=dict(size=6, color="#22d3ee"),
+    name="Peptide Points"
+))
+
+# Threshold line
+fig.add_hline(
+    y=threshold,
+    line_dash="dash",
+    line_color="#f43f5e",
+    annotation_text="Decision Threshold",
+    annotation_position="top left"
+)
+
+fig.update_layout(
+    title="Epitope Probability Landscape",
+    xaxis_title="Amino Acid Position",
+    yaxis_title="Predicted Epitope Probability",
+    template="plotly_dark",
+    plot_bgcolor="rgba(0,0,0,0)",
+    paper_bgcolor="rgba(0,0,0,0)",
+    font=dict(color="white"),
+    transition=dict(duration=1200, easing="cubic-in-out"),
+    hovermode="x unified"
+)
+
+fig.update_xaxes(showgrid=False)
+fig.update_yaxes(showgrid=False)
+
+st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
 
         # ==========================
         # DOWNLOAD
