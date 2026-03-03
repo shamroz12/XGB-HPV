@@ -54,6 +54,29 @@ textarea {
     font-size: 14px !important;
     border-radius: 12px !important;
 }
+
+/* DataFrame table text */
+div[data-testid="stDataFrame"] * {
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-size: 14px !important;
+}
+
+/* Table header styling */
+div[data-testid="stDataFrame"] thead tr th {
+    font-weight: 700 !important;
+    font-size: 15px !important;
+}
+
+/* Metric font */
+div[data-testid="metric-container"] {
+    font-family: 'Space Grotesk', sans-serif !important;
+}
+
+/* Download button */
+.stDownloadButton > button {
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-weight: 600;
+}
 </style>
 """, unsafe_allow_html=True)
 
