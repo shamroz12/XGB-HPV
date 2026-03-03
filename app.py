@@ -428,7 +428,7 @@ with tab1:
         # ==========================
         st.markdown("### 🟢 Predicted Epitopes")
         if not epitope_df.empty:
-            st.dataframe(epitope_df, use_container_width=True)
+            st.data_editor(epitope_df, use_container_width=True)
         else:
             st.info("No epitopes detected above threshold.")
 
