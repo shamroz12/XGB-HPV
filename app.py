@@ -73,7 +73,7 @@ canvas {
 }
 
 .hero-title {
-    font-size: 108px;
+    font-size: 100px;
     font-family: 'Sora', sans-serif;
     background: linear-gradient(90deg,#60a5fa,#a78bfa,#22d3ee);
     -webkit-background-clip: text;
