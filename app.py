@@ -9,42 +9,38 @@ import plotly.express as px
 from itertools import product
 from collections import Counter
 import math
-import io
+import streamlit.components.v1 as components
 
 # =========================================================
-# PREMIUM GLOBAL FONT SYSTEM
+# GLOBAL FONT SYSTEM
 # =========================================================
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&family=Sora:wght@600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Sora:wght@600;700&display=swap');
 
 html, body, [class*="css"] {
     font-family: 'Inter', sans-serif !important;
+    scroll-behavior: smooth;
 }
 
 h1, h2, h3 {
     font-family: 'Sora', sans-serif !important;
-    letter-spacing: -1px;
     font-weight: 700 !important;
-}
-
-p, label, span, div {
-    font-family: 'Plus Jakarta Sans', sans-serif !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # =========================================================
-# NEURAL NETWORK ANIMATED BACKGROUND
+# NEURAL NETWORK BACKGROUND (FULLSCREEN FIXED)
 # =========================================================
-st.components.v1.html("""
+components.html("""
 <canvas id="network-canvas" style="
 position:fixed;
 top:0;
 left:0;
 width:100%;
 height:100%;
-z-index:-3;
+z-index:-2;
 pointer-events:none;"></canvas>
 
 <script>
@@ -59,9 +55,7 @@ resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 
 let nodes = [];
-const NODE_COUNT = 65;
-
-for(let i=0;i<NODE_COUNT;i++){
+for(let i=0;i<60;i++){
     nodes.push({
         x:Math.random()*window.innerWidth,
         y:Math.random()*window.innerHeight,
@@ -70,8 +64,6 @@ for(let i=0;i<NODE_COUNT;i++){
     });
 }
 
-const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
 function animateNetwork(){
     netCtx.clearRect(0,0,netCanvas.width,netCanvas.height);
 
@@ -79,175 +71,26 @@ function animateNetwork(){
         n.x+=n.vx;
         n.y+=n.vy;
 
-        if(n.x<0||n.x>window.innerWidth) n.vx*=-1;
-        if(n.y<0||n.y>window.innerHeight) n.vy*=-1;
+        if(n.x<0||n.x>netCanvas.width) n.vx*=-1;
+        if(n.y<0||n.y>netCanvas.height) n.vy*=-1;
 
         netCtx.beginPath();
         netCtx.arc(n.x,n.y,2.5,0,Math.PI*2);
-        netCtx.fillStyle=isDark?
-            "rgba(99,102,241,0.6)":
-            "rgba(59,130,246,0.6)";
+        netCtx.fillStyle="rgba(99,102,241,0.6)";
         netCtx.fill();
     });
 
-    for(let i=0;i<nodes.length;i++){
-        for(let j=i+1;j<nodes.length;j++){
-            let dx=nodes[i].x-nodes[j].x;
-            let dy=nodes[i].y-nodes[j].y;
-            let dist=Math.sqrt(dx*dx+dy*dy);
-
-            if(dist<150){
-                netCtx.beginPath();
-                netCtx.moveTo(nodes[i].x,nodes[i].y);
-                netCtx.lineTo(nodes[j].x,nodes[j].y);
-
-                netCtx.strokeStyle=isDark?
-                    "rgba(99,102,241,0.15)":
-                    "rgba(59,130,246,0.15)";
-
-                netCtx.lineWidth=1;
-                netCtx.stroke();
-            }
-        }
-    }
-
     requestAnimationFrame(animateNetwork);
 }
-
 animateNetwork();
 </script>
 """, height=0)
 
-st.markdown("""
-<style>
-/* Force background on Streamlit containers */
-
-.stApp, .main, .block-container {
-    background: linear-gradient(
-        135deg,
-        #eef2ff 0%,
-        #e0e7ff 40%,
-        #dbeafe 100%
-    ) !important;
-}
-
-/* Remove excess padding to reduce height */
-.block-container {
-    padding-top: 2rem !important;
-    padding-bottom: 2rem !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
 # =========================================================
-# INTERACTIVE 3D HELIX WITH DEPTH FOG
+# HERO SECTION (ONLY ONE CANVAS → NO GAP)
 # =========================================================
-st.components.v1.html("""
-<canvas id="immune-canvas" style="width:100%; height:700px;"></canvas>
-
-<script>
-const canvas = document.getElementById("immune-canvas");
-const ctx = canvas.getContext("2d");
-
-canvas.width = window.innerWidth;
-canvas.height = 700;
-
-const cells = [];
-const peptides = [];
-
-for(let i=0;i<12;i++){
-    cells.push({
-        x:Math.random()*canvas.width,
-        y:Math.random()*canvas.height,
-        r:50+Math.random()*20,
-        pulse:Math.random()*Math.PI
-    });
-}
-
-for(let i=0;i<60;i++){
-    peptides.push({
-        x:Math.random()*canvas.width,
-        y:Math.random()*canvas.height,
-        vx:(Math.random()-0.5)*1.2,
-        vy:(Math.random()-0.5)*1.2
-    });
-}
-
-function draw(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    // Draw cells
-    cells.forEach(c=>{
-        c.pulse += 0.02;
-        let glow = 15 + Math.sin(c.pulse)*5;
-
-        let gradient = ctx.createRadialGradient(
-            c.x,c.y,c.r*0.3,
-            c.x,c.y,c.r
-        );
-
-        gradient.addColorStop(0,"rgba(99,102,241,0.6)");
-        gradient.addColorStop(1,"rgba(147,51,234,0.05)");
-
-        ctx.beginPath();
-        ctx.arc(c.x,c.y,c.r,0,Math.PI*2);
-        ctx.fillStyle = gradient;
-        ctx.fill();
-    });
-
-    // Draw peptides
-    peptides.forEach(p=>{
-        p.x += p.vx;
-        p.y += p.vy;
-
-        if(p.x<0||p.x>canvas.width) p.vx*=-1;
-        if(p.y<0||p.y>canvas.height) p.vy*=-1;
-
-        ctx.beginPath();
-        ctx.arc(p.x,p.y,3,0,Math.PI*2);
-        ctx.fillStyle="rgba(59,130,246,0.9)";
-        ctx.fill();
-    });
-
-    // Immune signaling lines
-    peptides.forEach(p=>{
-        cells.forEach(c=>{
-            let dx = p.x - c.x;
-            let dy = p.y - c.y;
-            let dist = Math.sqrt(dx*dx + dy*dy);
-
-            if(dist < c.r){
-                ctx.beginPath();
-                ctx.moveTo(p.x,p.y);
-                ctx.lineTo(c.x,c.y);
-                ctx.strokeStyle="rgba(59,130,246,0.15)";
-                ctx.stroke();
-            }
-        });
-    });
-
-    requestAnimationFrame(draw);
-}
-
-draw();
-</script>
-""", height=700)
-
-# =========================================================
-# HERO SECTION
-# =========================================================
-import streamlit.components.v1 as components
-
 components.html("""
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Plus+Jakarta+Sans:wght@500;600&display=swap" rel="stylesheet">
-
-<div style="
-position:relative;
-width:100%;
-height:720px;
-overflow:hidden;
-background:linear-gradient(135deg,#eef2ff 0%, #e0e7ff 40%, #dbeafe 100%);
-">
+<div style="position:relative;width:100%;height:100vh;overflow:hidden;">
 
 <canvas id="immune-canvas" style="
 position:absolute;
@@ -265,32 +108,15 @@ transform:translate(-50%,-50%);
 text-align:center;
 z-index:2;">
 
-<h1 style="
-font-family:'Sora', sans-serif;
-font-size:64px;
-font-weight:700;
-letter-spacing:-1px;
-background:linear-gradient(90deg,#3b82f6,#9333ea,#06b6d4);
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
-margin-bottom:20px;">
+<h1 style="font-size:72px;color:#4f46e5;">
 HPV–EPIPRED AI
 </h1>
 
-<p style="
-font-family:'Plus Jakarta Sans', sans-serif;
-font-size:20px;
-color:#334155;
-margin-bottom:30px;">
+<p style="font-size:20px;color:#334155;">
 AI-Driven MHC Class I Epitope Intelligence Platform
 </p>
 
-<a href="#scanner" style="
-font-family:'Plus Jakarta Sans', sans-serif;
-font-size:16px;
-color:#2563eb;
-text-decoration:none;
-font-weight:600;">
+<a href="#scanner" style="color:#4f46e5;font-weight:600;">
 ↓ Launch Scanner
 </a>
 
@@ -301,27 +127,20 @@ font-weight:600;">
 const canvas = document.getElementById("immune-canvas");
 const ctx = canvas.getContext("2d");
 
-canvas.width = window.innerWidth;
-canvas.height = 720;
+function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener("resize", resize);
 
 const cells = [];
-const peptides = [];
-
 for(let i=0;i<10;i++){
     cells.push({
-        x:Math.random()*canvas.width,
-        y:Math.random()*canvas.height,
+        x:Math.random()*window.innerWidth,
+        y:Math.random()*window.innerHeight,
         r:60+Math.random()*20,
         pulse:Math.random()*Math.PI
-    });
-}
-
-for(let i=0;i<50;i++){
-    peptides.push({
-        x:Math.random()*canvas.width,
-        y:Math.random()*canvas.height,
-        vx:(Math.random()-0.5)*1.2,
-        vy:(Math.random()-0.5)*1.2
     });
 }
 
@@ -343,23 +162,11 @@ function draw(){
         ctx.fill();
     });
 
-    peptides.forEach(p=>{
-        p.x+=p.vx;
-        p.y+=p.vy;
-        if(p.x<0||p.x>canvas.width) p.vx*=-1;
-        if(p.y<0||p.y>canvas.height) p.vy*=-1;
-
-        ctx.beginPath();
-        ctx.arc(p.x,p.y,3,0,Math.PI*2);
-        ctx.fillStyle="rgba(59,130,246,0.9)";
-        ctx.fill();
-    });
-
     requestAnimationFrame(draw);
 }
 draw();
 </script>
-""", height=720)
+""", height=900)
 
 # =========================================================
 # MODEL
@@ -409,11 +216,12 @@ def extract_features(seq):
 # =========================================================
 # SCANNER
 # =========================================================
-st.markdown('<div id="scanner" class="glass-card">', unsafe_allow_html=True)
+st.markdown('<div id="scanner"></div>', unsafe_allow_html=True)
 
 tab1, tab2 = st.tabs(["🔬 AI Scanner", "🧠 Model Explainability"])
 
 with tab1:
+
     mode = st.radio("Mode", ["Single Sequence","Batch Upload"])
     fasta = ""
 
@@ -426,142 +234,39 @@ with tab1:
 
     if st.button("Run AI Scan") and fasta:
 
-        # ==========================
-        # SEQUENCE CLEANING
-        # ==========================
-        seq = "".join([
-            l.strip() for l in fasta.split("\n")
-            if not l.startswith(">")
-        ]).upper()
+        seq = "".join([l.strip() for l in fasta.split("\n") if not l.startswith(">")]).upper()
 
         results = []
-
-        # ==========================
-        # PREDICTION LOOP
-        # ==========================
         for i in range(len(seq) - 8):
             pep = seq[i:i+9]
-            prob = model.predict_proba(
-                [extract_features(pep)]
-            )[0][1]
-
+            prob = model.predict_proba([extract_features(pep)])[0][1]
             cat = "Epitope" if prob >= threshold else "Non-Epitope"
             results.append([i+1, pep, prob, cat])
 
-        df = pd.DataFrame(
-            results,
-            columns=["Position", "Peptide", "Probability", "Category"]
-        )
+        df = pd.DataFrame(results, columns=["Position","Peptide","Probability","Category"])
 
-        # ==========================
-        # SPLIT TABLES
-        # ==========================
-        epitope_df = df[df["Category"] == "Epitope"] \
-            .sort_values(by="Probability", ascending=False)
+        st.dataframe(df, use_container_width=True)
 
-        non_df = df[df["Category"] == "Non-Epitope"] \
-            .sort_values(by="Probability", ascending=False)
+        mean_prob = df["Probability"].mean()
 
-        # ==========================
-        # DISPLAY TABLES
-        # ==========================
-        st.markdown("### 🟢 Predicted Epitopes")
-        if not epitope_df.empty:
-            st.dataframe(epitope_df, use_container_width=True)
-        else:
-            st.info("No epitopes detected above threshold.")
+        gauge = go.Figure(go.Indicator(
+            mode="gauge+number",
+            value=mean_prob,
+            number={'valueformat': ".2f"},
+            title={'text': "Global Immunogenic Score"},
+            gauge={'axis': {'range': [0, 1]}}
+        ))
 
-        st.markdown("### ⚪ Predicted Non-Epitopes")
-        if not non_df.empty:
-            st.dataframe(non_df, use_container_width=True)
-        else:
-            st.info("All peptides classified as epitopes.")
+        st.plotly_chart(gauge, use_container_width=True)
 
-        # ==========================
-        # PLOT
-        # ==========================
-        fig = px.line(
-            df,
-            x="Position",
-            y="Probability",
-            markers=True
-        )
-
-        fig.update_layout(
-            title="Epitope Probability Across Protein Sequence",
-            xaxis_title="Amino Acid Position",
-            yaxis_title="Predicted Epitope Probability",
-            plot_bgcolor="rgba(0,0,0,0)",
-            paper_bgcolor="rgba(0,0,0,0)"
-        )
-
-        fig.add_hline(
-            y=threshold,
-            line_dash="dash",
-            annotation_text="Decision Threshold",
-            annotation_position="top left"
-        )
-
-        st.plotly_chart(fig, use_container_width=True)
-    
-    # ==========================
-# GAUGE (SAFE VERSION)
-# ==========================
-
-if "df" in locals():
-
-    mean_prob = df["Probability"].mean()
-
-    gauge = go.Figure(go.Indicator(
-        mode="gauge+number",
-        value=mean_prob,
-        number={'valueformat': ".2f"},
-        title={'text': "Global Immunogenic Score"},
-        gauge={
-            'axis': {'range': [0, 1]},
-            'bar': {'color': "#6366f1"},
-            'steps': [
-                {'range': [0, 0.3], 'color': "#dcfce7"},
-                {'range': [0.3, 0.6], 'color': "#fef9c3"},
-                {'range': [0.6, 1], 'color': "#fee2e2"},
-            ],
-        }
-    ))
-
-    st.plotly_chart(gauge, use_container_width=True)
-    
-   # ==========================
-# DOWNLOAD (SAFE VERSION)
-# ==========================
-
-if "df" in locals():
-    csv = df.to_csv(index=False).encode()
-
-    st.download_button(
-        "Download CSV",
-        csv,
-        "epitope_results.csv"
-    )
+        csv = df.to_csv(index=False).encode()
+        st.download_button("Download CSV", csv, "epitope_results.csv")
 
 with tab2:
-    feat = pd.DataFrame({
-        "Feature":["Hydrophobicity","Net Charge","Entropy"],
-        "Importance":[0.32,0.21,0.17]
-    })
-    fig = px.bar(feat, x="Importance", y="Feature",
-                 orientation="h", template="plotly_dark")
-    st.plotly_chart(fig, use_container_width=True)
-
-st.markdown('</div>', unsafe_allow_html=True)
-st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
+    st.write("Explainability module coming soon...")
 
 st.markdown("""
-© 2026 HPV–EPIPRED AI™  
-Immunoinformatics Platform  
-Developed by Shamroz
+---
+© 2026 HPV–EPIPRED AI  
+Developed by Shamroz  
 """)
-
-
-
-
-
