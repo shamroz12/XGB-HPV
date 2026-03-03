@@ -404,12 +404,19 @@ with tab1:
         )
 
 with tab2:
-    eat = pd.DataFrame({
-        "Feature":["Hydrophobicity","Net Charge","Entropy"],
-        "Importance":[0.32,0.21,0.17]
+    feat = pd.DataFrame({
+        "Feature": ["Hydrophobicity", "Net Charge", "Entropy"],
+        "Importance": [0.32, 0.21, 0.17]
     })
-    fig = px.bar(feat, x="Importance", y="Feature",
-                 orientation="h", template="plotly_dark")
+
+    fig = px.bar(
+        feat,
+        x="Importance",
+        y="Feature",
+        orientation="h",
+        template="plotly_dark"
+    )
+
     st.plotly_chart(fig, use_container_width=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
