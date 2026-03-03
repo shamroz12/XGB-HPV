@@ -99,8 +99,8 @@ canvas {
     <canvas id="network"></canvas>
 
     <div class="hero-content">
-        <div class="hero-title">HPV–EPIPRED AI</div>
-        <div class="hero-sub">Cinematic Immune Cell Architecture Intelligence</div>
+        <div class="hero-title">HPV–EPIPRED</div>
+        <div class="hero-sub">MHC I Epitope Prediction</div>
         <a href="#scanner" class="cta">↓ Launch Scanner</a>
     </div>
 
