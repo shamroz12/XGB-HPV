@@ -55,10 +55,22 @@ textarea {
     border-radius: 12px !important;
 }
 
-/* DataFrame table text */
-div[data-testid="stDataFrame"] * {
+/* Target internal dataframe grid */
+div[data-testid="stDataFrame"] div[role="grid"] {
     font-family: 'Space Grotesk', sans-serif !important;
-    font-size: 14px !important;
+}
+
+/* Cell text */
+div[data-testid="stDataFrame"] div[role="grid"] div {
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-size: 15px !important;
+}
+
+/* Header cells */
+div[data-testid="stDataFrame"] div[role="columnheader"] {
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 16px !important;
 }
 
 /* Table header styling */
