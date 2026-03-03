@@ -276,13 +276,14 @@ def extract_features(seq):
         [hydro_frac,arom_frac,pos_frac,neg_frac,net_charge,entropy,avg_weight]])
 
 # =========================================================
-# SCANNER
+# SCANNER SECTION (FULL RESTORED VERSION)
 # =========================================================
 st.markdown('<div id="scanner"></div>', unsafe_allow_html=True)
 
 tab1, tab2 = st.tabs(["🔬 AI Scanner", "🧠 Model Explainability"])
 
 with tab1:
+
     mode = st.radio("Mode", ["Single Sequence","Batch Upload"])
     fasta = ""
 
@@ -295,18 +296,88 @@ with tab1:
 
     if st.button("Run AI Scan") and fasta:
 
-        seq = "".join([l.strip() for l in fasta.split("\n") if not l.startswith(">")]).upper()
+        # ==========================
+        # SEQUENCE CLEANING
+        # ==========================
+        seq = "".join([
+            l.strip() for l in fasta.split("\n")
+            if not l.startswith(">")
+        ]).upper()
 
         results = []
+
+        # ==========================
+        # PREDICTION LOOP
+        # ==========================
         for i in range(len(seq) - 8):
             pep = seq[i:i+9]
-            prob = model.predict_proba([extract_features(pep)])[0][1]
+            prob = model.predict_proba(
+                [extract_features(pep)]
+            )[0][1]
+
             cat = "Epitope" if prob >= threshold else "Non-Epitope"
             results.append([i+1, pep, prob, cat])
 
-        df = pd.DataFrame(results, columns=["Position","Peptide","Probability","Category"])
-        st.dataframe(df, use_container_width=True)
+        df = pd.DataFrame(
+            results,
+            columns=["Position", "Peptide", "Probability", "Category"]
+        )
 
+        # ==========================
+        # SPLIT TABLES
+        # ==========================
+        epitope_df = df[df["Category"] == "Epitope"] \
+            .sort_values(by="Probability", ascending=False)
+
+        non_df = df[df["Category"] == "Non-Epitope"] \
+            .sort_values(by="Probability", ascending=False)
+
+        # ==========================
+        # DISPLAY TABLES
+        # ==========================
+        st.markdown("### 🟢 Predicted Epitopes")
+        if not epitope_df.empty:
+            st.dataframe(epitope_df, use_container_width=True)
+        else:
+            st.info("No epitopes detected above threshold.")
+
+        st.markdown("### ⚪ Predicted Non-Epitopes")
+        if not non_df.empty:
+            st.dataframe(non_df, use_container_width=True)
+        else:
+            st.info("All peptides classified as epitopes.")
+
+        # ==========================
+        # PROBABILITY PLOT
+        # ==========================
+        fig = px.line(
+            df,
+            x="Position",
+            y="Probability",
+            markers=True
+        )
+
+        fig.update_layout(
+            title="Epitope Probability Across Protein Sequence",
+            xaxis_title="Amino Acid Position",
+            yaxis_title="Predicted Epitope Probability",
+            plot_bgcolor="rgba(0,0,0,0)",
+            paper_bgcolor="rgba(0,0,0,0)",
+            font=dict(color="white")
+        )
+
+        fig.add_hline(
+            y=threshold,
+            line_dash="dash",
+            annotation_text="Decision Threshold",
+            annotation_position="top left"
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+        # ==========================
+        # GAUGE
+        # ==========================
         mean_prob = df["Probability"].mean()
 
         gauge = go.Figure(go.Indicator(
@@ -314,16 +385,23 @@ with tab1:
             value=mean_prob,
             number={'valueformat': ".2f"},
             title={'text': "Global Immunogenic Score"},
-            gauge={'axis': {'range': [0, 1]}}
+            gauge={
+                'axis': {'range': [0, 1]},
+                'bar': {'color': "#38bdf8"}
+            }
         ))
 
         st.plotly_chart(gauge, use_container_width=True)
 
+        # ==========================
+        # DOWNLOAD
+        # ==========================
         csv = df.to_csv(index=False).encode()
-        st.download_button("Download CSV", csv, "epitope_results.csv")
+        st.download_button(
+            "Download CSV",
+            csv,
+            "epitope_results.csv"
+        )
 
 with tab2:
     st.write("Explainability module coming soon...")
-
-st.markdown("---")
-st.markdown("© 2026 HPV–EPIPRED AI | Developed by Shamroz")
