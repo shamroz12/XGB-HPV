@@ -73,7 +73,7 @@ canvas {
 }
 
 .hero-title {
-    font-size: 90px;
+    font-size: 108px;
     font-family: 'Sora', sans-serif;
     background: linear-gradient(90deg,#60a5fa,#a78bfa,#22d3ee);
     -webkit-background-clip: text;
@@ -81,7 +81,7 @@ canvas {
 }
 
 .hero-sub {
-    font-size: 28px;
+    font-size: 40px;
     color: #cbd5e1;
 }
 
