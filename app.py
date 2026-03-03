@@ -12,244 +12,207 @@ import math
 import streamlit.components.v1 as components
 
 # =========================================================
-# REMOVE STREAMLIT DEFAULT GAP
+# REMOVE STREAMLIT DEFAULT PADDING
 # =========================================================
 st.markdown("""
 <style>
-.block-container {
-    padding-top: 0rem !important;
-    padding-bottom: 2rem !important;
-}
-
+.block-container { padding-top: 0rem !important; }
 header {visibility: hidden;}
-
-html {
-    scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 </style>
 """, unsafe_allow_html=True)
 
 # =========================================================
-# PREMIUM GLOBAL FONT SYSTEM
+# PREMIUM FONT SYSTEM
 # =========================================================
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&family=Sora:wght@600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;600&display=swap');
 
 html, body, [class*="css"] {
     font-family: 'Inter', sans-serif !important;
+    background-color: #0f172a;
+    color: white;
 }
 
 h1, h2, h3 {
     font-family: 'Sora', sans-serif !important;
-    letter-spacing: -1px;
-    font-weight: 700 !important;
-}
-
-p, label, span, div {
-    font-family: 'Plus Jakarta Sans', sans-serif !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # =========================================================
-# NEURAL NETWORK BACKGROUND (FIXED)
+# CINEMATIC HERO (CELLULAR + AI NETWORK)
 # =========================================================
 components.html("""
-<canvas id="network-canvas" style="
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-z-index:-3;
-pointer-events:none;"></canvas>
+<style>
+.hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background: radial-gradient(circle at center, #1e293b 0%, #0f172a 80%);
+}
+
+.bg-layer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://images.unsplash.com/photo-1581090700227-4c4f50f0e9e1?auto=format&fit=crop&w=2000&q=80');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.25;
+    z-index: 0;
+}
+
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.hero-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 3;
+}
+
+.hero-title {
+    font-size: 72px;
+    background: linear-gradient(90deg,#3b82f6,#9333ea,#06b6d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-sub {
+    font-size: 22px;
+    opacity: 0.85;
+}
+
+.cta {
+    margin-top: 25px;
+    font-size: 18px;
+    color: #38bdf8;
+    text-decoration: none;
+}
+</style>
+
+<div class="hero">
+
+    <div class="bg-layer"></div>
+
+    <canvas id="immune"></canvas>
+    <canvas id="network"></canvas>
+
+    <div class="hero-content">
+        <div class="hero-title">HPV–EPIPRED AI</div>
+        <div class="hero-sub">Cinematic Immunoinformatics Intelligence Platform</div>
+        <a href="#scanner" class="cta">↓ Launch Scanner</a>
+    </div>
+
+</div>
 
 <script>
-const netCanvas = document.getElementById("network-canvas");
-const netCtx = netCanvas.getContext("2d");
 
-function resizeCanvas(){
-    netCanvas.width = window.innerWidth;
-    netCanvas.height = window.innerHeight;
+const immune = document.getElementById("immune");
+const network = document.getElementById("network");
+
+const ictx = immune.getContext("2d");
+const nctx = network.getContext("2d");
+
+function resize(){
+    immune.width = window.innerWidth;
+    immune.height = window.innerHeight;
+    network.width = window.innerWidth;
+    network.height = window.innerHeight;
 }
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
+resize();
+window.addEventListener("resize", resize);
 
-let nodes = [];
-for(let i=0;i<65;i++){
-    nodes.push({
+// IMMUNE CELLS
+let cells = [];
+for(let i=0;i<10;i++){
+    cells.push({
         x:Math.random()*window.innerWidth,
         y:Math.random()*window.innerHeight,
-        vx:(Math.random()-0.5)*0.6,
-        vy:(Math.random()-0.5)*0.6
+        r:60+Math.random()*40,
+        pulse:Math.random()*Math.PI
     });
 }
 
-function animateNetwork(){
-    netCtx.clearRect(0,0,netCanvas.width,netCanvas.height);
+function drawImmune(){
+    ictx.clearRect(0,0,immune.width,immune.height);
+
+    cells.forEach(c=>{
+        c.pulse+=0.02;
+
+        let g = ictx.createRadialGradient(c.x,c.y,c.r*0.2,c.x,c.y,c.r);
+        g.addColorStop(0,"rgba(139,92,246,0.7)");
+        g.addColorStop(1,"rgba(139,92,246,0.05)");
+
+        ictx.beginPath();
+        ictx.arc(c.x,c.y,c.r,0,Math.PI*2);
+        ictx.fillStyle=g;
+        ictx.fill();
+    });
+
+    requestAnimationFrame(drawImmune);
+}
+drawImmune();
+
+// AI NETWORK
+let nodes=[];
+for(let i=0;i<60;i++){
+    nodes.push({
+        x:Math.random()*window.innerWidth,
+        y:Math.random()*window.innerHeight,
+        vx:(Math.random()-0.5)*0.5,
+        vy:(Math.random()-0.5)*0.5
+    });
+}
+
+function drawNetwork(){
+    nctx.clearRect(0,0,network.width,network.height);
 
     nodes.forEach(n=>{
         n.x+=n.vx;
         n.y+=n.vy;
+        if(n.x<0||n.x>network.width) n.vx*=-1;
+        if(n.y<0||n.y>network.height) n.vy*=-1;
 
-        if(n.x<0||n.x>netCanvas.width) n.vx*=-1;
-        if(n.y<0||n.y>netCanvas.height) n.vy*=-1;
-
-        netCtx.beginPath();
-        netCtx.arc(n.x,n.y,2.5,0,Math.PI*2);
-        netCtx.fillStyle="rgba(99,102,241,0.6)";
-        netCtx.fill();
+        nctx.beginPath();
+        nctx.arc(n.x,n.y,2,0,Math.PI*2);
+        nctx.fillStyle="rgba(56,189,248,0.7)";
+        nctx.fill();
     });
 
-    requestAnimationFrame(animateNetwork);
+    for(let i=0;i<nodes.length;i++){
+        for(let j=i+1;j<nodes.length;j++){
+            let dx=nodes[i].x-nodes[j].x;
+            let dy=nodes[i].y-nodes[j].y;
+            let dist=Math.sqrt(dx*dx+dy*dy);
+            if(dist<120){
+                nctx.beginPath();
+                nctx.moveTo(nodes[i].x,nodes[i].y);
+                nctx.lineTo(nodes[j].x,nodes[j].y);
+                nctx.strokeStyle="rgba(56,189,248,0.15)";
+                nctx.stroke();
+            }
+        }
+    }
+
+    requestAnimationFrame(drawNetwork);
 }
-animateNetwork();
+drawNetwork();
+
 </script>
-""", height=0)
+""", height=900)
 
 # =========================================================
-# INTERACTIVE IMMUNE BACKGROUND SECTION (700px)
-# =========================================================
-components.html("""
-<canvas id="immune-bg" style="width:100%; height:700px;"></canvas>
-
-<script>
-const canvas1 = document.getElementById("immune-bg");
-const ctx1 = canvas1.getContext("2d");
-
-canvas1.width = window.innerWidth;
-canvas1.height = 700;
-
-const cells1 = [];
-
-for(let i=0;i<12;i++){
-    cells1.push({
-        x:Math.random()*canvas1.width,
-        y:Math.random()*canvas1.height,
-        r:50+Math.random()*20,
-        pulse:Math.random()*Math.PI
-    });
-}
-
-function draw1(){
-    ctx1.clearRect(0,0,canvas1.width,canvas1.height);
-
-    cells1.forEach(c=>{
-        c.pulse+=0.02;
-
-        let gradient = ctx1.createRadialGradient(
-            c.x,c.y,c.r*0.3,
-            c.x,c.y,c.r
-        );
-
-        gradient.addColorStop(0,"rgba(99,102,241,0.6)");
-        gradient.addColorStop(1,"rgba(147,51,234,0.05)");
-
-        ctx1.beginPath();
-        ctx1.arc(c.x,c.y,c.r,0,Math.PI*2);
-        ctx1.fillStyle=gradient;
-        ctx1.fill();
-    });
-
-    requestAnimationFrame(draw1);
-}
-draw1();
-</script>
-""", height=700)
-
-# =========================================================
-# HERO SECTION (NO DUPLICATE CANVAS ID)
-# =========================================================
-components.html("""
-<div style="
-position:relative;
-width:100%;
-height:720px;
-overflow:hidden;
-">
-
-<canvas id="immune-hero" style="
-position:absolute;
-top:0;
-left:0;
-width:100%;
-height:100%;
-z-index:-1;"></canvas>
-
-<div style="
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-text-align:center;
-z-index:2;">
-
-<h1 style="
-font-size:72px;
-background:linear-gradient(90deg,#3b82f6,#9333ea,#06b6d4);
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;">
-HPV–EPIPRED AI
-</h1>
-
-<p style="font-size:20px;color:#334155;">
-AI-Driven MHC Class I Epitope Intelligence Platform
-</p>
-
-<a href="#scanner" style="color:#2563eb;font-weight:600;">
-↓ Launch Scanner
-</a>
-
-</div>
-</div>
-
-<script>
-const canvas2 = document.getElementById("immune-hero");
-const ctx2 = canvas2.getContext("2d");
-
-canvas2.width = window.innerWidth;
-canvas2.height = 720;
-
-const cells2 = [];
-
-for(let i=0;i<10;i++){
-    cells2.push({
-        x:Math.random()*canvas2.width,
-        y:Math.random()*canvas2.height,
-        r:60+Math.random()*20,
-        pulse:Math.random()*Math.PI
-    });
-}
-
-function draw2(){
-    ctx2.clearRect(0,0,canvas2.width,canvas2.height);
-
-    cells2.forEach(c=>{
-        c.pulse+=0.02;
-
-        let gradient = ctx2.createRadialGradient(
-            c.x,c.y,c.r*0.2,
-            c.x,c.y,c.r
-        );
-
-        gradient.addColorStop(0,"rgba(139,92,246,0.6)");
-        gradient.addColorStop(1,"rgba(139,92,246,0.05)");
-
-        ctx2.beginPath();
-        ctx2.arc(c.x,c.y,c.r,0,Math.PI*2);
-        ctx2.fillStyle=gradient;
-        ctx2.fill();
-    });
-
-    requestAnimationFrame(draw2);
-}
-draw2();
-</script>
-""", height=720)
-
-# =========================================================
-# MODEL + SCANNER (UNCHANGED LOGIC)
+# MODEL
 # =========================================================
 model = joblib.load("hpv_epitope_model.pkl")
 threshold = 0.261
@@ -294,7 +257,7 @@ def extract_features(seq):
         [hydro_frac,arom_frac,pos_frac,neg_frac,net_charge,entropy,avg_weight]])
 
 # =========================================================
-# SCANNER SECTION
+# SCANNER
 # =========================================================
 st.markdown('<div id="scanner"></div>', unsafe_allow_html=True)
 
@@ -323,7 +286,6 @@ with tab1:
             results.append([i+1, pep, prob, cat])
 
         df = pd.DataFrame(results, columns=["Position","Peptide","Probability","Category"])
-
         st.dataframe(df, use_container_width=True)
 
         mean_prob = df["Probability"].mean()
@@ -344,8 +306,5 @@ with tab1:
 with tab2:
     st.write("Explainability module coming soon...")
 
-st.markdown("""
----
-© 2026 HPV–EPIPRED AI  
-Developed by Shamroz  
-""")
+st.markdown("---")
+st.markdown("© 2026 HPV–EPIPRED AI | Developed by Shamroz")
