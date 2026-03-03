@@ -1,6 +1,52 @@
 import streamlit as st
 st.set_page_config(page_title="HPV EPIPRED", page_icon="🧬", layout="wide")
 
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+/* Apply to entire app */
+html, body, [class*="css"]  {
+    font-family: 'Space Grotesk', sans-serif !important;
+}
+
+/* Headings */
+h1, h2, h3 {
+    font-weight: 700 !important;
+    letter-spacing: -0.5px;
+}
+
+/* Buttons */
+.stButton > button {
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 10px 22px;
+}
+
+/* Radio + Labels */
+label {
+    font-weight: 500 !important;
+}
+
+/* Tabs styling */
+button[role="tab"] {
+    font-weight: 600 !important;
+    font-size: 16px !important;
+}
+
+button[role="tab"][aria-selected="true"] {
+    color: #6366f1 !important;
+}
+
+textarea {
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-size: 14px !important;
+    border-radius: 12px !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 import numpy as np
 import pandas as pd
 import joblib
