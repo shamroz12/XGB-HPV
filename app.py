@@ -41,9 +41,6 @@ h1, h2, h3 {
 </style>
 """, unsafe_allow_html=True)
 
-# =========================================================
-# CINEMATIC HERO (CELLULAR + AI NETWORK)
-# =========================================================
 components.html("""
 <style>
 .hero {
@@ -51,17 +48,21 @@ components.html("""
     width: 100%;
     height: 100vh;
     overflow: hidden;
-    background: radial-gradient(circle at center, #1e293b 0%, #0f172a 80%);
+    background:
+        radial-gradient(circle at 20% 30%, #1e3a8a 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, #581c87 0%, transparent 40%),
+        linear-gradient(135deg, #020617 0%, #0f172a 50%, #020617 100%);
 }
 
-.bg-layer {
+.texture {
     position: absolute;
     width: 100%;
     height: 100%;
-    background-image: url('https://images.unsplash.com/photo-1581090700227-4c4f50f0e9e1?auto=format&fit=crop&w=2000&q=80');
+    background-image: url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=2000&q=80');
     background-size: cover;
     background-position: center;
-    opacity: 0.25;
+    opacity: 0.18;
+    filter: blur(2px) contrast(1.2);
     z-index: 0;
 }
 
@@ -77,19 +78,20 @@ canvas {
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
-    z-index: 3;
+    z-index: 5;
 }
 
 .hero-title {
     font-size: 72px;
-    background: linear-gradient(90deg,#3b82f6,#9333ea,#06b6d4);
+    font-family: 'Sora', sans-serif;
+    background: linear-gradient(90deg,#60a5fa,#a78bfa,#22d3ee);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 .hero-sub {
     font-size: 22px;
-    opacity: 0.85;
+    color: #cbd5e1;
 }
 
 .cta {
@@ -102,21 +104,20 @@ canvas {
 
 <div class="hero">
 
-    <div class="bg-layer"></div>
+    <div class="texture"></div>
 
     <canvas id="immune"></canvas>
     <canvas id="network"></canvas>
 
     <div class="hero-content">
         <div class="hero-title">HPV–EPIPRED AI</div>
-        <div class="hero-sub">Cinematic Immunoinformatics Intelligence Platform</div>
+        <div class="hero-sub">Advanced Immunoinformatics Intelligence Platform</div>
         <a href="#scanner" class="cta">↓ Launch Scanner</a>
     </div>
 
 </div>
 
 <script>
-
 const immune = document.getElementById("immune");
 const network = document.getElementById("network");
 
@@ -132,13 +133,16 @@ function resize(){
 resize();
 window.addEventListener("resize", resize);
 
-// IMMUNE CELLS
+// ============================
+// HD IMMUNE CELLS
+// ============================
+
 let cells = [];
-for(let i=0;i<10;i++){
+for(let i=0;i<6;i++){
     cells.push({
         x:Math.random()*window.innerWidth,
         y:Math.random()*window.innerHeight,
-        r:60+Math.random()*40,
+        r:80+Math.random()*40,
         pulse:Math.random()*Math.PI
     });
 }
@@ -149,13 +153,23 @@ function drawImmune(){
     cells.forEach(c=>{
         c.pulse+=0.02;
 
-        let g = ictx.createRadialGradient(c.x,c.y,c.r*0.2,c.x,c.y,c.r);
-        g.addColorStop(0,"rgba(139,92,246,0.7)");
-        g.addColorStop(1,"rgba(139,92,246,0.05)");
+        // Outer membrane
+        let membrane = ictx.createRadialGradient(
+            c.x,c.y,c.r*0.3,
+            c.x,c.y,c.r
+        );
+        membrane.addColorStop(0,"rgba(168,85,247,0.8)");
+        membrane.addColorStop(1,"rgba(139,92,246,0.05)");
 
         ictx.beginPath();
         ictx.arc(c.x,c.y,c.r,0,Math.PI*2);
-        ictx.fillStyle=g;
+        ictx.fillStyle=membrane;
+        ictx.fill();
+
+        // Nucleus
+        ictx.beginPath();
+        ictx.arc(c.x,c.y,c.r*0.4,0,Math.PI*2);
+        ictx.fillStyle="rgba(99,102,241,0.7)";
         ictx.fill();
     });
 
@@ -163,14 +177,17 @@ function drawImmune(){
 }
 drawImmune();
 
-// AI NETWORK
+// ============================
+// NEURAL NETWORK
+// ============================
+
 let nodes=[];
-for(let i=0;i<60;i++){
+for(let i=0;i<70;i++){
     nodes.push({
         x:Math.random()*window.innerWidth,
         y:Math.random()*window.innerHeight,
-        vx:(Math.random()-0.5)*0.5,
-        vy:(Math.random()-0.5)*0.5
+        vx:(Math.random()-0.5)*0.4,
+        vy:(Math.random()-0.5)*0.4
     });
 }
 
@@ -180,12 +197,13 @@ function drawNetwork(){
     nodes.forEach(n=>{
         n.x+=n.vx;
         n.y+=n.vy;
+
         if(n.x<0||n.x>network.width) n.vx*=-1;
         if(n.y<0||n.y>network.height) n.vy*=-1;
 
         nctx.beginPath();
         nctx.arc(n.x,n.y,2,0,Math.PI*2);
-        nctx.fillStyle="rgba(56,189,248,0.7)";
+        nctx.fillStyle="rgba(34,211,238,0.8)";
         nctx.fill();
     });
 
@@ -194,11 +212,12 @@ function drawNetwork(){
             let dx=nodes[i].x-nodes[j].x;
             let dy=nodes[i].y-nodes[j].y;
             let dist=Math.sqrt(dx*dx+dy*dy);
-            if(dist<120){
+
+            if(dist<140){
                 nctx.beginPath();
                 nctx.moveTo(nodes[i].x,nodes[i].y);
                 nctx.lineTo(nodes[j].x,nodes[j].y);
-                nctx.strokeStyle="rgba(56,189,248,0.15)";
+                nctx.strokeStyle="rgba(34,211,238,0.15)";
                 nctx.stroke();
             }
         }
@@ -209,7 +228,7 @@ function drawNetwork(){
 drawNetwork();
 
 </script>
-""", height=900)
+""", height=950)
 
 # =========================================================
 # MODEL
