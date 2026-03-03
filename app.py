@@ -296,129 +296,112 @@ with tab1:
 
     if st.button("Run AI Scan") and fasta:
 
-    # ==========================
-    # SEQUENCE CLEANING
-    # ==========================
-    seq = "".join([
-        l.strip() for l in fasta.split("\n")
-        if not l.startswith(">")
-    ]).upper()
+        # ==========================
+        # SEQUENCE CLEANING
+        # ==========================
+        seq = "".join([
+            l.strip() for l in fasta.split("\n")
+            if not l.startswith(">")
+        ]).upper()
 
-    results = []
+        results = []
 
-    # ==========================
-    # PREDICTION LOOP
-    # ==========================
-    for i in range(len(seq) - 8):
-        pep = seq[i:i+9]
-        prob = model.predict_proba(
-            [extract_features(pep)]
-        )[0][1]
+        # ==========================
+        # PREDICTION LOOP
+        # ==========================
+        for i in range(len(seq) - 8):
+            pep = seq[i:i+9]
+            prob = model.predict_proba(
+                [extract_features(pep)]
+            )[0][1]
 
-        cat = "Epitope" if prob >= threshold else "Non-Epitope"
-        results.append([i+1, pep, prob, cat])
+            cat = "Epitope" if prob >= threshold else "Non-Epitope"
+            results.append([i+1, pep, prob, cat])
 
-    df = pd.DataFrame(
-        results,
-        columns=["Position", "Peptide", "Probability", "Category"]
-    )
+        df = pd.DataFrame(
+            results,
+            columns=["Position", "Peptide", "Probability", "Category"]
+        )
 
-    # ==========================
-    # SPLIT TABLES
-    # ==========================
-    epitope_df = df[df["Category"] == "Epitope"] \
-        .sort_values(by="Probability", ascending=False)
+        # ==========================
+        # SPLIT TABLES
+        # ==========================
+        epitope_df = df[df["Category"] == "Epitope"] \
+            .sort_values(by="Probability", ascending=False)
 
-    non_df = df[df["Category"] == "Non-Epitope"] \
-        .sort_values(by="Probability", ascending=False)
+        non_df = df[df["Category"] == "Non-Epitope"] \
+            .sort_values(by="Probability", ascending=False)
 
-    # ==========================
-    # DISPLAY TABLES
-    # ==========================
-    st.markdown("### 🟢 Predicted Epitopes")
-    if not epitope_df.empty:
-        st.dataframe(epitope_df, use_container_width=True)
-    else:
-        st.info("No epitopes detected above threshold.")
+        # ==========================
+        # DISPLAY TABLES
+        # ==========================
+        st.markdown("### 🟢 Predicted Epitopes")
+        if not epitope_df.empty:
+            st.dataframe(epitope_df, use_container_width=True)
+        else:
+            st.info("No epitopes detected above threshold.")
 
-    st.markdown("### ⚪ Predicted Non-Epitopes")
-    if not non_df.empty:
-        st.dataframe(non_df, use_container_width=True)
-    else:
-        st.info("All peptides classified as epitopes.")
+        st.markdown("### ⚪ Predicted Non-Epitopes")
+        if not non_df.empty:
+            st.dataframe(non_df, use_container_width=True)
+        else:
+            st.info("All peptides classified as epitopes.")
 
-    # ==========================
-    # PROBABILITY PLOT (PREMIUM GLOW)
-    # ==========================
-    import numpy as np
+        # ==========================
+        # PROBABILITY PLOT
+        # ==========================
+        fig = px.line(
+            df,
+            x="Position",
+            y="Probability",
+            markers=True
+        )
 
-    x_vals = df["Position"].values
-    y_vals = df["Probability"].values
+        fig.update_layout(
+            title="Epitope Probability Across Protein Sequence",
+            xaxis_title="Amino Acid Position",
+            yaxis_title="Predicted Epitope Probability",
+            plot_bgcolor="rgba(0,0,0,0)",
+            paper_bgcolor="rgba(0,0,0,0)",
+            font=dict(color="white")
+        )
 
-    x_smooth = np.linspace(x_vals.min(), x_vals.max(), 400)
-    y_smooth = np.interp(x_smooth, x_vals, y_vals)
+        fig.add_hline(
+            y=threshold,
+            line_dash="dash",
+            annotation_text="Decision Threshold",
+            annotation_position="top left"
+        )
 
-    fig = go.Figure()
+        st.plotly_chart(fig, use_container_width=True)
 
-    # Glow layer
-    fig.add_trace(go.Scatter(
-        x=x_smooth,
-        y=y_smooth,
-        mode="lines",
-        line=dict(width=10, color="rgba(56,189,248,0.15)"),
-        hoverinfo="skip",
-        showlegend=False
-    ))
+        # ==========================
+        # GAUGE
+        # ==========================
+        mean_prob = df["Probability"].mean()
 
-    # Main line
-    fig.add_trace(go.Scatter(
-        x=x_smooth,
-        y=y_smooth,
-        mode="lines",
-        line=dict(width=3, color="#38bdf8"),
-        name="Epitope Probability"
-    ))
+        gauge = go.Figure(go.Indicator(
+            mode="gauge+number",
+            value=mean_prob,
+            number={'valueformat': ".2f"},
+            title={'text': "Global Immunogenic Score"},
+            gauge={
+                'axis': {'range': [0, 1]},
+                'bar': {'color': "#38bdf8"}
+            }
+        ))
 
-    # Markers
-    fig.add_trace(go.Scatter(
-        x=x_vals,
-        y=y_vals,
-        mode="markers",
-        marker=dict(size=6, color="#22d3ee"),
-        name="Peptide Points"
-    ))
+        st.plotly_chart(gauge, use_container_width=True)
 
-    fig.add_hline(
-        y=threshold,
-        line_dash="dash",
-        line_color="#f43f5e",
-        annotation_text="Decision Threshold",
-        annotation_position="top left"
-    )
+        # ==========================
+        # DOWNLOAD
+        # ==========================
+        csv = df.to_csv(index=False).encode()
+        st.download_button(
+            "Download CSV",
+            csv,
+            "epitope_results.csv"
+        )
 
-    fig.update_layout(
-        title="Epitope Probability Landscape",
-        xaxis_title="Amino Acid Position",
-        yaxis_title="Predicted Epitope Probability",
-        template="plotly_dark",
-        plot_bgcolor="rgba(0,0,0,0)",
-        paper_bgcolor="rgba(0,0,0,0)",
-        font=dict(color="white"),
-        transition=dict(duration=1200, easing="cubic-in-out"),
-        hovermode="x unified"
-    )
-
-    fig.update_xaxes(showgrid=False)
-    fig.update_yaxes(showgrid=False)
-
-    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
-
-    # ==========================
-    # DOWNLOAD
-    # ==========================
-    csv = df.to_csv(index=False).encode()
-    st.download_button(
-        "Download CSV",
-        csv,
-        "epitope_results.csv"
-    )
+with tab2:
+    st.write("Explainability module coming soon...")
