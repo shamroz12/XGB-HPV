@@ -1021,50 +1021,53 @@ with tab1:
 
         st.plotly_chart(fig, use_container_width=True)
 
-        # ==========================
-        # IMMUNE INTERACTION ANIMATION
+                # ==========================
+        # HD CELLULAR IMMUNE SIMULATOR
         # ==========================
 
-        st.markdown("### 🧬 Immune Interaction Simulation (HPV Epitope Response)")
+        st.markdown("### 🧬 Cellular Immune Interaction Simulator (HPV Antigen Processing)")
 
         import plotly.graph_objects as go
 
-        steps = [
-            ("HPV Infection",0.1,0.5,"HPV enters epithelial cell"),
-            ("Protein Expression",0.3,0.5,"Viral protein produced"),
-            ("Proteasome Cleavage",0.45,0.5,"Protein degraded into epitopes"),
-            ("MHC-I Binding",0.6,0.5,"Epitope binds MHC-I"),
-            ("Antigen Presentation",0.75,0.5,"MHC displays epitope"),
-            ("T-cell Recognition",0.9,0.5,"CD8 T-cell recognizes antigen")
-        ]
-
         frames = []
+
+        steps = [
+            ("HPV Virus",0.1,0.75,"red"),
+            ("Epithelial Cell",0.25,0.7,"lightpink"),
+            ("Viral Protein",0.4,0.65,"green"),
+            ("Proteasome",0.55,0.55,"purple"),
+            ("Epitope Peptide",0.65,0.52,"orange"),
+            ("TAP Transport",0.75,0.5,"cyan"),
+            ("MHC-I Loading",0.85,0.45,"blue"),
+            ("CD8 T Cell",0.95,0.35,"gold")
+        ]
 
         for i in range(len(steps)):
 
-            x = [s[1] for s in steps[:i+1]]
-            y = [s[2] for s in steps[:i+1]]
-            labels = [s[0] for s in steps[:i+1]]
+            xs=[s[1] for s in steps[:i+1]]
+            ys=[s[2] for s in steps[:i+1]]
+            labels=[s[0] for s in steps[:i+1]]
+            colors=[s[3] for s in steps[:i+1]]
 
-            frame = go.Frame(
-                data=[
-                    go.Scatter(
-                        x=x,
-                        y=y,
-                        mode="markers+text+lines",
-                        text=labels,
-                        textposition="top center",
-                        marker=dict(
-                            size=35,
-                            color="green",
-                            line=dict(width=2,color="black")
-                        ),
-                        line=dict(width=4,color="royalblue")
-                    )
-                ]
+            frames.append(
+                go.Frame(
+                    data=[
+                        go.Scatter(
+                            x=xs,
+                            y=ys,
+                            mode="markers+text+lines",
+                            text=labels,
+                            textposition="top center",
+                            marker=dict(
+                                size=45,
+                                color=colors,
+                                line=dict(width=2,color="black")
+                            ),
+                            line=dict(width=4,color="royalblue")
+                        )
+                    ]
+                )
             )
-
-            frames.append(frame)
 
         fig = go.Figure(
             data=[
@@ -1074,36 +1077,44 @@ with tab1:
                     mode="markers+text",
                     text=[steps[0][0]],
                     textposition="top center",
-                    marker=dict(size=35,color="green")
+                    marker=dict(size=45,color=steps[0][3])
                 )
             ],
             frames=frames
         )
 
+        # Cell background
+        fig.add_shape(
+            type="circle",
+            x0=0.15, y0=0.2,
+            x1=0.9, y1=0.85,
+            fillcolor="rgba(255,200,150,0.2)",
+            line=dict(color="lightgray")
+        )
+
         fig.update_layout(
-            height=500,
+            height=750,
+            title="HPV Antigen Processing and CD8 T-Cell Activation",
             xaxis=dict(visible=False),
             yaxis=dict(visible=False),
-            title="Immune Recognition of HPV Epitope",
             updatemenus=[
                 dict(
                     type="buttons",
                     buttons=[
                         dict(
-                            label="▶ Play Animation",
+                            label="▶ Run Immune Simulation",
                             method="animate",
                             args=[None,
-                                dict(
-                                    frame=dict(duration=900, redraw=True),
-                                    fromcurrent=True
-                                )
-                            ]
+                                  dict(
+                                      frame=dict(duration=1200, redraw=True),
+                                      fromcurrent=True
+                                  )]
                         )
                     ]
                 )
             ],
-            plot_bgcolor="rgba(0,0,0,0)",
-            paper_bgcolor="rgba(0,0,0,0)"
+            plot_bgcolor="white",
+            paper_bgcolor="white"
         )
 
         st.plotly_chart(fig,use_container_width=True)
