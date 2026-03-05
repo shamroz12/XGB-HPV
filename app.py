@@ -428,14 +428,34 @@ with tab1:
         # ==========================
         # PREDICTION LOOP
         # ==========================
-        for i in range(len(seq) - 8):
-            pep = seq[i:i+9]
-            prob = model.predict_proba(
-                [extract_features(pep)]
-            )[0][1]
+        # ==========================
+        # GENERATE ALL PEPTIDES
+        # ==========================
+        peptides = []
+        positions = []
 
+        for i in range(len(seq) - 8):
+            peptides.append(seq[i:i+9])
+            positions.append(i + 1)
+
+        # ==========================
+        # FEATURE EXTRACTION
+        # ==========================
+        X = np.array([extract_features(p) for p in peptides])
+
+        # ==========================
+        # BATCH PREDICTION
+        # ==========================
+        probs = model.predict_proba(X)[:, 1]
+
+        # ==========================
+        # BUILD RESULTS
+        # ==========================
+        results = []
+
+        for pos, pep, prob in zip(positions, peptides, probs):
             cat = "Epitope" if prob >= threshold else "Non-Epitope"
-            results.append([i+1, pep, prob, cat])
+            results.append([pos, pep, prob, cat])
 
         df = pd.DataFrame(
             results,
