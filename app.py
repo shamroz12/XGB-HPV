@@ -560,34 +560,84 @@ with tab1:
             st.plotly_chart(fig, use_container_width=True)
                             
         # ==========================
-        # EPITOPE LANDSCAPE (BLOCK STYLE)
+        # EPITOPE LANDSCAPE WITH CLUSTERS
         # ==========================
         with tab_landscape:
 
             st.markdown("### 🔬 Epitope Immunogenic Landscape")
 
-            # convert probabilities to 2D array for heatmap
-            landscape = [df["Probability"].values]
+            # ---------- LEGEND ----------
+            st.markdown("""
+            <div style="display:flex;gap:30px;margin-bottom:10px;font-size:15px">
+                <div><span style="display:inline-block;width:18px;height:18px;background:#22c55e;border-radius:3px;margin-right:6px"></span>Predicted Epitope</div>
+                <div><span style="display:inline-block;width:18px;height:18px;background:#475569;border-radius:3px;margin-right:6px"></span>Non-Epitope</div>
+                <div><span style="display:inline-block;width:18px;height:18px;background:#a855f7;border-radius:3px;margin-right:6px"></span>Immunogenic Region</div>
+            </div>
+            """, unsafe_allow_html=True)
 
-            fig_land = go.Figure(
-                data=go.Heatmap(
-                    z=landscape,
+            # ---------- EPITOPE STRIP ----------
+            epitope_values = [
+                1 if p >= threshold else 0
+                for p in df["Probability"]
+            ]
+
+            # ---------- CLUSTER DETECTION ----------
+            clusters = []
+            start = None
+
+            for pos, val in zip(df["Position"], epitope_values):
+
+                if val == 1 and start is None:
+                    start = pos
+
+                if val == 0 and start is not None:
+                    clusters.append((start, pos))
+                    start = None
+
+            if start is not None:
+                clusters.append((start, df["Position"].iloc[-1]))
+
+            # ---------- BUILD FIGURE ----------
+            fig_land = go.Figure()
+
+            # epitope strip
+            fig_land.add_trace(
+                go.Heatmap(
+                    z=[epitope_values],
                     x=df["Position"],
-                    y=["Protein"],
+                    y=["Epitope Map"],
                     colorscale=[
-                        [0, "#475569"],
-                        [threshold, "#475569"],
-                        [threshold, "#22c55e"],
-                        [1, "#22c55e"]
+                        [0,"#475569"],
+                        [1,"#22c55e"]
+                    ],
+                    showscale=False
+                )
+            )
+
+            # cluster strip
+            cluster_strip = [0]*len(df)
+
+            for start,end in clusters:
+                for i,pos in enumerate(df["Position"]):
+                    if start <= pos <= end:
+                        cluster_strip[i] = 1
+
+            fig_land.add_trace(
+                go.Heatmap(
+                    z=[cluster_strip],
+                    x=df["Position"],
+                    y=["Immunogenic Regions"],
+                    colorscale=[
+                        [0,"#0f172a"],
+                        [1,"#a855f7"]
                     ],
                     showscale=False
                 )
             )
 
             fig_land.update_layout(
-                height=120,
+                height=160,
                 xaxis_title="Protein Position",
-                yaxis_showticklabels=False,
                 plot_bgcolor="rgba(0,0,0,0)",
                 paper_bgcolor="rgba(0,0,0,0)",
                 margin=dict(l=10,r=10,t=10,b=10)
