@@ -559,9 +559,10 @@ with tab1:
 
             st.plotly_chart(fig, use_container_width=True)
                             
+        # ==========================
         # EPITOPE LANDSCAPE TAB
         # ==========================
-                with tab_landscape:
+        with tab_landscape:
 
             st.markdown("### 🔬 Epitope Immunogenic Landscape")
 
@@ -572,11 +573,9 @@ with tab1:
                     x=df["Position"],
                     y=df["Probability"],
                     mode="lines",
-                    line=dict(width=2,color="#38bdf8"),
+                    line=dict(width=2, color="#38bdf8"),
                     fill="tozeroy",
-                    hovertemplate=
-                    "<b>Position:</b> %{x}<br>"
-                    "<b>Probability:</b> %{y:.3f}<extra></extra>"
+                    hovertemplate="<b>Position:</b> %{x}<br><b>Probability:</b> %{y:.3f}<extra></extra>"
                 )
             )
 
@@ -596,8 +595,8 @@ with tab1:
                 font=dict(color="white")
             )
 
-            st.plotly_chart(fig_land,use_container_width=True)
-                    
+            st.plotly_chart(fig_land, use_container_width=True)
+            
         # ==========================
         # GAUGE TAB
         # ==========================
