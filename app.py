@@ -413,7 +413,14 @@ with tab1:
         if uploaded:
             fasta = uploaded.read().decode()
 
-    if st.button("Run AI Scan") and fasta:
+    run_scan = st.button("Run AI Scan")
+
+    if run_scan and fasta:
+        st.session_state["run_scan"] = True
+        st.session_state["fasta"] = fasta
+
+    if "run_scan" in st.session_state and st.session_state["run_scan"]:
+        fasta = st.session_state["fasta"]
 
         # ==========================
         # SEQUENCE CLEANING
@@ -585,6 +592,9 @@ with tab1:
         )
 
 with tab2:
+
+    st.markdown("### 🧠 Model Feature Importance")
+
     feat = pd.DataFrame({
         "Feature": ["Hydrophobicity", "Net Charge", "Entropy"],
         "Importance": [0.32, 0.21, 0.17]
@@ -599,5 +609,3 @@ with tab2:
     )
 
     st.plotly_chart(fig, use_container_width=True)
-
-st.markdown('</div>', unsafe_allow_html=True)
