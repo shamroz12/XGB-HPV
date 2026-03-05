@@ -525,40 +525,97 @@ with tab1:
 
             else:
                 st.info("All peptides classified as epitopes.")
+                
         # ==========================
-        # PROBABILITY PLOT
+        # ADVANCED PROBABILITY PLOT
         # ==========================
-        with tab_plot:
 
-            fig = px.line(
-                df,
-                x="Position",
-                y="Probability",
-                markers=True
+        st.markdown("### 📈 Epitope Probability Across Protein Sequence")
+
+        import numpy as np
+        import plotly.graph_objects as go
+
+        # ---- smooth signal ----
+        window = 12
+        smooth_prob = np.convolve(
+            df["Probability"],
+            np.ones(window)/window,
+            mode="same"
+        )
+
+        fig = go.Figure()
+
+        # ---- raw probability signal ----
+        fig.add_trace(
+            go.Scatter(
+                x=df["Position"],
+                y=df["Probability"],
+                mode="lines",
+                line=dict(color="rgba(59,130,246,0.30)", width=1),
+                name="Raw Prediction"
+            )
+        )
+
+        # ---- smoothed signal ----
+        fig.add_trace(
+            go.Scatter(
+                x=df["Position"],
+                y=smooth_prob,
+                mode="lines",
+                line=dict(color="#1d4ed8", width=3),
+                name="Smoothed Immunogenic Signal"
+            )
+        )
+
+        # ---- threshold ----
+        fig.add_hline(
+            y=threshold,
+            line_dash="dash",
+            line_color="red",
+            annotation_text="Epitope Threshold"
+        )
+
+        # ==========================
+        # DETECT IMMUNOGENIC REGIONS
+        # ==========================
+
+        regions = []
+        start = None
+
+        for i, p in enumerate(smooth_prob):
+
+            if p >= threshold and start is None:
+                start = df["Position"].iloc[i]
+
+            elif p < threshold and start is not None:
+                end = df["Position"].iloc[i]
+                regions.append((start, end))
+                start = None
+
+        if start is not None:
+            regions.append((start, df["Position"].iloc[-1]))
+
+        # ---- highlight regions ----
+        for r in regions:
+            fig.add_vrect(
+                x0=r[0],
+                x1=r[1],
+                fillcolor="rgba(16,185,129,0.18)",
+                line_width=0,
+                layer="below"
             )
 
-            fig.update_traces(
-                line=dict(width=2),
-                marker=dict(size=6,color="#3b82f6")
-            )
+        # ---- layout ----
+        fig.update_layout(
+            height=500,
+            xaxis_title="Protein Position",
+            yaxis_title="Epitope Probability",
+            hovermode="x unified",
+            plot_bgcolor="rgba(0,0,0,0)",
+            paper_bgcolor="rgba(0,0,0,0)"
+        )
 
-            fig.add_hline(
-                y=threshold,
-                line_dash="dash",
-                line_color="red",
-                annotation_text="Decision Threshold",
-                annotation_position="top left"
-            )
-
-            fig.update_layout(
-                title="Epitope Probability Across Protein Sequence",
-                xaxis_title="Protein Position",
-                yaxis_title="Epitope Probability",
-                height=420,
-                margin=dict(l=20,r=20,t=60,b=20)
-            )
-
-            st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True)
                             
         # ==========================
         # EPITOPE LANDSCAPE (ML VISUALIZATION)
