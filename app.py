@@ -214,10 +214,28 @@ canvas {
 }
 
 .cta {
-    margin-top: 25px;
+    margin-top: 60px;          /* pushes it lower */
     font-size: 20px;
     color: #38bdf8;
     text-decoration: none;
+    display: inline-block;
+    font-weight: 500;
+}
+
+/* Arrow animation */
+.arrow {
+    display: inline-block;
+    animation: bounce 1.6s infinite;
+}
+
+/* Bounce effect */
+@keyframes bounce {
+    0%,100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(8px);
+    }
 }
 </style>
 
@@ -229,9 +247,12 @@ canvas {
     <div class="hero-content">
         <div class="hero-title">HPV EPIPRED</div>
         <div class="hero-sub">MHC I Epitope Prediction</div>
-        <a href="#scanner" class="cta">↓ Launch Scanner</a>
-    </div>
 
+        <a href="#scanner" class="cta">
+            <span class="arrow">↓</span> Launch Scanner
+        </a>
+
+    </div>
 </div>
 
 <script>
