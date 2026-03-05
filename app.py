@@ -514,31 +514,42 @@ with tab1:
 
         st.plotly_chart(fig, use_container_width=True)
 
-        # ==========================
-        # EPITOPE HEATMAP
+         # ==========================
+        # EPITOPE LANDSCAPE STRIP
         # ==========================
         st.markdown("### 🔬 Epitope Immunogenic Landscape")
 
-        heatmap = go.Figure(
-            data=go.Heatmap(
-                z=[df["Probability"]],
+        colors = [
+            "#22c55e" if p >= threshold else "#475569"
+            for p in df["Probability"]
+        ]
+
+        strip = go.Figure()
+
+        strip.add_trace(
+            go.Bar(
                 x=df["Position"],
-                y=["Epitope Probability"],
-                colorscale="Viridis",
-                colorbar=dict(title="Probability")
+                y=[1]*len(df),
+                marker=dict(color=colors),
+                customdata=df[["Peptide","Probability"]],
+                hovertemplate=
+                "<b>Position:</b> %{x}<br>"
+                "<b>Peptide:</b> %{customdata[0]}<br>"
+                "<b>Probability:</b> %{customdata[1]:.3f}<extra></extra>"
             )
         )
 
-        heatmap.update_layout(
-            height=200,
+        strip.update_layout(
+            height=180,
+            yaxis=dict(showticklabels=False),
             xaxis_title="Protein Position",
-            yaxis_showticklabels=False,
             plot_bgcolor="rgba(0,0,0,0)",
             paper_bgcolor="rgba(0,0,0,0)",
-            font=dict(color="white")
+            font=dict(color="white"),
+            showlegend=False
         )
 
-        st.plotly_chart(heatmap, use_container_width=True)
+        st.plotly_chart(strip, use_container_width=True)
 
         # ==========================
         # GAUGE
