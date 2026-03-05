@@ -845,19 +845,20 @@ with tab1:
         else:
             st.info("No immunogenic clusters detected.")
 
-        # ==========================
+                # ==========================
         # STRING STYLE EPITOPE NETWORK
         # ==========================
 
         st.markdown("### 🧬 Epitope Interaction Network")
 
         import networkx as nx
+        from networkx.algorithms import community
 
         epi_df = df[df["Category"] == "Epitope"]
 
         G = nx.Graph()
 
-        # ----- add nodes with probability -----
+        # add nodes
         for _, row in epi_df.iterrows():
 
             G.add_node(
@@ -865,19 +866,26 @@ with tab1:
                 prob=row["Probability"]
             )
 
-        # ----- similarity function -----
+        # similarity function
         def similarity(a, b):
-            return sum(x == y for x, y in zip(a, b))
+
+            score = 0
+
+            for x, y in zip(a, b):
+                if x == y:
+                    score += 1
+
+            return score
 
         peptides = epi_df["Peptide"].tolist()
 
-        # ----- create weighted edges -----
+        # create edges
         for i in range(len(peptides)):
             for j in range(i + 1, len(peptides)):
 
                 sim = similarity(peptides[i], peptides[j])
 
-                if sim >= 5:
+                if sim >= 4:  # relaxed threshold for better connectivity
 
                     G.add_edge(
                         peptides[i],
@@ -885,13 +893,35 @@ with tab1:
                         weight=sim
                     )
 
-        # ----- better network layout -----
+        # layout
         pos = nx.spring_layout(
             G,
-            k=0.8,
-            iterations=80,
+            k=0.6,
+            iterations=120,
             seed=42
         )
+
+        # ==========================
+        # COMMUNITY DETECTION
+        # ==========================
+
+        communities = community.greedy_modularity_communities(G)
+
+        node_color_map = {}
+
+        palette = [
+            "#22c55e",
+            "#6366f1",
+            "#f59e0b",
+            "#ef4444",
+            "#8b5cf6"
+        ]
+
+        for i, comm in enumerate(communities):
+
+            for node in comm:
+
+                node_color_map[node] = palette[i % len(palette)]
 
         # ==========================
         # EDGES
@@ -899,9 +929,8 @@ with tab1:
 
         edge_x = []
         edge_y = []
-        edge_width = []
 
-        for u, v, d in G.edges(data=True):
+        for u, v in G.edges():
 
             x0, y0 = pos[u]
             x1, y1 = pos[v]
@@ -909,16 +938,11 @@ with tab1:
             edge_x += [x0, x1, None]
             edge_y += [y0, y1, None]
 
-            edge_width.append(d["weight"])
-
         edge_trace = go.Scatter(
             x=edge_x,
             y=edge_y,
             mode="lines",
-            line=dict(
-                width=1,
-                color="#94a3b8"
-            ),
+            line=dict(width=1, color="#94a3b8"),
             hoverinfo="none"
         )
 
@@ -929,6 +953,7 @@ with tab1:
         node_x = []
         node_y = []
         node_size = []
+        node_color = []
         labels = []
 
         for node in G.nodes():
@@ -942,25 +967,27 @@ with tab1:
 
             node_size.append(10 + prob * 20)
 
+            node_color.append(node_color_map[node])
+
             labels.append(node)
 
         node_trace = go.Scatter(
             x=node_x,
             y=node_y,
-            mode="markers+text",
-            text=labels,
-            textposition="top center",
+            mode="markers",
             marker=dict(
                 size=node_size,
-                color="#22c55e",
+                color=node_color,
                 line=dict(width=1, color="white")
-            )
+            ),
+            text=labels,
+            hovertemplate="<b>%{text}</b><extra></extra>"
         )
 
         fig_net = go.Figure(
             data=[edge_trace, node_trace],
             layout=go.Layout(
-                height=550,
+                height=600,
                 showlegend=False,
                 plot_bgcolor="rgba(0,0,0,0)",
                 paper_bgcolor="rgba(0,0,0,0)"
