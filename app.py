@@ -845,11 +845,11 @@ with tab1:
         else:
             st.info("No immunogenic clusters detected.")
 
-                # ==========================
-        # EPITOPE INTERACTION MAP
+        # ==========================
+        # STRING STYLE EPITOPE NETWORK
         # ==========================
 
-        st.markdown("### 🧬 Epitope Interaction Map")
+        st.markdown("### 🧬 Epitope Interaction Network")
 
         import networkx as nx
 
@@ -857,50 +857,91 @@ with tab1:
 
         G = nx.Graph()
 
-        for i, row in epi_df.iterrows():
-            G.add_node(row["Peptide"])
+        # ----- add nodes with probability -----
+        for _, row in epi_df.iterrows():
 
+            G.add_node(
+                row["Peptide"],
+                prob=row["Probability"]
+            )
+
+        # ----- similarity function -----
         def similarity(a, b):
             return sum(x == y for x, y in zip(a, b))
 
         peptides = epi_df["Peptide"].tolist()
 
+        # ----- create weighted edges -----
         for i in range(len(peptides)):
             for j in range(i + 1, len(peptides)):
 
                 sim = similarity(peptides[i], peptides[j])
 
                 if sim >= 5:
-                    G.add_edge(peptides[i], peptides[j])
 
-        pos = nx.spring_layout(G, seed=42)
+                    G.add_edge(
+                        peptides[i],
+                        peptides[j],
+                        weight=sim
+                    )
+
+        # ----- better network layout -----
+        pos = nx.spring_layout(
+            G,
+            k=0.8,
+            iterations=80,
+            seed=42
+        )
+
+        # ==========================
+        # EDGES
+        # ==========================
 
         edge_x = []
         edge_y = []
+        edge_width = []
 
-        for edge in G.edges():
-            x0, y0 = pos[edge[0]]
-            x1, y1 = pos[edge[1]]
+        for u, v, d in G.edges(data=True):
+
+            x0, y0 = pos[u]
+            x1, y1 = pos[v]
 
             edge_x += [x0, x1, None]
             edge_y += [y0, y1, None]
+
+            edge_width.append(d["weight"])
 
         edge_trace = go.Scatter(
             x=edge_x,
             y=edge_y,
             mode="lines",
-            line=dict(width=1, color="#94a3b8"),
+            line=dict(
+                width=1,
+                color="#94a3b8"
+            ),
             hoverinfo="none"
         )
 
+        # ==========================
+        # NODES
+        # ==========================
+
         node_x = []
         node_y = []
+        node_size = []
         labels = []
 
         for node in G.nodes():
+
             x, y = pos[node]
+
             node_x.append(x)
             node_y.append(y)
+
+            prob = G.nodes[node]["prob"]
+
+            node_size.append(10 + prob * 20)
+
             labels.append(node)
 
         node_trace = go.Scatter(
@@ -910,15 +951,16 @@ with tab1:
             text=labels,
             textposition="top center",
             marker=dict(
-                size=14,
-                color="#22c55e"
+                size=node_size,
+                color="#22c55e",
+                line=dict(width=1, color="white")
             )
         )
 
         fig_net = go.Figure(
             data=[edge_trace, node_trace],
             layout=go.Layout(
-                height=450,
+                height=550,
                 showlegend=False,
                 plot_bgcolor="rgba(0,0,0,0)",
                 paper_bgcolor="rgba(0,0,0,0)"
