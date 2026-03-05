@@ -547,7 +547,7 @@ with tab1:
         # ==========================
         # PROBABILITY PLOT
         # ==========================
-                with tab_plot:
+       with tab_plot:
 
             fig = px.line(
                 df,
@@ -556,19 +556,29 @@ with tab1:
                 markers=True
             )
 
+            fig.update_traces(
+                line=dict(width=2),
+                marker=dict(size=6,color="#3b82f6")
+            )
+
             fig.add_hline(
                 y=threshold,
                 line_dash="dash",
-                annotation_text="Decision Threshold"
+                line_color="red",
+                annotation_text="Decision Threshold",
+                annotation_position="top left"
             )
 
             fig.update_layout(
+                title="Epitope Probability Across Protein Sequence",
+                xaxis_title="Protein Position",
+                yaxis_title="Epitope Probability",
                 height=420,
-                margin=dict(l=20,r=20,t=40,b=20)
+                margin=dict(l=20,r=20,t=60,b=20)
             )
 
             st.plotly_chart(fig, use_container_width=True)
-                    
+                            
         # EPITOPE LANDSCAPE TAB
         # ==========================
         with tab_landscape:
