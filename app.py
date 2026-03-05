@@ -1040,3 +1040,90 @@ with tab2:
     )
 
     st.plotly_chart(fig, use_container_width=True)
+
+        # ==========================
+        # IMMUNE INTERACTION ANIMATION
+        # ==========================
+
+        st.markdown("### 🧬 Immune Interaction Simulation (HPV Epitope Response)")
+
+        import plotly.graph_objects as go
+
+        steps = [
+            ("HPV Infection",0.1,0.5,"HPV enters epithelial cell"),
+            ("Protein Expression",0.3,0.5,"Viral protein produced"),
+            ("Proteasome Cleavage",0.45,0.5,"Protein degraded into epitopes"),
+            ("MHC-I Binding",0.6,0.5,"Epitope binds MHC-I"),
+            ("Antigen Presentation",0.75,0.5,"MHC displays epitope"),
+            ("T-cell Recognition",0.9,0.5,"CD8 T-cell recognizes antigen")
+        ]
+
+        frames = []
+
+        for i in range(len(steps)):
+
+            x = [s[1] for s in steps[:i+1]]
+            y = [s[2] for s in steps[:i+1]]
+            labels = [s[0] for s in steps[:i+1]]
+
+            frame = go.Frame(
+                data=[
+                    go.Scatter(
+                        x=x,
+                        y=y,
+                        mode="markers+text+lines",
+                        text=labels,
+                        textposition="top center",
+                        marker=dict(
+                            size=35,
+                            color="green",
+                            line=dict(width=2,color="black")
+                        ),
+                        line=dict(width=4,color="royalblue")
+                    )
+                ]
+            )
+
+            frames.append(frame)
+
+        fig = go.Figure(
+            data=[
+                go.Scatter(
+                    x=[steps[0][1]],
+                    y=[steps[0][2]],
+                    mode="markers+text",
+                    text=[steps[0][0]],
+                    textposition="top center",
+                    marker=dict(size=35,color="green")
+                )
+            ],
+            frames=frames
+        )
+
+        fig.update_layout(
+            height=500,
+            xaxis=dict(visible=False),
+            yaxis=dict(visible=False),
+            title="Immune Recognition of HPV Epitope",
+            updatemenus=[
+                dict(
+                    type="buttons",
+                    buttons=[
+                        dict(
+                            label="▶ Play Animation",
+                            method="animate",
+                            args=[None,
+                                dict(
+                                    frame=dict(duration=900, redraw=True),
+                                    fromcurrent=True
+                                )
+                            ]
+                        )
+                    ]
+                )
+            ],
+            plot_bgcolor="rgba(0,0,0,0)",
+            paper_bgcolor="rgba(0,0,0,0)"
+        )
+
+        st.plotly_chart(fig,use_container_width=True)
