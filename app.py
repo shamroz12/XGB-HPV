@@ -544,42 +544,31 @@ with tab1:
 
             else:
                 st.info("All peptides classified as epitopes.")
-
-                        # ==========================
-                # PROBABILITY PLOT
-                # ==========================
-                fig = px.line(
-                    df,
-                    x="Position",
-                    y="Probability",
-                    markers=True
-                )
-
-                fig.update_traces(
-                    line=dict(width=2),
-                    marker=dict(size=6)
-                )
-
-                fig.update_layout(
-                    height=420,
-                    title="Epitope Probability Across Protein Sequence",
-                    xaxis_title="Protein Position",
-                    yaxis_title="Epitope Probability",
-                    plot_bgcolor="rgba(0,0,0,0)",
-                    paper_bgcolor="rgba(0,0,0,0)",
-                    font=dict(size=16, color="white")
-                )
-
-                fig.add_hline(
-                    y=threshold,
-                    line_dash="dash",
-                    line_color="red",
-                    annotation_text="Decision Threshold",
-                    annotation_position="top left"
-                )
-
-                st.plotly_chart(fig, use_container_width=True)
         # ==========================
+        # PROBABILITY PLOT
+        # ==========================
+                with tab_plot:
+
+            fig = px.line(
+                df,
+                x="Position",
+                y="Probability",
+                markers=True
+            )
+
+            fig.add_hline(
+                y=threshold,
+                line_dash="dash",
+                annotation_text="Decision Threshold"
+            )
+
+            fig.update_layout(
+                height=420,
+                margin=dict(l=20,r=20,t=40,b=20)
+            )
+
+            st.plotly_chart(fig, use_container_width=True)
+                    
         # EPITOPE LANDSCAPE TAB
         # ==========================
         with tab_landscape:
