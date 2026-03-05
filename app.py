@@ -560,25 +560,48 @@ with tab1:
             st.plotly_chart(fig, use_container_width=True)
                             
         # ==========================
-        # EPITOPE LANDSCAPE TAB
+        # EPITOPE LANDSCAPE
         # ==========================
         with tab_landscape:
 
             st.markdown("### 🔬 Epitope Immunogenic Landscape")
 
+            # classify colors
+            colors = [
+                "#22c55e" if p >= threshold else "#64748b"
+                for p in df["Probability"]
+            ]
+
             fig_land = go.Figure()
 
+            # vertical peptide stems
+            for pos, prob, col in zip(df["Position"], df["Probability"], colors):
+                fig_land.add_shape(
+                    type="line",
+                    x0=pos,
+                    x1=pos,
+                    y0=0,
+                    y1=prob,
+                    line=dict(color=col, width=2)
+                )
+
+            # peptide points
             fig_land.add_trace(
                 go.Scatter(
                     x=df["Position"],
                     y=df["Probability"],
-                    mode="lines",
-                    line=dict(width=2, color="#38bdf8"),
-                    fill="tozeroy",
-                    hovertemplate="<b>Position:</b> %{x}<br><b>Probability:</b> %{y:.3f}<extra></extra>"
+                    mode="markers",
+                    marker=dict(
+                        size=7,
+                        color=colors
+                    ),
+                    hovertemplate=
+                    "<b>Position:</b> %{x}<br>"
+                    "<b>Probability:</b> %{y:.3f}<extra></extra>"
                 )
             )
 
+            # threshold line
             fig_land.add_hline(
                 y=threshold,
                 line_dash="dash",
@@ -587,12 +610,13 @@ with tab1:
             )
 
             fig_land.update_layout(
-                height=350,
+                height=380,
                 xaxis_title="Protein Position",
                 yaxis_title="Epitope Probability",
                 plot_bgcolor="rgba(0,0,0,0)",
                 paper_bgcolor="rgba(0,0,0,0)",
-                font=dict(color="white")
+                font=dict(color="white"),
+                showlegend=False
             )
 
             st.plotly_chart(fig_land, use_container_width=True)
