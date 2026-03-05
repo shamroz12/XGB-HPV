@@ -439,7 +439,7 @@ with tab1:
         # ==========================
         # SEQUENCE CLEANING
         # ==========================
-        seq = "".join([
+                seq = "".join([
             l.strip() for l in fasta.split("\n")
             if not l.startswith(">")
         ]).upper()
