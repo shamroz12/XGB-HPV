@@ -434,7 +434,7 @@ with tab1:
 
         run_scan = st.button("Run AI Scan")
 
-if run_scan and fasta:
+        if run_scan and fasta:
 
         # ==========================
         # SEQUENCE CLEANING
