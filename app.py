@@ -962,42 +962,48 @@ with tab1:
 
         st.plotly_chart(fig_net,use_container_width=True)
 
-                # ==========================
+        # ==========================
         # EPITOPE MOTIF MAP (HD)
         # ==========================
 
         st.markdown("### 🧬 Epitope Motif Map")
 
-        import plotly.express as px
-
-        # select top epitopes for clarity
-        epi_df = df[df["Category"]=="Epitope"] \
-                    .sort_values("Probability",ascending=False) \
+        # Select top epitopes
+        epi_df = df[df["Category"] == "Epitope"] \
+                    .sort_values("Probability", ascending=False) \
                     .head(40)
 
         peptides = epi_df["Peptide"].tolist()
 
-        # convert peptides into matrix
+        # Amino acid encoding
+        aa_list = list("ACDEFGHIKLMNPQRSTVWY")
+        aa_map = {aa:i for i,aa in enumerate(aa_list)}
+
         matrix = []
 
         for pep in peptides:
-            matrix.append(list(pep))
+            row = []
+            for aa in pep:
+                row.append(aa_map.get(aa,0))
+            matrix.append(row)
 
         motif_df = pd.DataFrame(matrix)
 
         motif_df.index = peptides
         motif_df.columns = [f"P{i}" for i in range(1,10)]
 
+        import plotly.express as px
+
         fig = px.imshow(
             motif_df,
             aspect="auto",
-            color_continuous_scale="viridis"
+            color_continuous_scale="viridis",
+            labels=dict(x="Peptide Position", y="Epitope", color="Residue Code")
         )
 
         fig.update_layout(
-            height=650,
-            xaxis_title="Peptide Position",
-            yaxis_title="Epitope Sequence",
+            height=700,
+            font=dict(size=13),
             plot_bgcolor="rgba(0,0,0,0)",
             paper_bgcolor="rgba(0,0,0,0)"
         )
