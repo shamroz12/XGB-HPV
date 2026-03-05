@@ -674,6 +674,39 @@ with tab1:
         )
 
         st.plotly_chart(fig_density, use_container_width=True)
+
+        # ==========================
+        # 3D EPITOPE LANDSCAPE
+        # ==========================
+        st.markdown("### 🌐 3D Epitope Landscape")
+
+        # prepare data
+        plot3d_df = pd.DataFrame({
+            "Position": df["Position"],
+            "Probability": df["Probability"],
+            "Density": density
+        })
+
+        fig3d = px.scatter_3d(
+            plot3d_df,
+            x="Position",
+            y="Probability",
+            z="Density",
+            color="Density",
+            color_continuous_scale="viridis",
+            hover_data=["Position","Probability","Density"]
+        )
+
+        fig3d.update_layout(
+            height=500,
+            scene=dict(
+                xaxis_title="Protein Position",
+                yaxis_title="Epitope Probability",
+                zaxis_title="Epitope Density"
+            )
+        )
+
+        st.plotly_chart(fig3d, use_container_width=True)
             
         # ==========================
         # GAUGE TAB
