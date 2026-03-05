@@ -3,44 +3,31 @@ st.set_page_config(page_title="HPV EPIPRED", page_icon="🧬", layout="wide")
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap');
 
-/* ================= GLOBAL ================= */
+/* GLOBAL APP STYLE */
 html, body, [class*="css"] {
-    font-family: 'Space Grotesk', sans-serif !important;
+    font-family: 'Inter', sans-serif !important;
     letter-spacing: -0.2px;
 }
 
-/* Smooth typography */
-p, label, span, div {
-    font-size: 15.5px !important;
-    line-height: 1.6 !important;
-}
-
-/* ================= HEADINGS ================= */
-h1 {
-    font-size: 48px !important;
-    font-weight: 700 !important;
-    letter-spacing: -1px !important;
-}
-
-h2 {
-    font-size: 34px !important;
+/* HEADINGS */
+h1, h2, h3 {
+    font-family: 'Sora', sans-serif !important;
     font-weight: 700 !important;
 }
 
-h3 {
-    font-size: 24px !important;
-    font-weight: 600 !important;
-}
+h1 { font-size: 48px !important; }
+h2 { font-size: 34px !important; }
+h3 { font-size: 24px !important; }
 
-/* ================= BUTTONS ================= */
+/* BUTTONS */
 .stButton > button {
-    font-family: 'Space Grotesk', sans-serif !important;
+    font-family: 'Inter', sans-serif !important;
     font-weight: 600;
-    border-radius: 14px;
-    padding: 12px 26px;
-    transition: all 0.2s ease-in-out;
+    border-radius: 12px;
+    padding: 10px 24px;
+    transition: all 0.2s ease;
 }
 
 .stButton > button:hover {
@@ -48,80 +35,59 @@ h3 {
     box-shadow: 0 8px 20px rgba(99,102,241,0.25);
 }
 
-/* ================= DOWNLOAD BUTTON ================= */
+/* DOWNLOAD BUTTON */
 .stDownloadButton > button {
-    font-family: 'Space Grotesk', sans-serif !important;
-    font-weight: 600;
     border-radius: 12px;
 }
 
-/* ================= TABS ================= */
+/* TABS */
 div[data-baseweb="tab-list"] {
-    gap: 40px;
+    gap: 35px;
 }
 
 button[data-baseweb="tab"] {
-    font-family: 'Space Grotesk', sans-serif !important;
-    font-weight: 600 !important;
     font-size: 18px !important;
-    color: #64748b !important;
+    font-weight: 600 !important;
     border-bottom: 2px solid transparent !important;
-    padding-bottom: 8px !important;
 }
 
 button[data-baseweb="tab"][aria-selected="true"] {
-    color: #6366f1 !important;
     border-bottom: 3px solid #6366f1 !important;
 }
 
-/* ================= INPUT FIELDS ================= */
+/* INPUTS + SEQUENCES */
 textarea, input {
     font-family: 'JetBrains Mono', monospace !important;
-    font-size: 14px !important;
-    border-radius: 14px !important;
-    padding: 12px !important;
-}
-
-/* ================= DATAFRAME ================= */
-div[data-testid="stDataFrame"] {
-    border-radius: 18px !important;
-    overflow: hidden !important;
-}
-
-/* Table body */
-div[data-testid="stDataFrame"] div[role="grid"] * {
-    font-family: 'Space Grotesk', sans-serif !important;
     font-size: 15px !important;
+    border-radius: 12px !important;
 }
 
-/* Table header */
+/* DATAFRAME */
+div[data-testid="stDataFrame"] div[role="grid"] * {
+    font-size: 16px !important;
+}
+
 div[data-testid="stDataFrame"] thead tr th {
     font-weight: 700 !important;
-    font-size: 15px !important;
-    background: linear-gradient(90deg,#eef2ff,#f5f3ff) !important;
 }
 
-/* Probability column highlight */
+/* PROBABILITY COLUMN */
 div[data-testid="stDataFrame"] div[role="gridcell"]:nth-child(3) {
     font-weight: 700 !important;
     color: #6366f1 !important;
 }
 
-/* ================= RADIO ================= */
-label {
-    font-weight: 500 !important;
-}
-
-/* ================= METRICS ================= */
+/* METRICS */
 [data-testid="metric-container"] {
     border-radius: 16px;
     padding: 12px 18px;
 }
 
-/* ================= SCROLLBAR ================= */
+/* SCROLLBAR */
 ::-webkit-scrollbar {
     width: 8px;
 }
+
 ::-webkit-scrollbar-thumb {
     background: #c7d2fe;
     border-radius: 10px;
@@ -201,7 +167,7 @@ canvas {
 }
 
 .hero-title {
-    font-size: 115px;
+    font-size: clamp(64px,8vw,115px);
     font-family: 'Sora', sans-serif;
     background: linear-gradient(90deg,#60a5fa,#a78bfa,#22d3ee);
     -webkit-background-clip: text;
@@ -209,8 +175,9 @@ canvas {
 }
 
 .hero-sub {
-    font-size: 40px;
-    color: #cbd5e1;
+    font-size:40px;
+    color:#cbd5e1;
+    margin-top:10px;
 }
 
 .cta {
