@@ -420,6 +420,9 @@ st.markdown('<div id="scanner"></div>', unsafe_allow_html=True)
 
 tab1, tab2 = st.tabs(["🔬 AI Scanner", "🧠 Model Explainability"])
 
+# ==========================
+# AI SCANNER TAB
+# ==========================
 with tab1:
 
     mode = st.radio("Mode", ["Single Sequence","Batch Upload"])
@@ -432,14 +435,13 @@ with tab1:
         if uploaded:
             fasta = uploaded.read().decode()
 
-        run_scan = st.button("Run AI Scan")
- 
-        if run_scan and fasta:
+    # BUTTON MUST BE INSIDE TAB
+    run_scan = st.button("Run AI Scan")
 
-        # ==========================
+    if run_scan and fasta:
+
         # SEQUENCE CLEANING
-        # ==========================
-                seq = "".join([
+        seq = "".join([
             l.strip() for l in fasta.split("\n")
             if not l.startswith(">")
         ]).upper()
@@ -447,13 +449,11 @@ with tab1:
         peptides = []
         positions = []
 
-        for i in range(len(seq) - 8):
+        for i in range(len(seq)-8):
             peptides.append(seq[i:i+9])
             positions.append(i+1)
 
-        # ==========================
-        # MODEL PREDICTION
-        # ==========================
+        X = np.array([extract_features(p) for p in peptides])
         probs = model.predict_proba(X)[:,1]
 
         results = []
@@ -467,24 +467,6 @@ with tab1:
         )
 
         st.session_state["df"] = df
-
-        # ==========================
-        # PREDICTION LOOP
-        # ==========================
-        # ==========================
-        # GENERATE ALL PEPTIDES
-        # ==========================
-        peptides = []
-        positions = []
-
-        for i in range(len(seq) - 8):
-            peptides.append(seq[i:i+9])
-            positions.append(i + 1)
-
-        # ==========================
-        # FEATURE EXTRACTION
-        # ==========================
-        X = np.array([extract_features(p) for p in peptides])
 
         # ==========================
         # SPLIT TABLES
