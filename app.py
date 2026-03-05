@@ -3,6 +3,25 @@ st.set_page_config(page_title="HPV EPIPRED", page_icon="🧬", layout="wide")
 
 st.markdown("""
 <style>
+
+.block-container {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+[data-testid="stVerticalBlock"] {
+    gap: 0.5rem;
+}
+
+h3 {
+    margin-bottom: 0.2rem;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<style>
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap');
 
 /* GLOBAL APP STYLE */
@@ -495,14 +514,34 @@ with tab1:
             st.markdown("### 🟢 Predicted Epitopes")
 
             if not epitope_df.empty:
-                st.data_editor(epitope_df, use_container_width=True)
+
+                epi_show = epitope_df.copy()
+                epi_show["Probability"] = epi_show["Probability"].round(3)
+
+                st.dataframe(
+                    epi_show,
+                    use_container_width=True,
+                    height=350
+                )
+
             else:
                 st.info("No epitopes detected above threshold.")
+
+            st.markdown("---")
 
             st.markdown("### ⚪ Predicted Non-Epitopes")
 
             if not non_df.empty:
-                st.dataframe(non_df, use_container_width=True)
+
+                non_show = non_df.copy()
+                non_show["Probability"] = non_show["Probability"].round(3)
+
+                st.dataframe(
+                    non_show,
+                    use_container_width=True,
+                    height=350
+                )
+
             else:
                 st.info("All peptides classified as epitopes.")
 
