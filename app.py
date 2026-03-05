@@ -123,6 +123,7 @@ from itertools import product
 from collections import Counter
 import math
 from sklearn.cluster import KMeans
+import networkx as nx
 import streamlit.components.v1 as components
 
 # =========================================================
@@ -843,6 +844,88 @@ with tab1:
 
         else:
             st.info("No immunogenic clusters detected.")
+
+                # ==========================
+        # EPITOPE INTERACTION MAP
+        # ==========================
+
+        st.markdown("### 🧬 Epitope Interaction Map")
+
+        import networkx as nx
+
+        epi_df = df[df["Category"] == "Epitope"]
+
+        G = nx.Graph()
+
+        for i, row in epi_df.iterrows():
+            G.add_node(row["Peptide"])
+
+        def similarity(a, b):
+            return sum(x == y for x, y in zip(a, b))
+
+        peptides = epi_df["Peptide"].tolist()
+
+        for i in range(len(peptides)):
+            for j in range(i + 1, len(peptides)):
+
+                sim = similarity(peptides[i], peptides[j])
+
+                if sim >= 5:
+                    G.add_edge(peptides[i], peptides[j])
+
+        pos = nx.spring_layout(G, seed=42)
+
+        edge_x = []
+        edge_y = []
+
+        for edge in G.edges():
+            x0, y0 = pos[edge[0]]
+            x1, y1 = pos[edge[1]]
+
+            edge_x += [x0, x1, None]
+            edge_y += [y0, y1, None]
+
+        edge_trace = go.Scatter(
+            x=edge_x,
+            y=edge_y,
+            mode="lines",
+            line=dict(width=1, color="#94a3b8"),
+            hoverinfo="none"
+        )
+
+        node_x = []
+        node_y = []
+        labels = []
+
+        for node in G.nodes():
+            x, y = pos[node]
+            node_x.append(x)
+            node_y.append(y)
+            labels.append(node)
+
+        node_trace = go.Scatter(
+            x=node_x,
+            y=node_y,
+            mode="markers+text",
+            text=labels,
+            textposition="top center",
+            marker=dict(
+                size=14,
+                color="#22c55e"
+            )
+        )
+
+        fig_net = go.Figure(
+            data=[edge_trace, node_trace],
+            layout=go.Layout(
+                height=450,
+                showlegend=False,
+                plot_bgcolor="rgba(0,0,0,0)",
+                paper_bgcolor="rgba(0,0,0,0)"
+            )
+        )
+
+        st.plotly_chart(fig_net, use_container_width=True)
 
         # ==========================
         # DOWNLOAD
