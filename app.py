@@ -432,35 +432,41 @@ with tab1:
         if uploaded:
             fasta = uploaded.read().decode()
 
-       if run_scan and fasta:
+       run_scan = st.button("Run AI Scan")
 
-    # SEQUENCE CLEANING
-    seq = "".join([
-        l.strip() for l in fasta.split("\n")
-        if not l.startswith(">")
-    ]).upper()
+if run_scan and fasta:
 
-    peptides = []
-    positions = []
+        # ==========================
+        # SEQUENCE CLEANING
+        # ==========================
+        seq = "".join([
+            l.strip() for l in fasta.split("\n")
+            if not l.startswith(">")
+        ]).upper()
 
-    for i in range(len(seq)-8):
-        peptides.append(seq[i:i+9])
-        positions.append(i+1)
+        peptides = []
+        positions = []
 
-    X = np.array([extract_features(p) for p in peptides])
-    probs = model.predict_proba(X)[:,1]
+        for i in range(len(seq) - 8):
+            peptides.append(seq[i:i+9])
+            positions.append(i+1)
 
-    results = []
-    for pos, pep, prob in zip(positions, peptides, probs):
-        cat = "Epitope" if prob >= threshold else "Non-Epitope"
-        results.append([pos, pep, prob, cat])
+        # ==========================
+        # MODEL PREDICTION
+        # ==========================
+        probs = model.predict_proba(X)[:,1]
 
-    df = pd.DataFrame(
-        results,
-        columns=["Position","Peptide","Probability","Category"]
-    )
+        results = []
+        for pos, pep, prob in zip(positions, peptides, probs):
+            cat = "Epitope" if prob >= threshold else "Non-Epitope"
+            results.append([pos, pep, prob, cat])
 
-    st.session_state["df"] = df
+        df = pd.DataFrame(
+            results,
+            columns=["Position","Peptide","Probability","Category"]
+        )
+
+        st.session_state["df"] = df
 
         # ==========================
         # PREDICTION LOOP
@@ -479,25 +485,6 @@ with tab1:
         # FEATURE EXTRACTION
         # ==========================
         X = np.array([extract_features(p) for p in peptides])
-
-        # ==========================
-        # BATCH PREDICTION
-        # ==========================
-        probs = model.predict_proba(X)[:, 1]
-
-        # ==========================
-        # BUILD RESULTS
-        # ==========================
-        results = []
-
-        for pos, pep, prob in zip(positions, peptides, probs):
-            cat = "Epitope" if prob >= threshold else "Non-Epitope"
-            results.append([pos, pep, prob, cat])
-
-        df = pd.DataFrame(
-            results,
-            columns=["Position", "Peptide", "Probability", "Category"]
-        )
 
         # ==========================
         # SPLIT TABLES
