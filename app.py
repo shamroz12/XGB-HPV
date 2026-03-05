@@ -448,126 +448,119 @@ with tab1:
         # ==========================
         probs = model.predict_proba(X)[:, 1]
 
+        
         # ==========================
-        # BUILD RESULTS
+        # RESULT TABS
         # ==========================
-        results = []
-
-        for pos, pep, prob in zip(positions, peptides, probs):
-            cat = "Epitope" if prob >= threshold else "Non-Epitope"
-            results.append([pos, pep, prob, cat])
-
-        df = pd.DataFrame(
-            results,
-            columns=["Position", "Peptide", "Probability", "Category"]
+        tab_table, tab_plot, tab_landscape, tab_gauge = st.tabs(
+            ["📊 Tables", "📈 Probability Plot", "🔬 Epitope Landscape", "🧬 Immunogenic Score"]
         )
 
         # ==========================
-        # SPLIT TABLES
+        # TABLE TAB
         # ==========================
-        epitope_df = df[df["Category"] == "Epitope"] \
-            .sort_values(by="Probability", ascending=False)
+        with tab_table:
 
-        non_df = df[df["Category"] == "Non-Epitope"] \
-            .sort_values(by="Probability", ascending=False)
+            st.markdown("### 🟢 Predicted Epitopes")
+            if not epitope_df.empty:
+                st.data_editor(epitope_df, use_container_width=True)
+            else:
+                st.info("No epitopes detected above threshold.")
 
-        # ==========================
-        # DISPLAY TABLES
-        # ==========================
-        st.markdown("### 🟢 Predicted Epitopes")
-        if not epitope_df.empty:
-            st.data_editor(epitope_df, use_container_width=True)
-        else:
-            st.info("No epitopes detected above threshold.")
-
-        st.markdown("### ⚪ Predicted Non-Epitopes")
-        if not non_df.empty:
-            st.dataframe(non_df, use_container_width=True)
-        else:
-            st.info("All peptides classified as epitopes.")
+            st.markdown("### ⚪ Predicted Non-Epitopes")
+            if not non_df.empty:
+                st.dataframe(non_df, use_container_width=True)
+            else:
+                st.info("All peptides classified as epitopes.")
 
         # ==========================
-        # PROBABILITY PLOT
+        # PROBABILITY PLOT TAB
         # ==========================
-        fig = px.line(
-            df,
-            x="Position",
-            y="Probability",
-            markers=True
-        )
+        with tab_plot:
 
-        fig.update_layout(
-            title="Epitope Probability Across Protein Sequence",
-            xaxis_title="Amino Acid Position",
-            yaxis_title="Predicted Epitope Probability",
-            plot_bgcolor="rgba(0,0,0,0)",
-            paper_bgcolor="rgba(0,0,0,0)",
-            font=dict(color="white")
-        )
-
-        fig.add_hline(
-            y=threshold,
-            line_dash="dash",
-            annotation_text="Decision Threshold",
-            annotation_position="top left"
-        )
-
-        st.plotly_chart(fig, use_container_width=True)
-
-         # ==========================
-        # EPITOPE LANDSCAPE STRIP
-        # ==========================
-        st.markdown("### 🔬 Epitope Immunogenic Landscape")
-
-        colors = [
-            "#22c55e" if p >= threshold else "#475569"
-            for p in df["Probability"]
-        ]
-
-        strip = go.Figure()
-
-        strip.add_trace(
-            go.Bar(
-                x=df["Position"],
-                y=[1]*len(df),
-                marker=dict(color=colors),
-                customdata=df[["Peptide","Probability"]],
-                hovertemplate=
-                "<b>Position:</b> %{x}<br>"
-                "<b>Peptide:</b> %{customdata[0]}<br>"
-                "<b>Probability:</b> %{customdata[1]:.3f}<extra></extra>"
+            fig = px.line(
+                df,
+                x="Position",
+                y="Probability",
+                markers=True
             )
-        )
 
-        strip.update_layout(
-            height=180,
-            yaxis=dict(showticklabels=False),
-            xaxis_title="Protein Position",
-            plot_bgcolor="rgba(0,0,0,0)",
-            paper_bgcolor="rgba(0,0,0,0)",
-            font=dict(color="white"),
-            showlegend=False
-        )
+            fig.update_layout(
+                title="Epitope Probability Across Protein Sequence",
+                xaxis_title="Amino Acid Position",
+                yaxis_title="Predicted Epitope Probability",
+                plot_bgcolor="rgba(0,0,0,0)",
+                paper_bgcolor="rgba(0,0,0,0)",
+                font=dict(color="white")
+            )
 
-        st.plotly_chart(strip, use_container_width=True)
+            fig.add_hline(
+                y=threshold,
+                line_dash="dash",
+                annotation_text="Decision Threshold",
+                annotation_position="top left"
+            )
+
+            st.plotly_chart(fig, use_container_width=True)
 
         # ==========================
-        # GAUGE
+        # EPITOPE LANDSCAPE TAB
         # ==========================
-        mean_prob = df["Probability"].mean()
+        with tab_landscape:
 
-        gauge = go.Figure(go.Indicator(
-            mode="gauge+number",
-            value=mean_prob,
-            number={'valueformat': ".2f"},
-            title={'text': "Global Immunogenic Score"},
-            gauge={
-                'axis': {'range': [0, 1]},
-                'bar': {'color': "#38bdf8"}
-            }
-        ))
+            st.markdown("### 🔬 Epitope Immunogenic Landscape")
 
-        st.plotly_chart(gauge, use_container_width=True)
+            colors = [
+                "#22c55e" if p >= threshold else "#475569"
+                for p in df["Probability"]
+            ]
+
+            strip = go.Figure()
+
+            strip.add_trace(
+                go.Bar(
+                    x=df["Position"],
+                    y=[1]*len(df),
+                    marker=dict(color=colors),
+                    customdata=df[["Peptide","Probability"]],
+                    hovertemplate=
+                    "<b>Position:</b> %{x}<br>"
+                    "<b>Peptide:</b> %{customdata[0]}<br>"
+                    "<b>Probability:</b> %{customdata[1]:.3f}<extra></extra>"
+                )
+            )
+
+            strip.update_layout(
+                height=180,
+                yaxis=dict(showticklabels=False),
+                xaxis_title="Protein Position",
+                plot_bgcolor="rgba(0,0,0,0)",
+                paper_bgcolor="rgba(0,0,0,0)",
+                font=dict(color="white"),
+                showlegend=False
+            )
+
+            st.plotly_chart(strip, use_container_width=True)
+
+        # ==========================
+        # GAUGE TAB
+        # ==========================
+        with tab_gauge:
+
+            mean_prob = df["Probability"].mean()
+
+            gauge = go.Figure(go.Indicator(
+                mode="gauge+number",
+                value=mean_prob,
+                number={'valueformat': ".2f"},
+                title={'text': "Global Immunogenic Score"},
+                gauge={
+                    'axis': {'range': [0, 1]},
+                    'bar': {'color': "#38bdf8"}
+                }
+            ))
+
+            st.plotly_chart(gauge, use_container_width=True)
 
         # ==========================
         # DOWNLOAD
@@ -578,7 +571,6 @@ with tab1:
             csv,
             "epitope_results.csv"
         )
-
 with tab2:
     feat = pd.DataFrame({
         "Feature": ["Hydrophobicity", "Net Charge", "Entropy"],
