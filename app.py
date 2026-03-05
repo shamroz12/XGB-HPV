@@ -449,6 +449,20 @@ with tab1:
         probs = model.predict_proba(X)[:, 1]
 
         # ==========================
+        # BUILD RESULTS
+        # ==========================
+        results = []
+
+        for pos, pep, prob in zip(positions, peptides, probs):
+            cat = "Epitope" if prob >= threshold else "Non-Epitope"
+            results.append([pos, pep, prob, cat])
+
+        df = pd.DataFrame(
+            results,
+            columns=["Position", "Peptide", "Probability", "Category"]
+        )
+
+        # ==========================
         # SPLIT TABLES
         # ==========================
         epitope_df = df[df["Category"] == "Epitope"].sort_values(
