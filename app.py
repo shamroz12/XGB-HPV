@@ -1020,26 +1020,6 @@ with tab1:
         )
 
         st.plotly_chart(fig, use_container_width=True)
-        
-        
-with tab2:
-
-    st.markdown("### 🧠 Model Feature Importance")
-
-    feat = pd.DataFrame({
-        "Feature": ["Hydrophobicity", "Net Charge", "Entropy"],
-        "Importance": [0.32, 0.21, 0.17]
-    })
-
-    fig = px.bar(
-        feat,
-        x="Importance",
-        y="Feature",
-        orientation="h",
-        template="plotly_dark"
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
 
         # ==========================
         # IMMUNE INTERACTION ANIMATION
@@ -1127,3 +1107,22 @@ with tab2:
         )
 
         st.plotly_chart(fig,use_container_width=True)
+        
+with tab2:
+
+    st.markdown("### 🧠 Model Feature Importance")
+
+    feat = pd.DataFrame({
+        "Feature": ["Hydrophobicity", "Net Charge", "Entropy"],
+        "Importance": [0.32, 0.21, 0.17]
+    })
+
+    fig = px.bar(
+        feat,
+        x="Importance",
+        y="Feature",
+        orientation="h",
+        template="plotly_dark"
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
