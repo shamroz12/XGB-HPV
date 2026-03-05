@@ -515,6 +515,32 @@ with tab1:
         st.plotly_chart(fig, use_container_width=True)
 
         # ==========================
+        # EPITOPE HEATMAP
+        # ==========================
+        st.markdown("### 🔬 Epitope Immunogenic Landscape")
+
+        heatmap = go.Figure(
+            data=go.Heatmap(
+                z=[df["Probability"]],
+                x=df["Position"],
+                y=["Epitope Probability"],
+                colorscale="Viridis",
+                colorbar=dict(title="Probability")
+            )
+        )
+
+        heatmap.update_layout(
+            height=200,
+            xaxis_title="Protein Position",
+            yaxis_showticklabels=False,
+            plot_bgcolor="rgba(0,0,0,0)",
+            paper_bgcolor="rgba(0,0,0,0)",
+            font=dict(color="white")
+        )
+
+        st.plotly_chart(heatmap, use_container_width=True)
+
+        # ==========================
         # GAUGE
         # ==========================
         mean_prob = df["Probability"].mean()
