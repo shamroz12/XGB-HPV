@@ -961,6 +961,48 @@ with tab1:
         )
 
         st.plotly_chart(fig_net,use_container_width=True)
+
+                # ==========================
+        # EPITOPE MOTIF MAP (HD)
+        # ==========================
+
+        st.markdown("### 🧬 Epitope Motif Map")
+
+        import plotly.express as px
+
+        # select top epitopes for clarity
+        epi_df = df[df["Category"]=="Epitope"] \
+                    .sort_values("Probability",ascending=False) \
+                    .head(40)
+
+        peptides = epi_df["Peptide"].tolist()
+
+        # convert peptides into matrix
+        matrix = []
+
+        for pep in peptides:
+            matrix.append(list(pep))
+
+        motif_df = pd.DataFrame(matrix)
+
+        motif_df.index = peptides
+        motif_df.columns = [f"P{i}" for i in range(1,10)]
+
+        fig = px.imshow(
+            motif_df,
+            aspect="auto",
+            color_continuous_scale="viridis"
+        )
+
+        fig.update_layout(
+            height=650,
+            xaxis_title="Peptide Position",
+            yaxis_title="Epitope Sequence",
+            plot_bgcolor="rgba(0,0,0,0)",
+            paper_bgcolor="rgba(0,0,0,0)"
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
         
         # ==========================
         # DOWNLOAD
