@@ -349,7 +349,10 @@ drawNetwork();
 # =========================================================
 # MODEL
 # =========================================================
-model = joblib.load("hpv_epitope_model.pkl")
+@st.cache_resource
+def load_model():
+    return joblib.load("hpv_epitope_model.pkl")
+model = load_model()
 threshold = 0.261
 
 aa_list = list("ACDEFGHIKLMNPQRSTVWY")
