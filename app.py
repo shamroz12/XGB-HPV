@@ -545,7 +545,7 @@ if run_scan and fasta:
         # ==========================
         # PROBABILITY PLOT
         # ==========================
-       with tab_plot:
+        with tab_plot:
 
             fig = px.line(
                 df,
