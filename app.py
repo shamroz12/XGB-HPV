@@ -122,6 +122,7 @@ import plotly.express as px
 from itertools import product
 from collections import Counter
 import math
+from sklearn.cluster import KMeans
 import streamlit.components.v1 as components
 
 # =========================================================
@@ -560,84 +561,46 @@ with tab1:
             st.plotly_chart(fig, use_container_width=True)
                             
         # ==========================
-        # EPITOPE LANDSCAPE (PROTEOME STYLE)
+        # EPITOPE LANDSCAPE (KMEANS CLUSTER)
         # ==========================
         with tab_landscape:
 
             st.markdown("### 🔬 Epitope Immunogenic Landscape")
 
-            # ---------- LEGEND ----------
-            st.markdown("""
-            <div style="display:flex;gap:30px;margin-bottom:12px;font-size:15px">
-            <div><span style="display:inline-block;width:20px;height:20px;background:#22c55e;border-radius:4px;margin-right:6px"></span>Predicted Epitope</div>
-            <div><span style="display:inline-block;width:20px;height:20px;background:#475569;border-radius:4px;margin-right:6px"></span>Non-Epitope</div>
-            <div><span style="display:inline-block;width:20px;height:20px;background:#a855f7;border-radius:4px;margin-right:6px"></span>Immunogenic Region</div>
-            </div>
-            """, unsafe_allow_html=True)
+            # Prepare clustering data
+            X_cluster = df[["Position","Probability"]]
 
-            # ----- classify epitopes -----
-            epitope_vals = [1 if p >= threshold else 0 for p in df["Probability"]]
+            # K-means clustering
+            kmeans = KMeans(n_clusters=4, random_state=42)
+            df["Cluster"] = kmeans.fit_predict(X_cluster)
 
-            # ----- cluster detection -----
-            clusters = []
-            start = None
-
-            for pos,val in zip(df["Position"],epitope_vals):
-
-                if val==1 and start is None:
-                    start = pos
-
-                if val==0 and start is not None:
-                    clusters.append((start,pos))
-                    start = None
-
-            if start is not None:
-                clusters.append((start,df["Position"].iloc[-1]))
-
-            # ----- cluster track -----
-            cluster_track = [0]*len(df)
-
-            for start,end in clusters:
-                for i,pos in enumerate(df["Position"]):
-                    if start <= pos <= end:
-                        cluster_track[i] = 1
-
-            # ----- figure -----
-            fig_land = go.Figure()
-
-            fig_land.add_trace(
-                go.Heatmap(
-                    z=[epitope_vals],
-                    x=df["Position"],
-                    y=["Epitope Map"],
-                    colorscale=[[0,"#475569"],[1,"#22c55e"]],
-                    showscale=False
-                )
+            fig_land = px.scatter(
+                df,
+                x="Position",
+                y="Probability",
+                color="Cluster",
+                hover_data=["Peptide","Position","Probability"],
+                color_continuous_scale="viridis"
             )
 
-            fig_land.add_trace(
-                go.Heatmap(
-                    z=[cluster_track],
-                    x=df["Position"],
-                    y=["Immunogenic Regions"],
-                    colorscale=[[0,"#0f172a"],[1,"#a855f7"]],
-                    showscale=False
-                )
+            # Decision threshold
+            fig_land.add_hline(
+                y=threshold,
+                line_dash="dash",
+                line_color="red",
+                annotation_text="Decision Threshold"
             )
 
             fig_land.update_layout(
-                height=260,
+                height=450,
                 xaxis_title="Protein Position",
-                xaxis=dict(
-                    showgrid=False,
-                    zeroline=False
-                ),
+                yaxis_title="Epitope Probability",
                 plot_bgcolor="rgba(0,0,0,0)",
                 paper_bgcolor="rgba(0,0,0,0)",
-                margin=dict(l=10,r=10,t=10,b=10)
+                font=dict(size=14)
             )
 
-            st.plotly_chart(fig_land,use_container_width=True)
+            st.plotly_chart(fig_land, use_container_width=True)
             
         # ==========================
         # GAUGE TAB
@@ -659,7 +622,7 @@ with tab1:
 
             st.plotly_chart(gauge, use_container_width=True)
 
-                # ==========================
+        # ==========================
         # TOP IMMUNOGENIC REGIONS
         # ==========================
         st.markdown("### 🧬 Top Immunogenic Regions")
