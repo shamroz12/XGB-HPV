@@ -526,7 +526,18 @@ with tab1:
 
             else:
                 st.info("All peptides classified as epitopes.")
-                
+
+        # ==========================
+        # DOWNLOAD
+        # ==========================
+        csv = df.to_csv(index=False).encode()
+
+        st.download_button(
+            "Download CSV",
+            csv,
+            "epitope_results.csv"
+        )
+        
         # ==========================
         # ADVANCED PROBABILITY PLOT
         # ==========================
@@ -1010,17 +1021,7 @@ with tab1:
 
         st.plotly_chart(fig, use_container_width=True)
         
-        # ==========================
-        # DOWNLOAD
-        # ==========================
-        csv = df.to_csv(index=False).encode()
-
-        st.download_button(
-            "Download CSV",
-            csv,
-            "epitope_results.csv"
-        )
-
+        
 with tab2:
 
     st.markdown("### 🧠 Model Feature Importance")
