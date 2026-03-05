@@ -433,7 +433,7 @@ with tab1:
             fasta = uploaded.read().decode()
 
         run_scan = st.button("Run AI Scan")
-
+ 
         if run_scan and fasta:
 
         # ==========================
