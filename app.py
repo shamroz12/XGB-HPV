@@ -777,26 +777,42 @@ with tab1:
 
         st.plotly_chart(fig3d, use_container_width=True)
             
+                # ==========================
+        # IMMUNOGENIC SCORE PANEL
         # ==========================
-        # GAUGE TAB
-        # ==========================
-        with tab_gauge:
 
-            mean_prob = df["Probability"].mean()
+        mean_prob = df["Probability"].mean()
+        total_pep = len(df)
+        epi_count = len(df[df["Category"]=="Epitope"])
 
-            gauge = go.Figure(go.Indicator(
-                mode="gauge+number",
-                value=mean_prob,
-                number={'valueformat': ".2f"},
-                title={'text': "Global Immunogenic Score"},
-                gauge={
-                    'axis': {'range': [0, 1]},
-                    'bar': {'color': "#38bdf8"}
-                }
-            ))
+        density = epi_count / total_pep
 
-            st.plotly_chart(gauge, use_container_width=True)
+        score = mean_prob
 
+        import plotly.graph_objects as go
+
+        gauge = go.Figure(go.Indicator(
+            mode="gauge+number",
+            value=score,
+            number={'valueformat': ".2f"},
+            title={'text': "Global Immunogenic Score"},
+            gauge={
+                'axis': {'range':[0,1]},
+                'steps':[
+                    {'range':[0,0.3],'color':'lightgray'},
+                    {'range':[0.3,0.6],'color':'khaki'},
+                    {'range':[0.6,1],'color':'salmon'}
+                ],
+                'bar':{'color':"#38bdf8"}
+            }
+        ))
+
+        st.plotly_chart(gauge,use_container_width=True)
+
+        st.metric("Peptides scanned", total_pep)
+        st.metric("Predicted epitopes", epi_count)
+        st.metric("Epitope density", f"{density:.2%}")
+        
         # ==========================
         # TOP IMMUNOGENIC REGIONS
         # ==========================
