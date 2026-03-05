@@ -845,47 +845,50 @@ with tab1:
         else:
             st.info("No immunogenic clusters detected.")
 
-                # ==========================
-        # STRING STYLE EPITOPE NETWORK
+        # ==========================
+        # EPITOPE INTERACTION NETWORK
         # ==========================
 
         st.markdown("### 🧬 Epitope Interaction Network")
 
         import networkx as nx
-        from networkx.algorithms import community
 
         epi_df = df[df["Category"] == "Epitope"]
 
         G = nx.Graph()
 
+        peptides = epi_df["Peptide"].tolist()
+        probs = epi_df["Probability"].tolist()
+
         # add nodes
-        for _, row in epi_df.iterrows():
+        for pep, p in zip(peptides, probs):
 
             G.add_node(
-                row["Peptide"],
-                prob=row["Probability"]
+                pep,
+                prob=p
             )
 
-        # similarity function
-        def similarity(a, b):
+        # -------- motif similarity --------
+        def motif_similarity(a, b):
 
             score = 0
 
-            for x, y in zip(a, b):
-                if x == y:
+            for i in range(len(a)-2):
+
+                motif = a[i:i+3]
+
+                if motif in b:
                     score += 1
 
             return score
 
-        peptides = epi_df["Peptide"].tolist()
-
         # create edges
         for i in range(len(peptides)):
-            for j in range(i + 1, len(peptides)):
+            for j in range(i+1, len(peptides)):
 
-                sim = similarity(peptides[i], peptides[j])
+                sim = motif_similarity(peptides[i], peptides[j])
 
-                if sim >= 4:  # relaxed threshold for better connectivity
+                if sim >= 1:
 
                     G.add_edge(
                         peptides[i],
@@ -893,99 +896,62 @@ with tab1:
                         weight=sim
                     )
 
-        # layout
-        pos = nx.spring_layout(
-            G,
-            k=0.6,
-            iterations=120,
-            seed=42
-        )
+        pos = nx.spring_layout(G, k=0.7, iterations=120, seed=42)
 
-        # ==========================
-        # COMMUNITY DETECTION
-        # ==========================
+        # edges
+        edge_x=[]
+        edge_y=[]
 
-        communities = community.greedy_modularity_communities(G)
+        for u,v in G.edges():
 
-        node_color_map = {}
+            x0,y0 = pos[u]
+            x1,y1 = pos[v]
 
-        palette = [
-            "#22c55e",
-            "#6366f1",
-            "#f59e0b",
-            "#ef4444",
-            "#8b5cf6"
-        ]
-
-        for i, comm in enumerate(communities):
-
-            for node in comm:
-
-                node_color_map[node] = palette[i % len(palette)]
-
-        # ==========================
-        # EDGES
-        # ==========================
-
-        edge_x = []
-        edge_y = []
-
-        for u, v in G.edges():
-
-            x0, y0 = pos[u]
-            x1, y1 = pos[v]
-
-            edge_x += [x0, x1, None]
-            edge_y += [y0, y1, None]
+            edge_x += [x0,x1,None]
+            edge_y += [y0,y1,None]
 
         edge_trace = go.Scatter(
             x=edge_x,
             y=edge_y,
             mode="lines",
-            line=dict(width=1, color="#94a3b8"),
+            line=dict(width=1,color="#94a3b8"),
             hoverinfo="none"
         )
 
-        # ==========================
-        # NODES
-        # ==========================
-
-        node_x = []
-        node_y = []
-        node_size = []
-        node_color = []
-        labels = []
+        # nodes
+        node_x=[]
+        node_y=[]
+        node_size=[]
+        labels=[]
 
         for node in G.nodes():
 
-            x, y = pos[node]
+            x,y = pos[node]
 
             node_x.append(x)
             node_y.append(y)
 
             prob = G.nodes[node]["prob"]
 
-            node_size.append(10 + prob * 20)
-
-            node_color.append(node_color_map[node])
+            node_size.append(10 + prob*25)
 
             labels.append(node)
 
         node_trace = go.Scatter(
             x=node_x,
             y=node_y,
-            mode="markers",
+            mode="markers+text",
+            text=labels,
+            textposition="top center",
             marker=dict(
                 size=node_size,
-                color=node_color,
-                line=dict(width=1, color="white")
-            ),
-            text=labels,
-            hovertemplate="<b>%{text}</b><extra></extra>"
+                color="#22c55e",
+                line=dict(width=1,color="white")
+            )
         )
 
         fig_net = go.Figure(
-            data=[edge_trace, node_trace],
+            data=[edge_trace,node_trace],
             layout=go.Layout(
                 height=600,
                 showlegend=False,
@@ -994,8 +960,8 @@ with tab1:
             )
         )
 
-        st.plotly_chart(fig_net, use_container_width=True)
-
+        st.plotly_chart(fig_net,use_container_width=True)
+        
         # ==========================
         # DOWNLOAD
         # ==========================
