@@ -631,6 +631,49 @@ with tab1:
             )
 
             st.plotly_chart(fig_land, use_container_width=True)
+
+        # ==========================
+        # EPITOPE DENSITY MAP
+        # ==========================
+        st.markdown("### 🧬 Epitope Density Map")
+
+        # sliding window density
+        window = 15
+        density = []
+
+        for i in range(len(df)):
+            start = max(0, i - window)
+            end = min(len(df), i + window)
+
+            region = df.iloc[start:end]
+            ep_count = (region["Probability"] >= threshold).sum()
+
+            density.append(ep_count / len(region))
+
+        density_df = pd.DataFrame({
+            "Position": df["Position"],
+            "Density": density
+        })
+
+        fig_density = go.Figure()
+
+        fig_density.add_trace(
+            go.Bar(
+                x=density_df["Position"],
+                y=density_df["Density"],
+                marker_color="#6366f1"
+            )
+        )
+
+        fig_density.update_layout(
+            height=300,
+            xaxis_title="Protein Position",
+            yaxis_title="Epitope Density",
+            plot_bgcolor="rgba(0,0,0,0)",
+            paper_bgcolor="rgba(0,0,0,0)"
+        )
+
+        st.plotly_chart(fig_density, use_container_width=True)
             
         # ==========================
         # GAUGE TAB
