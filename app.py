@@ -432,24 +432,35 @@ with tab1:
         if uploaded:
             fasta = uploaded.read().decode()
 
-    run_scan = st.button("Run AI Scan")
+       if run_scan and fasta:
 
-    if run_scan and fasta:
-        st.session_state["run_scan"] = True
-        st.session_state["fasta"] = fasta
+    # SEQUENCE CLEANING
+    seq = "".join([
+        l.strip() for l in fasta.split("\n")
+        if not l.startswith(">")
+    ]).upper()
 
-    if "run_scan" in st.session_state and st.session_state["run_scan"]:
-        fasta = st.session_state["fasta"]
+    peptides = []
+    positions = []
 
-        # ==========================
-        # SEQUENCE CLEANING
-        # ==========================
-        seq = "".join([
-            l.strip() for l in fasta.split("\n")
-            if not l.startswith(">")
-        ]).upper()
+    for i in range(len(seq)-8):
+        peptides.append(seq[i:i+9])
+        positions.append(i+1)
 
-        results = []
+    X = np.array([extract_features(p) for p in peptides])
+    probs = model.predict_proba(X)[:,1]
+
+    results = []
+    for pos, pep, prob in zip(positions, peptides, probs):
+        cat = "Epitope" if prob >= threshold else "Non-Epitope"
+        results.append([pos, pep, prob, cat])
+
+    df = pd.DataFrame(
+        results,
+        columns=["Position","Peptide","Probability","Category"]
+    )
+
+    st.session_state["df"] = df
 
         # ==========================
         # PREDICTION LOOP
