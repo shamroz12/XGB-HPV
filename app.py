@@ -1021,100 +1021,85 @@ with tab1:
 
         st.plotly_chart(fig, use_container_width=True)
 
-                # ==========================
-        # HD CELLULAR IMMUNE SIMULATOR
+                        # ==========================
+        # REAL CELLULAR IMMUNE DIAGRAM
         # ==========================
 
-        st.markdown("### 🧬 Cellular Immune Interaction Simulator (HPV Antigen Processing)")
+        st.markdown("### 🧬 Cellular Immune Simulation")
 
         import plotly.graph_objects as go
 
-        frames = []
+        fig = go.Figure()
 
-        steps = [
-            ("HPV Virus",0.1,0.75,"red"),
-            ("Epithelial Cell",0.25,0.7,"lightpink"),
-            ("Viral Protein",0.4,0.65,"green"),
-            ("Proteasome",0.55,0.55,"purple"),
-            ("Epitope Peptide",0.65,0.52,"orange"),
-            ("TAP Transport",0.75,0.5,"cyan"),
-            ("MHC-I Loading",0.85,0.45,"blue"),
-            ("CD8 T Cell",0.95,0.35,"gold")
-        ]
-
-        for i in range(len(steps)):
-
-            xs=[s[1] for s in steps[:i+1]]
-            ys=[s[2] for s in steps[:i+1]]
-            labels=[s[0] for s in steps[:i+1]]
-            colors=[s[3] for s in steps[:i+1]]
-
-            frames.append(
-                go.Frame(
-                    data=[
-                        go.Scatter(
-                            x=xs,
-                            y=ys,
-                            mode="markers+text+lines",
-                            text=labels,
-                            textposition="top center",
-                            marker=dict(
-                                size=45,
-                                color=colors,
-                                line=dict(width=2,color="black")
-                            ),
-                            line=dict(width=4,color="royalblue")
-                        )
-                    ]
-                )
-            )
-
-        fig = go.Figure(
-            data=[
-                go.Scatter(
-                    x=[steps[0][1]],
-                    y=[steps[0][2]],
-                    mode="markers+text",
-                    text=[steps[0][0]],
-                    textposition="top center",
-                    marker=dict(size=45,color=steps[0][3])
-                )
-            ],
-            frames=frames
-        )
-
-        # Cell background
+        # epithelial cell
         fig.add_shape(
             type="circle",
-            x0=0.15, y0=0.2,
-            x1=0.9, y1=0.85,
-            fillcolor="rgba(255,200,150,0.2)",
-            line=dict(color="lightgray")
+            x0=0.2, y0=0.2,
+            x1=0.8, y1=0.8,
+            fillcolor="rgba(255,200,150,0.4)",
+            line=dict(color="gray",width=3)
         )
 
+        # nucleus
+        fig.add_shape(
+            type="circle",
+            x0=0.45, y0=0.55,
+            x1=0.55, y1=0.65,
+            fillcolor="lightblue"
+        )
+
+        # proteasome
+        fig.add_shape(
+            type="circle",
+            x0=0.45, y0=0.35,
+            x1=0.55, y1=0.45,
+            fillcolor="purple"
+        )
+
+        # ER region
+        fig.add_shape(
+            type="rect",
+            x0=0.60, y0=0.35,
+            x1=0.75, y1=0.45,
+            fillcolor="lightgreen"
+        )
+
+        # peptides
+        fig.add_shape(
+            type="rect",
+            x0=0.52, y0=0.38,
+            x1=0.56, y1=0.41,
+            fillcolor="orange"
+        )
+
+        # MHC molecule
+        fig.add_shape(
+            type="rect",
+            x0=0.77, y0=0.45,
+            x1=0.80, y1=0.55,
+            fillcolor="blue"
+        )
+
+        # CD8 T cell
+        fig.add_shape(
+            type="circle",
+            x0=0.88, y0=0.40,
+            x1=0.98, y1=0.55,
+            fillcolor="gold"
+        )
+
+        fig.add_annotation(x=0.5,y=0.7,text="Nucleus",showarrow=False)
+        fig.add_annotation(x=0.5,y=0.48,text="Proteasome",showarrow=False)
+        fig.add_annotation(x=0.68,y=0.48,text="Endoplasmic Reticulum",showarrow=False)
+        fig.add_annotation(x=0.78,y=0.6,text="MHC-I",showarrow=False)
+        fig.add_annotation(x=0.93,y=0.6,text="CD8 T-Cell",showarrow=False)
+
         fig.update_layout(
-            height=750,
-            title="HPV Antigen Processing and CD8 T-Cell Activation",
+            height=700,
+            title="HPV Antigen Processing and Immune Recognition",
             xaxis=dict(visible=False),
             yaxis=dict(visible=False),
-            updatemenus=[
-                dict(
-                    type="buttons",
-                    buttons=[
-                        dict(
-                            label="▶ Run Immune Simulation",
-                            method="animate",
-                            args=[None,
-                                  dict(
-                                      frame=dict(duration=1200, redraw=True),
-                                      fromcurrent=True
-                                  )]
-                        )
-                    ]
-                )
-            ],
-            plot_bgcolor="white",
-            paper_bgcolor="white"
+            plot_bgcolor="white"
         )
 
         st.plotly_chart(fig,use_container_width=True)
