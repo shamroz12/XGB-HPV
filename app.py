@@ -561,37 +561,43 @@ with tab1:
                             
         # EPITOPE LANDSCAPE TAB
         # ==========================
-        with tab_landscape:
+                with tab_landscape:
 
-            colors = [
-                "#22c55e" if p >= threshold else "#475569"
-                for p in df["Probability"]
-            ]
+            st.markdown("### 🔬 Epitope Immunogenic Landscape")
 
-            strip = go.Figure()
+            fig_land = go.Figure()
 
-            strip.add_trace(
-                go.Bar(
+            fig_land.add_trace(
+                go.Scatter(
                     x=df["Position"],
-                    y=[1]*len(df),
-                    marker=dict(color=colors),
-                    customdata=df[["Peptide","Probability"]],
+                    y=df["Probability"],
+                    mode="lines",
+                    line=dict(width=2,color="#38bdf8"),
+                    fill="tozeroy",
                     hovertemplate=
                     "<b>Position:</b> %{x}<br>"
-                    "<b>Peptide:</b> %{customdata[0]}<br>"
-                    "<b>Probability:</b> %{customdata[1]:.3f}<extra></extra>"
+                    "<b>Probability:</b> %{y:.3f}<extra></extra>"
                 )
             )
 
-            strip.update_layout(
-                height=180,
-                yaxis=dict(showticklabels=False),
-                xaxis_title="Protein Position",
-                showlegend=False
+            fig_land.add_hline(
+                y=threshold,
+                line_dash="dash",
+                line_color="red",
+                annotation_text="Epitope Threshold"
             )
 
-            st.plotly_chart(strip, use_container_width=True)
+            fig_land.update_layout(
+                height=350,
+                xaxis_title="Protein Position",
+                yaxis_title="Epitope Probability",
+                plot_bgcolor="rgba(0,0,0,0)",
+                paper_bgcolor="rgba(0,0,0,0)",
+                font=dict(color="white")
+            )
 
+            st.plotly_chart(fig_land,use_container_width=True)
+                    
         # ==========================
         # GAUGE TAB
         # ==========================
