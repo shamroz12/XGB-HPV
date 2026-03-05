@@ -561,7 +561,7 @@ with tab1:
             st.plotly_chart(fig, use_container_width=True)
                             
         # ==========================
-        # EPITOPE LANDSCAPE (KMEANS CLUSTER)
+        # EPITOPE LANDSCAPE (ML VISUALIZATION)
         # ==========================
         with tab_landscape:
 
@@ -570,10 +570,13 @@ with tab1:
             # Prepare clustering data
             X_cluster = df[["Position","Probability"]]
 
-            # K-means clustering
+            # KMeans clustering
             kmeans = KMeans(n_clusters=4, random_state=42)
             df["Cluster"] = kmeans.fit_predict(X_cluster)
 
+            centers = kmeans.cluster_centers_
+
+            # Scatter plot
             fig_land = px.scatter(
                 df,
                 x="Position",
@@ -581,6 +584,32 @@ with tab1:
                 color="Cluster",
                 hover_data=["Peptide","Position","Probability"],
                 color_continuous_scale="viridis"
+            )
+
+            # Add cluster centers
+            fig_land.add_trace(
+                go.Scatter(
+                    x=centers[:,0],
+                    y=centers[:,1],
+                    mode="markers",
+                    marker=dict(
+                        color="black",
+                        size=12,
+                        symbol="x"
+                    ),
+                    name="Cluster Center"
+                )
+            )
+
+            # Density contours
+            fig_land.add_trace(
+                go.Histogram2dContour(
+                    x=df["Position"],
+                    y=df["Probability"],
+                    colorscale="Blues",
+                    showscale=False,
+                    opacity=0.3
+                )
             )
 
             # Decision threshold
@@ -592,9 +621,10 @@ with tab1:
             )
 
             fig_land.update_layout(
-                height=450,
+                height=500,
                 xaxis_title="Protein Position",
                 yaxis_title="Epitope Probability",
+                legend_title="Cluster",
                 plot_bgcolor="rgba(0,0,0,0)",
                 paper_bgcolor="rgba(0,0,0,0)",
                 font=dict(size=14)
