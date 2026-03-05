@@ -214,7 +214,7 @@ canvas {
 }
 
 .cta {
-    margin-top: 25px;
+    margin-top: 45px;
     font-size: 20px;
     color: #38bdf8;
     text-decoration: none;
