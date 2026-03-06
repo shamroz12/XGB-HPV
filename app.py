@@ -489,6 +489,8 @@ with tab1:
                 "📊 Tables",
                 "📈 Probability Plot",
                 "🌍 Epitope Landscape",
+                "🧬 Epitope Density Map",
+                "🌐 3D Epitope Landscape",
                 "🧬 Immunogenic Score"
         ])
         
@@ -606,6 +608,7 @@ with tab1:
         # ==========================
         # DETECT IMMUNOGENIC REGIONS
         # ==========================
+       with tab_prob:
 
         regions = []
         start = None
