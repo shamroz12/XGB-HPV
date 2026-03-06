@@ -608,45 +608,46 @@ with tab1:
         # ==========================
         # DETECT IMMUNOGENIC REGIONS
         # ==========================
+
         with tab_prob:
 
-        regions = []
-        start = None
-
-        for i, p in enumerate(smooth_prob):
-
-            if p >= threshold and start is None:
-                start = df["Position"].iloc[i]
-
-            elif p < threshold and start is not None:
-                end = df["Position"].iloc[i]
-                regions.append((start, end))
+                regions = []
                 start = None
 
-        if start is not None:
-            regions.append((start, df["Position"].iloc[-1]))
+                for i, p in enumerate(smooth_prob):
 
-        # ---- highlight regions ----
-        for r in regions:
-            fig.add_vrect(
-                x0=r[0],
-                x1=r[1],
-                fillcolor="rgba(16,185,129,0.18)",
-                line_width=0,
-                layer="below"
-            )
+                        if p >= threshold and start is None:
+                                start = df["Position"].iloc[i]
 
-        # ---- layout ----
-        fig.update_layout(
-            height=500,
-            xaxis_title="Protein Position",
-            yaxis_title="Epitope Probability",
-            hovermode="x unified",
-            plot_bgcolor="rgba(0,0,0,0)",
-            paper_bgcolor="rgba(0,0,0,0)"
-        )
+                        elif p < threshold and start is not None:
+                                end = df["Position"].iloc[i]
+                                regions.append((start, end))
+                                start = None
 
-        st.plotly_chart(fig, use_container_width=True)
+                if start is not None:
+                        regions.append((start, df["Position"].iloc[-1]))
+
+                # ---- highlight regions ----
+                for r in regions:
+                        fig.add_vrect(
+                                x0=r[0],
+                                x1=r[1],
+                                fillcolor="rgba(16,185,129,0.18)",
+                                line_width=0,
+                                layer="below"
+                        )
+
+                # ---- layout ----
+                fig.update_layout(
+                        height=500,
+                        xaxis_title="Protein Position",
+                        yaxis_title="Epitope Probability",
+                        hovermode="x unified",
+                        plot_bgcolor="rgba(0,0,0,0)",
+                        paper_bgcolor="rgba(0,0,0,0)"
+                )
+
+                st.plotly_chart(fig, use_container_width=True)
                             
         # ==========================
         # EPITOPE LANDSCAPE (ML VISUALIZATION)
