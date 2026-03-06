@@ -608,7 +608,7 @@ with tab1:
         # ==========================
         # DETECT IMMUNOGENIC REGIONS
         # ==========================
-       with tab_prob:
+        with tab_prob:
 
         regions = []
         start = None
