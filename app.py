@@ -542,7 +542,7 @@ with tab1:
         # ADVANCED PROBABILITY PLOT
         # ==========================
 
-        with tab_prob:
+        with tab_Probability Plot:
 
                 st.markdown("### 📈 Epitope Probability Across Protein Sequence")
 
