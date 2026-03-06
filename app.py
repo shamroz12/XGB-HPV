@@ -542,50 +542,62 @@ with tab1:
         # ADVANCED PROBABILITY PLOT
         # ==========================
 
-        st.markdown("### 📈 Epitope Probability Across Protein Sequence")
+        with tab_prob:
 
-        import numpy as np
-        import plotly.graph_objects as go
+                st.markdown("### 📈 Epitope Probability Across Protein Sequence")
 
-        # ---- smooth signal ----
-        window = 12
-        smooth_prob = np.convolve(
-            df["Probability"],
-            np.ones(window)/window,
-            mode="same"
-        )
+                import numpy as np
+                import plotly.graph_objects as go
 
-        fig = go.Figure()
+                # ---- smooth signal ----
+                window = 12
+                smooth_prob = np.convolve(
+                        df["Probability"],
+                        np.ones(window)/window,
+                        mode="same"
+                )
 
-        # ---- raw probability signal ----
-        fig.add_trace(
-            go.Scatter(
-                x=df["Position"],
-                y=df["Probability"],
-                mode="lines",
-                line=dict(color="rgba(59,130,246,0.30)", width=1),
-                name="Raw Prediction"
-            )
-        )
+                fig = go.Figure()
 
-        # ---- smoothed signal ----
-        fig.add_trace(
-            go.Scatter(
-                x=df["Position"],
-                y=smooth_prob,
-                mode="lines",
-                line=dict(color="#1d4ed8", width=3),
-                name="Smoothed Immunogenic Signal"
-            )
-        )
+                # ---- raw probability signal ----
+                fig.add_trace(
+                        go.Scatter(
+                                x=df["Position"],
+                                y=df["Probability"],
+                                mode="lines",
+                                line=dict(color="rgba(59,130,246,0.30)", width=1),
+                                name="Raw Prediction"
+                        )
+                )
 
-        # ---- threshold ----
-        fig.add_hline(
-            y=threshold,
-            line_dash="dash",
-            line_color="red",
-            annotation_text="Epitope Threshold"
-        )
+                # ---- smoothed signal ----
+                fig.add_trace(
+                        go.Scatter(
+                                x=df["Position"],
+                                y=smooth_prob,
+                                mode="lines",
+                                line=dict(color="#1d4ed8", width=3),
+                                name="Smoothed Immunogenic Signal"
+                        )
+                )
+
+                # ---- threshold ----
+                fig.add_hline(
+                        y=threshold,
+                        line_dash="dash",
+                        line_color="red",
+                        annotation_text="Epitope Threshold"
+                )
+
+                fig.update_layout(
+                        height=500,
+                        template="plotly_white",
+                        xaxis_title="Protein Position",
+                        yaxis_title="Epitope Probability",
+                        hovermode="x unified"
+                )
+
+                st.plotly_chart(fig, use_container_width=True)
 
         # ==========================
         # DETECT IMMUNOGENIC REGIONS
