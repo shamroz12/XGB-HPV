@@ -484,10 +484,14 @@ with tab1:
         # ==========================
         # RESULT TABS
         # ==========================
-        tab_table, tab_plot, tab_landscape, tab_gauge = st.tabs(
-            ["📊 Tables", "📈 Probability Plot", "🔬 Epitope Landscape", "🧬 Immunogenic Score"]
-        )
 
+        tab_table, tab_prob, tab_landscape, tab_score = st.tabs([
+                "📊 Tables",
+                "📈 Probability Plot",
+                "🌍 Epitope Landscape",
+                "🧬 Immunogenic Score"
+        ])
+        
         # ==========================
         # TABLE TAB
         # ==========================
@@ -542,7 +546,7 @@ with tab1:
         # ADVANCED PROBABILITY PLOT
         # ==========================
 
-        with tab_Probability Plot:
+        with tab_prob:
 
                 st.markdown("### 📈 Epitope Probability Across Protein Sequence")
 
