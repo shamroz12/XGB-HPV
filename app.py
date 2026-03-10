@@ -498,7 +498,7 @@ with tab1:
         # TABLE TAB
         # ==========================
         
-    with tab_table:
+        with tab_table:
         
         st.markdown("### 🟢 Predicted Epitopes")
 
