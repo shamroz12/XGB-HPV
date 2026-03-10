@@ -814,8 +814,8 @@ with tab1:
 
                 st.plotly_chart(fig_atlas, use_container_width=True)
 
-                # ==========================
-        # IMMUNE RECOGNITION ILLUSTRATION
+            # ==========================
+        # IMMUNE RECOGNITION ANIMATION
         # ==========================
         with tab_sim:
 
@@ -825,36 +825,73 @@ with tab1:
 
                 components.html("""
 
-                <div style="width:100%;height:420px;background:#f8fafc;border-radius:10px;
-                            display:flex;align-items:center;justify-content:space-around;font-family:sans-serif">
+                <div style="width:100%;height:420px;background:#f8fafc;
+                            border-radius:10px;position:relative;font-family:sans-serif">
 
-                <div style="text-align:center">
-                    <div style="width:60px;height:60px;border-radius:50%;background:#6366f1;margin:auto"></div>
-                    <p><b>Epitope</b><br>Predicted peptide</p>
-                </div>
+                <!-- Epitope (animated particle) -->
+                <div style="
+                    width:30px;
+                    height:30px;
+                    border-radius:50%;
+                    background:#6366f1;
+                    position:absolute;
+                    top:190px;
+                    left:50px;
+                    animation: moveEpitope 6s linear infinite;
+                "></div>
 
-                <div style="font-size:30px">➡</div>
+                <!-- MHC -->
+                <div style="
+                    width:90px;
+                    height:50px;
+                    border-radius:20px;
+                    background:#22c55e;
+                    position:absolute;
+                    top:180px;
+                    left:350px;
+                "></div>
 
-                <div style="text-align:center">
-                    <div style="width:90px;height:50px;border-radius:20px;background:#22c55e;margin:auto"></div>
-                    <p><b>MHC-I</b><br>Antigen Presentation</p>
-                </div>
+                <!-- T cell -->
+                <div style="
+                    width:90px;
+                    height:90px;
+                    border-radius:50%;
+                    background:#ef4444;
+                    position:absolute;
+                    top:160px;
+                    left:650px;
+                "></div>
 
-                <div style="font-size:30px">➡</div>
+                <!-- Immune response -->
+                <div style="
+                    width:90px;
+                    height:90px;
+                    border-radius:50%;
+                    background:#f59e0b;
+                    position:absolute;
+                    top:160px;
+                    left:900px;
+                "></div>
 
-                <div style="text-align:center">
-                    <div style="width:80px;height:80px;border-radius:50%;background:#ef4444;margin:auto"></div>
-                    <p><b>T-Cell</b><br>TCR Recognition</p>
-                </div>
+                <style>
 
-                <div style="font-size:30px">➡</div>
+                @keyframes moveEpitope {
 
-                <div style="text-align:center">
-                    <div style="width:80px;height:80px;border-radius:50%;background:#f59e0b;margin:auto"></div>
-                    <p><b>Immune Response</b><br>Cytotoxic Activation</p>
-                </div>
+                    0% { left:50px; }
+
+                    40% { left:350px; }
+
+                    70% { left:650px; }
+
+                    100% { left:900px; }
+
+                }
+
+                </style>
 
                 </div>
 
                 """, height=420)
             
+
+       
