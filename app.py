@@ -534,6 +534,73 @@ with tab1:
                 st.info("All peptides classified as epitopes.")
 
         # ==========================
+        # TOP 10 HIGH CONFIDENCE EPITOPES
+        # ==========================
+
+        st.markdown("### 🏆 Top 10 High-Confidence Predicted Epitopes")
+
+        # Filter predicted epitopes
+        epitope_df = df[df["Category"] == "Epitope"].copy()
+
+        # Sort by probability
+        epitope_df = epitope_df.sort_values(
+            by="Probability",
+            ascending=False
+        )
+
+        # Select top 10
+        top10 = epitope_df.head(10).copy()
+
+        # Reset index
+        top10.reset_index(drop=True, inplace=True)
+
+        # Add ranking
+        top10.insert(0, "Rank", range(1, len(top10)+1))
+
+        # Calculate peptide length
+        top10["Length"] = top10["Peptide"].apply(len)
+
+        # Add confidence category
+        def confidence(p):
+            if p >= 0.90:
+                return "Very High"
+            elif p >= 0.80:
+                return "High"
+            elif p >= 0.70:
+                return "Moderate"
+            else:
+                return "Low"
+
+        top10["Confidence"] = top10["Probability"].apply(confidence)
+
+        # Display table
+        st.dataframe(
+            top10[
+                [
+                    "Rank",
+                    "Position",
+                    "Peptide",
+                    "Length",
+                    "Probability",
+                    "Confidence"
+                ]
+            ],
+            use_container_width=True
+        )
+
+        # Download option
+        csv_top10 = top10.to_csv(index=False).encode()
+
+        st.download_button(
+            "📥 Download Top 10 Epitopes",
+            csv_top10,
+            "top10_epitopes.csv",
+            "text/csv"
+        )
+
+        
+
+        # ==========================
         # DOWNLOAD
         # ==========================
         csv = df.to_csv(index=False).encode()
