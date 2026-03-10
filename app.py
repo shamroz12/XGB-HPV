@@ -814,84 +814,119 @@ with tab1:
 
                 st.plotly_chart(fig_atlas, use_container_width=True)
 
-            # ==========================
+        # ==========================
         # IMMUNE RECOGNITION ANIMATION
         # ==========================
         with tab_sim:
 
-                st.markdown("### 🎬 Immune Recognition Pathway")
+        st.markdown("### 🧬 Cellular Immune Recognition Pathway")
 
-                import streamlit.components.v1 as components
+        import streamlit.components.v1 as components
 
-                components.html("""
+        components.html("""
 
-                <div style="width:100%;height:420px;background:#f8fafc;
-                            border-radius:10px;position:relative;font-family:sans-serif">
+        <div style="
+            width:100%;
+            height:520px;
+            background:#f8fafc;
+            border-radius:12px;
+            position:relative;
+            font-family:sans-serif;
+        ">
 
-                <!-- Epitope (animated particle) -->
-                <div style="
-                    width:30px;
-                    height:30px;
-                    border-radius:50%;
-                    background:#6366f1;
-                    position:absolute;
-                    top:190px;
-                    left:50px;
-                    animation: moveEpitope 6s linear infinite;
-                "></div>
+        <!-- Antigen outside cell -->
+        <div style="
+            width:30px;
+            height:30px;
+            border-radius:50%;
+            background:#6366f1;
+            position:absolute;
+            left:40px;
+            top:230px;
+        "></div>
+        <p style="position:absolute;left:30px;top:270px">Antigen</p>
 
-                <!-- MHC -->
-                <div style="
-                    width:90px;
-                    height:50px;
-                    border-radius:20px;
-                    background:#22c55e;
-                    position:absolute;
-                    top:180px;
-                    left:350px;
-                "></div>
+        <!-- Cell -->
+        <div style="
+            width:420px;
+            height:300px;
+            border-radius:200px;
+            border:4px solid #94a3b8;
+            position:absolute;
+            left:120px;
+            top:100px;
+        "></div>
 
-                <!-- T cell -->
-                <div style="
-                    width:90px;
-                    height:90px;
-                    border-radius:50%;
-                    background:#ef4444;
-                    position:absolute;
-                    top:160px;
-                    left:650px;
-                "></div>
+        <p style="position:absolute;left:290px;top:90px;font-weight:bold">
+        Antigen Presenting Cell
+        </p>
 
-                <!-- Immune response -->
-                <div style="
-                    width:90px;
-                    height:90px;
-                    border-radius:50%;
-                    background:#f59e0b;
-                    position:absolute;
-                    top:160px;
-                    left:900px;
-                "></div>
+        <!-- Proteasome -->
+        <div style="
+            width:70px;
+            height:70px;
+            border-radius:50%;
+            background:#22c55e;
+            position:absolute;
+            left:230px;
+            top:210px;
+        "></div>
 
-                <style>
+        <p style="position:absolute;left:225px;top:285px">
+        Proteasome
+        </p>
 
-                @keyframes moveEpitope {
+        <!-- Peptide -->
+        <div style="
+            width:18px;
+            height:18px;
+            border-radius:50%;
+            background:#ef4444;
+            position:absolute;
+            left:330px;
+            top:240px;
+        "></div>
 
-                    0% { left:50px; }
+        <p style="position:absolute;left:315px;top:270px">
+        Peptide
+        </p>
 
-                    40% { left:350px; }
+        <!-- MHC -->
+        <div style="
+            width:80px;
+            height:40px;
+            border-radius:20px;
+            background:#f59e0b;
+            position:absolute;
+            left:480px;
+            top:235px;
+        "></div>
 
-                    70% { left:650px; }
+        <p style="position:absolute;left:480px;top:275px">
+        MHC-I
+        </p>
 
-                    100% { left:900px; }
+        <!-- T cell -->
+        <div style="
+            width:120px;
+            height:120px;
+            border-radius:50%;
+            background:#ef4444;
+            position:absolute;
+            left:700px;
+            top:190px;
+        "></div>
 
-                }
+        <p style="position:absolute;left:730px;top:310px;font-weight:bold">
+        CD8 T-Cell
+        </p>
 
-                </style>
+        <!-- arrows -->
+        <div style="position:absolute;left:80px;top:240px;font-size:30px">→</div>
+        <div style="position:absolute;left:310px;top:240px;font-size:30px">→</div>
+        <div style="position:absolute;left:420px;top:240px;font-size:30px">→</div>
+        <div style="position:absolute;left:610px;top:240px;font-size:30px">→</div>
 
-                </div>
+        </div>
 
-                """, height=420)
-            
-
-       
+        """, height=520)
