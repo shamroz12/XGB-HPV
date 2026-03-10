@@ -598,8 +598,6 @@ with tab1:
             "text/csv"
         )
 
-        
-
         # ==========================
         # DOWNLOAD
         # ==========================
@@ -791,8 +789,10 @@ with tab1:
         # ==========================
         # EPITOPE DENSITY MAP
         # ==========================
-        st.markdown("### 🧬 Epitope Density Map")
+        with tab_density:
 
+            st.markdown("### 🧬 Epitope Density Map")
+            
         # sliding window density
         window = 15
         density = []
@@ -834,8 +834,10 @@ with tab1:
         # ==========================
         # 3D EPITOPE LANDSCAPE
         # ==========================
-        st.markdown("### 🌐 3D Epitope Landscape")
+        with tab_3d:
 
+            st.markdown("### 🌐 3D Epitope Landscape")
+            
         # prepare data
         plot3d_df = pd.DataFrame({
             "Position": df["Position"],
