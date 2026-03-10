@@ -498,7 +498,7 @@ with tab1:
         # TABLE TAB
         # ==========================
         with tab_table:
-
+        
         st.markdown("### 🟢 Predicted Epitopes")
 
         if not epitope_df.empty:
