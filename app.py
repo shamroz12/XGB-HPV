@@ -484,14 +484,15 @@ with tab1:
         # ==========================
         # RESULT TABS
         # ==========================
-        tab_table, tab_prob, tab_landscape, tab_density, tab_fingerprint, tab_score, tab_atlas = st.tabs([
+        tab_table, tab_prob, tab_landscape, tab_density, tab_fingerprint, tab_score, tab_atlas, tab_sim = st.tabs([
                 "📊 Tables",
                 "📈 Probability Plot",
                 "🌍 Epitope Landscape",
                 "🧬 Epitope Density Map",
                 "🌐 Immunogenicity Fingerprint",
                 "🧬 Immunogenic Score",
-                "🧭 Epitope Atlas"
+                "🧭 Epitope Atlas",
+                "🎬 Immune Recognition Simulation"
         ])
 
         # ==========================
@@ -813,6 +814,82 @@ with tab1:
 
                 st.plotly_chart(fig_atlas, use_container_width=True)
 
+        # ==========================
+        # IMMUNE RECOGNITION SIMULATION
+        # ==========================
+        with tab_sim:
 
+                st.markdown("### 🎬 Immune Recognition Simulation")
+
+                import streamlit.components.v1 as components
+
+                components.html("""
+                <div style="width:100%; height:420px; background:#f8fafc; border-radius:12px; position:relative; overflow:hidden">
+
+                <!-- Epitope -->
+                <div id="epi" style="
+                    width:22px;
+                    height:22px;
+                    border-radius:50%;
+                    background:#6366f1;
+                    position:absolute;
+                    left:30px;
+                    top:200px;
+                    animation: moveEpitope 6s linear infinite;
+                "></div>
+
+                <!-- MHC -->
+                <div style="
+                    width:80px;
+                    height:40px;
+                    border-radius:20px;
+                    background:#22c55e;
+                    position:absolute;
+                    left:320px;
+                    top:190px;
+                ">
+                </div>
+
+                <!-- T Cell -->
+                <div style="
+                    width:90px;
+                    height:90px;
+                    border-radius:50%;
+                    background:#ef4444;
+                    position:absolute;
+                    left:620px;
+                    top:165px;
+                ">
+                </div>
+
+                <style>
+
+                @keyframes moveEpitope {
+
+                    0%   { left:30px; }
+
+                    50%  { left:320px; }
+
+                    100% { left:620px; }
+
+                }
+
+                </style>
+
+                <div style="position:absolute; top:250px; left:20px; font-size:13px">
+                Epitope
+                </div>
+
+                <div style="position:absolute; top:250px; left:320px; font-size:13px">
+                MHC-I
+                </div>
+
+                <div style="position:absolute; top:250px; left:640px; font-size:13px">
+                T-Cell
+                </div>
+
+                </div>
+                """, height=420)
+            
 
         
