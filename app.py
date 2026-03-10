@@ -499,39 +499,41 @@ with tab1:
         # ==========================
         with tab_table:
 
-            st.markdown("### 🟢 Predicted Epitopes")
+        st.markdown("### 🟢 Predicted Epitopes")
 
-            if not epitope_df.empty:
+        if not epitope_df.empty:
 
                 epi_show = epitope_df.copy()
                 epi_show["Probability"] = epi_show["Probability"].round(3)
 
                 st.dataframe(
-                    epi_show,
-                    use_container_width=True,
-                    height=350
+                        epi_show,
+                        use_container_width=True,
+                        height=350
                 )
 
-            else:
+        else:
                 st.info("No epitopes detected above threshold.")
 
-            st.markdown("---")
+        st.markdown("---")
 
-            st.markdown("### ⚪ Predicted Non-Epitopes")
+        st.markdown("### ⚪ Predicted Non-Epitopes")
 
-            if not non_df.empty:
+        if not non_df.empty:
 
                 non_show = non_df.copy()
                 non_show["Probability"] = non_show["Probability"].round(3)
 
                 st.dataframe(
-                    non_show,
-                    use_container_width=True,
-                    height=350
+                        non_show,
+                        use_container_width=True,
+                        height=350
                 )
 
-            else:
+        else:
                 st.info("All peptides classified as epitopes.")
+
+        st.markdown("---")
 
         # ==========================
         # TOP 10 HIGH CONFIDENCE EPITOPES
@@ -539,53 +541,32 @@ with tab1:
 
         st.markdown("### 🏆 Top 10 High-Confidence Predicted Epitopes")
 
-        # Filter predicted epitopes
         epitope_df = df[df["Category"] == "Epitope"].copy()
 
-        # Sort by probability
         epitope_df = epitope_df.sort_values(
-            by="Probability",
-            ascending=False
+                by="Probability",
+                ascending=False
         )
 
-        # Select top 10
         top10 = epitope_df.head(10).copy()
 
-        # Reset index
         top10.reset_index(drop=True, inplace=True)
 
-        # Add ranking
         top10.insert(0, "Rank", range(1, len(top10)+1))
 
-        # Calculate peptide length
         top10["Length"] = top10["Peptide"].apply(len)
 
-        # Add confidence category
-        def confidence(p):
-            if p >= 0.90:
-                return "Very High"
-            elif p >= 0.80:
-                return "High"
-            elif p >= 0.70:
-                return "Moderate"
-            else:
-                return "Low"
-
-        top10["Confidence"] = top10["Probability"].apply(confidence)
-
-        # Display table
         st.dataframe(
-            top10[
-                [
-                    "Rank",
-                    "Position",
-                    "Peptide",
-                    "Length",
-                    "Probability",
-                    "Confidence"
-                ]
-            ],
-            use_container_width=True
+                top10[
+                        [
+                                "Rank",
+                                "Position",
+                                "Peptide",
+                                "Length",
+                                "Probability"
+                        ]
+                ],
+                use_container_width=True
         )
 
         # Download option
