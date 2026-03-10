@@ -484,7 +484,6 @@ with tab1:
         # ==========================
         # RESULT TABS
         # ==========================
-
         tab_table, tab_prob, tab_landscape, tab_density, tab_3d, tab_score = st.tabs([
                 "📊 Tables",
                 "📈 Probability Plot",
@@ -493,7 +492,7 @@ with tab1:
                 "🌐 3D Epitope Landscape",
                 "🧬 Immunogenic Score"
         ])
-        
+
         # ==========================
         # TABLE TAB
         # ==========================
@@ -515,23 +514,23 @@ with tab1:
                 else:
                         st.info("No epitopes detected above threshold.")
 
-        st.markdown("---")
+                st.markdown("---")
 
-        st.markdown("### ⚪ Predicted Non-Epitopes")
+                st.markdown("### ⚪ Predicted Non-Epitopes")
 
-        if not non_df.empty:
+                if not non_df.empty:
 
-                non_show = non_df.copy()
-                non_show["Probability"] = non_show["Probability"].round(3)
+                        non_show = non_df.copy()
+                        non_show["Probability"] = non_show["Probability"].round(3)
 
-                st.dataframe(
-                        non_show,
-                        use_container_width=True,
-                        height=350
-                )
+                        st.dataframe(
+                                non_show,
+                                use_container_width=True,
+                                height=350
+                        )
 
-        else:
-                st.info("All peptides classified as epitopes.")
+                else:
+                        st.info("All peptides classified as epitopes.")
 
         st.markdown("---")
 
