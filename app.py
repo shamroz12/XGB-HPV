@@ -166,7 +166,7 @@ components.html("""
     bottom:20px;
     width:100%;
     text-align:center;
-    font-size:14px;
+    font-size:30px;
     color:#94a3b8;
     letter-spacing:1px;
 }
