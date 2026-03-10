@@ -683,7 +683,7 @@ with tab1:
         # ==========================
         # 3D LANDSCAPE TAB
         # ==========================
-     with tab_3d:
+        with tab_3d:
 
                 st.markdown("### 🌐 3D Epitope Landscape")
 
