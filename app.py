@@ -819,9 +819,10 @@ with tab1:
         # ==========================
         with tab_sim:
 
-                 st.markdown("### 🧬 Cellular Immune Recognition Pathway")
+            st.markdown("### 🎬 Immune Recognition Simulation")
 
         import streamlit.components.v1 as components
+
 
         components.html("""
 
