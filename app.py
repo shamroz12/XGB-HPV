@@ -484,12 +484,12 @@ with tab1:
         # ==========================
         # RESULT TABS
         # ==========================
-        tab_table, tab_prob, tab_landscape, tab_density, tab_interaction, tab_score, tab_atlas = st.tabs([
+        tab_table, tab_prob, tab_landscape, tab_density, tab_fingerprint, tab_score, tab_atlas = st.tabs([
                 "📊 Tables",
                 "📈 Probability Plot",
                 "🌍 Epitope Landscape",
                 "🧬 Epitope Density Map",
-                "🌐 Immune Interaction Map",
+                "🌐 Immunogenicity Fingerprint",
                 "🧬 Immunogenic Score",
                 "🧭 Epitope Atlas"
         ])
@@ -679,88 +679,67 @@ with tab1:
 
                 st.plotly_chart(fig_density,use_container_width=True)
 
-
         # ==========================
-        # IMMUNE INTERACTION MAP
+        # IMMUNOGENICITY FINGERPRINT
         # ==========================
-        with tab_interaction:
+        with tab_fingerprint:
 
-                st.markdown("### 🧠 Epitope–Immune Interaction Map")
+                st.markdown("### 🧬 Protein Immunogenicity Fingerprint")
 
-                # Select top predicted epitopes
-                top_epi = epitope_df.head(10)
+                # Global metrics
+                mean_prob = df["Probability"].mean()
 
-                nodes_x = []
-                nodes_y = []
-                labels = []
+                epitope_density = len(df[df["Category"]=="Epitope"]) / len(df)
 
-                # Epitope nodes
-                for i, row in enumerate(top_epi.itertuples()):
+                hydro_score = np.mean([
+                        extract_features(p)[-7]
+                        for p in df["Peptide"]
+                ])
 
-                        nodes_x.append(i)
-                        nodes_y.append(1)
-                        labels.append(row.Peptide)
+                entropy_score = np.mean([
+                        extract_features(p)[-2]
+                        for p in df["Peptide"]
+                ])
 
-                # MHC node
-                nodes_x.append(len(top_epi)/2)
-                nodes_y.append(2)
-                labels.append("MHC-I")
+                charge_score = np.mean([
+                        extract_features(p)[-3]
+                        for p in df["Peptide"]
+                ])
 
-                # TCR node
-                nodes_x.append(len(top_epi)/2)
-                nodes_y.append(3)
-                labels.append("TCR")
+                metrics = {
+                        "ML Immunogenicity": mean_prob,
+                        "Epitope Density": epitope_density,
+                        "Hydrophobicity": hydro_score,
+                        "Entropy": entropy_score,
+                        "Net Charge": abs(charge_score)
+                }
 
-                fig_net = go.Figure()
+                categories = list(metrics.keys())
+                values = list(metrics.values())
 
-                # Draw connections Epitope → MHC
-                for i in range(len(top_epi)):
+                fig_radar = go.Figure()
 
-                        fig_net.add_trace(
-                                go.Scatter(
-                                        x=[nodes_x[i], nodes_x[-2]],
-                                        y=[nodes_y[i], nodes_y[-2]],
-                                        mode="lines",
-                                        line=dict(color="gray"),
-                                        showlegend=False
+                fig_radar.add_trace(
+                        go.Scatterpolar(
+                                r=values,
+                                theta=categories,
+                                fill="toself",
+                                line=dict(color="#6366f1", width=3),
+                                name="Protein Profile"
+                        )
+                )
+
+                fig_radar.update_layout(
+                        polar=dict(
+                                radialaxis=dict(
+                                        visible=True,
+                                        range=[0,1]
                                 )
-                        )
-
-                # Draw connection MHC → TCR
-                fig_net.add_trace(
-                        go.Scatter(
-                                x=[nodes_x[-2], nodes_x[-1]],
-                                y=[nodes_y[-2], nodes_y[-1]],
-                                mode="lines",
-                                line=dict(color="red", width=3),
-                                showlegend=False
-                        )
+                        ),
+                        height=500
                 )
 
-                # Draw nodes
-                fig_net.add_trace(
-                        go.Scatter(
-                                x=nodes_x,
-                                y=nodes_y,
-                                mode="markers+text",
-                                marker=dict(
-                                        size=18,
-                                        color=["#6366f1"]*len(top_epi) + ["#22c55e","#ef4444"]
-                                ),
-                                text=labels,
-                                textposition="bottom center"
-                        )
-                )
-
-                fig_net.update_layout(
-                        height=450,
-                        xaxis=dict(showgrid=False,visible=False),
-                        yaxis=dict(showgrid=False,visible=False),
-                        plot_bgcolor="white",
-                        paper_bgcolor="white"
-                )
-
-                st.plotly_chart(fig_net, use_container_width=True)
+                st.plotly_chart(fig_radar, use_container_width=True)
             
         # ==========================
         # IMMUNOGENIC SCORE TAB
