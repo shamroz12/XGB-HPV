@@ -497,24 +497,23 @@ with tab1:
         # ==========================
         # TABLE TAB
         # ==========================
-        
         with tab_table:
 
-        st.markdown("### 🟢 Predicted Epitopes")
+                st.markdown("### 🟢 Predicted Epitopes")
 
-        if not epitope_df.empty:
+                if not epitope_df.empty:
 
-                epi_show = epitope_df.copy()
-                epi_show["Probability"] = epi_show["Probability"].round(3)
+                        epi_show = epitope_df.copy()
+                        epi_show["Probability"] = epi_show["Probability"].round(3)
 
-                st.dataframe(
-                        epi_show,
-                        use_container_width=True,
-                        height=350
-                )
+                        st.dataframe(
+                                epi_show,
+                                use_container_width=True,
+                                height=350
+                        )
 
-        else:
-                st.info("No epitopes detected above threshold.")
+                else:
+                        st.info("No epitopes detected above threshold.")
 
         st.markdown("---")
 
