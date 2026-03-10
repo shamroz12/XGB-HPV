@@ -489,7 +489,7 @@ with tab1:
                 "📈 Probability Plot",
                 "🌍 Epitope Landscape",
                 "🧬 Epitope Density Map",
-                "🌐 2D Epitope Landscape",
+                "🌐 Epitope Hotspot Finder",
                 "🧬 Immunogenic Score",
                 "🧭 Epitope Atlas"
         ])
