@@ -161,6 +161,16 @@ h1, h2, h3 {
 # =========================================================
 components.html("""
 <style>
+.hero-footer{
+    position:absolute;
+    bottom:20px;
+    width:100%;
+    text-align:center;
+    font-size:14px;
+    color:#94a3b8;
+    letter-spacing:1px;
+}
+
 .hero {
     position: relative;
     width: 100%;
