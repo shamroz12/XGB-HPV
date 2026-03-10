@@ -683,14 +683,16 @@ with tab1:
         # ==========================
         # 3D LANDSCAPE TAB
         # ==========================
-        with tab_3d:
+       with tab_3d:
 
-                st.markdown("### 🌐 3D Epitope Landscape")
+        st.markdown("### 🌐 3D Epitope Landscape")
+
+        try:
 
                 plot3d_df = pd.DataFrame({
-                        "Position":df["Position"],
-                        "Probability":df["Probability"],
-                        "Density":density
+                        "Position": df["Position"],
+                        "Probability": df["Probability"],
+                        "Density": density
                 })
 
                 fig3d = px.scatter_3d(
@@ -705,13 +707,17 @@ with tab1:
                 fig3d.update_layout(
                         height=500,
                         scene=dict(
-                                xaxis_title="Position",
-                                yaxis_title="Probability",
-                                zaxis_title="Density"
+                                xaxis_title="Protein Position",
+                                yaxis_title="Epitope Probability",
+                                zaxis_title="Epitope Density"
                         )
                 )
 
-                st.plotly_chart(fig3d,use_container_width=True)
+                st.plotly_chart(fig3d, use_container_width=True)
+
+        except:
+
+                st.warning("⚠ 3D visualization requires WebGL. Please open the app in Chrome.")
 
 
         # ==========================
