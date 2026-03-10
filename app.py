@@ -484,7 +484,7 @@ with tab1:
         # ==========================
         # RESULT TABS
         # ==========================
-        tab_table, tab_prob, tab_landscape, tab_density, tab_3d, tab_score = st.tabs([
+        tab_table, tab_prob, tab_landscape, tab_density, tab_3d, tab_score, tab_atlas = st.tabs([
                 "📊 Tables",
                 "📈 Probability Plot",
                 "🌍 Epitope Landscape",
