@@ -484,7 +484,7 @@ with tab1:
         # ==========================
         # RESULT TABS
         # ==========================
-        tab_table, tab_prob, tab_landscape, tab_density, tab_2d, tab_score, tab_atlas = st.tabs([
+        tab_table, tab_prob, tab_landscape, tab_density, tab_hotspot, tab_score, tab_atlas = st.tabs([
                 "📊 Tables",
                 "📈 Probability Plot",
                 "🌍 Epitope Landscape",
@@ -681,41 +681,55 @@ with tab1:
 
 
         # ==========================
-        # 2D EPITOPE LANDSCAPE
+        # EPITOPE HOTSPOT FINDER
         # ==========================
-        with tab_2d:
+        with tab_hotspot:
 
-                st.markdown("### 🌐 Epitope Density Heatmap")
+                st.markdown("### 🔥 Epitope Hotspot Finder")
 
-                heat_df = pd.DataFrame({
+                window = 20
+                hotspot_score = []
+
+                for i in range(len(df)):
+
+                        start = max(0, i-window)
+                        end = min(len(df), i+window)
+
+                        region = df.iloc[start:end]
+
+                        epi_count = (region["Probability"] >= threshold).sum()
+
+                        hotspot_score.append(epi_count)
+
+                hotspot_df = pd.DataFrame({
                         "Position": df["Position"],
-                        "Probability": df["Probability"],
-                        "Density": density
+                        "HotspotScore": hotspot_score
                 })
 
-                fig_heat = px.density_heatmap(
-                        heat_df,
-                        x="Position",
-                        y="Probability",
-                        z="Density",
-                        nbinsx=60,
-                        nbinsy=40,
-                        color_continuous_scale="viridis"
+                fig_hot = go.Figure()
+
+                fig_hot.add_trace(
+                        go.Scatter(
+                                x=hotspot_df["Position"],
+                                y=hotspot_df["HotspotScore"],
+                                mode="lines",
+                                line=dict(color="#ef4444", width=3),
+                                fill="tozeroy",
+                                name="Hotspot Score"
+                        )
                 )
 
-                fig_heat.update_layout(
-                        height=500,
+                fig_hot.update_layout(
+                        height=450,
                         xaxis_title="Protein Position",
-                        yaxis_title="Epitope Probability",
-                        coloraxis_colorbar=dict(
-                                title="Epitope Density"
-                        ),
+                        yaxis_title="Epitope Cluster Score",
+                        hovermode="x unified",
                         plot_bgcolor="white",
                         paper_bgcolor="white"
                 )
 
-                st.plotly_chart(fig_heat, use_container_width=True)
-
+                st.plotly_chart(fig_hot, use_container_width=True)
+            
         # ==========================
         # IMMUNOGENIC SCORE TAB
         # ==========================
