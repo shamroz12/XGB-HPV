@@ -532,75 +532,27 @@ with tab1:
                 else:
                         st.info("All peptides classified as epitopes.")
 
-        st.markdown("---")
+                st.markdown("---")
+
+                st.markdown("### 🏆 Top 10 High-Confidence Epitopes")
+
+                top10 = epitope_df.head(10).copy()
+                top10.insert(0, "Rank", range(1, len(top10)+1))
+                top10["Length"] = top10["Peptide"].apply(len)
+
+                st.dataframe(
+                        top10[["Rank","Position","Peptide","Length","Probability"]],
+                        use_container_width=True
+                )
+
 
         # ==========================
-        # TOP 10 HIGH CONFIDENCE EPITOPES
+        # PROBABILITY PLOT TAB
         # ==========================
-
-        st.markdown("### 🏆 Top 10 High-Confidence Predicted Epitopes")
-
-        epitope_df = df[df["Category"] == "Epitope"].copy()
-
-        epitope_df = epitope_df.sort_values(
-                by="Probability",
-                ascending=False
-        )
-
-        top10 = epitope_df.head(10).copy()
-
-        top10.reset_index(drop=True, inplace=True)
-
-        top10.insert(0, "Rank", range(1, len(top10)+1))
-
-        top10["Length"] = top10["Peptide"].apply(len)
-
-        st.dataframe(
-                top10[
-                        [
-                                "Rank",
-                                "Position",
-                                "Peptide",
-                                "Length",
-                                "Probability"
-                        ]
-                ],
-                use_container_width=True
-        )
-
-        # Download option
-        csv_top10 = top10.to_csv(index=False).encode()
-
-        st.download_button(
-            "📥 Download Top 10 Epitopes",
-            csv_top10,
-            "top10_epitopes.csv",
-            "text/csv"
-        )
-
-        # ==========================
-        # DOWNLOAD
-        # ==========================
-        csv = df.to_csv(index=False).encode()
-
-        st.download_button(
-            "Download CSV",
-            csv,
-            "epitope_results.csv"
-        )
-        
-        # ==========================
-        # ADVANCED PROBABILITY PLOT
-        # ==========================
-
         with tab_prob:
 
                 st.markdown("### 📈 Epitope Probability Across Protein Sequence")
 
-                import numpy as np
-                import plotly.graph_objects as go
-
-                # ---- smooth signal ----
                 window = 12
                 smooth_prob = np.convolve(
                         df["Probability"],
@@ -610,29 +562,26 @@ with tab1:
 
                 fig = go.Figure()
 
-                # ---- raw probability signal ----
                 fig.add_trace(
                         go.Scatter(
                                 x=df["Position"],
                                 y=df["Probability"],
                                 mode="lines",
-                                line=dict(color="rgba(59,130,246,0.30)", width=1),
+                                line=dict(color="rgba(59,130,246,0.3)", width=1),
                                 name="Raw Prediction"
                         )
                 )
 
-                # ---- smoothed signal ----
                 fig.add_trace(
                         go.Scatter(
                                 x=df["Position"],
                                 y=smooth_prob,
                                 mode="lines",
                                 line=dict(color="#1d4ed8", width=3),
-                                name="Smoothed Immunogenic Signal"
+                                name="Smoothed Signal"
                         )
                 )
 
-                # ---- threshold ----
                 fig.add_hline(
                         y=threshold,
                         line_dash="dash",
@@ -642,7 +591,6 @@ with tab1:
 
                 fig.update_layout(
                         height=500,
-                        template="plotly_white",
                         xaxis_title="Protein Position",
                         yaxis_title="Epitope Probability",
                         hovermode="x unified"
@@ -650,360 +598,151 @@ with tab1:
 
                 st.plotly_chart(fig, use_container_width=True)
 
+
         # ==========================
-        # DETECT IMMUNOGENIC REGIONS
-        # ==========================
-
-        with tab_prob:
-
-                regions = []
-                start = None
-
-                for i, p in enumerate(smooth_prob):
-
-                        if p >= threshold and start is None:
-                                start = df["Position"].iloc[i]
-
-                        elif p < threshold and start is not None:
-                                end = df["Position"].iloc[i]
-                                regions.append((start, end))
-                                start = None
-
-                if start is not None:
-                        regions.append((start, df["Position"].iloc[-1]))
-
-                # ---- highlight regions ----
-                for r in regions:
-                        fig.add_vrect(
-                                x0=r[0],
-                                x1=r[1],
-                                fillcolor="rgba(16,185,129,0.18)",
-                                line_width=0,
-                                layer="below"
-                        )
-
-                # ---- layout ----
-                fig.update_layout(
-                        height=500,
-                        xaxis_title="Protein Position",
-                        yaxis_title="Epitope Probability",
-                        hovermode="x unified",
-                        plot_bgcolor="rgba(0,0,0,0)",
-                        paper_bgcolor="rgba(0,0,0,0)"
-                )
-
-                st.plotly_chart(fig, use_container_width=True)
-                            
-        # ==========================
-        # EPITOPE LANDSCAPE (ML VISUALIZATION)
+        # EPITOPE LANDSCAPE TAB
         # ==========================
         with tab_landscape:
 
-            st.markdown("### 🔬 Epitope Immunogenic Landscape")
+                st.markdown("### 🌍 Epitope Immunogenic Landscape")
 
-            # Prepare clustering data
-            X_cluster = df[["Position","Probability"]]
+                X_cluster = df[["Position","Probability"]]
 
-            # KMeans clustering
-            kmeans = KMeans(n_clusters=4, random_state=42)
-            df["Cluster"] = kmeans.fit_predict(X_cluster)
+                kmeans = KMeans(n_clusters=4, random_state=42)
+                df["Cluster"] = kmeans.fit_predict(X_cluster)
 
-            centers = kmeans.cluster_centers_
+                centers = kmeans.cluster_centers_
 
-            # Scatter plot
-            fig_land = px.scatter(
-                df,
-                x="Position",
-                y="Probability",
-                color="Cluster",
-                hover_data=["Peptide","Position","Probability"],
-                color_continuous_scale="viridis"
-            )
-
-            # Add cluster centers
-            fig_land.add_trace(
-                go.Scatter(
-                    x=centers[:,0],
-                    y=centers[:,1],
-                    mode="markers",
-                    marker=dict(
-                        color="black",
-                        size=12,
-                        symbol="x"
-                    ),
-                    name="Cluster Center"
+                fig_land = px.scatter(
+                        df,
+                        x="Position",
+                        y="Probability",
+                        color="Cluster",
+                        hover_data=["Peptide"],
+                        color_continuous_scale="viridis"
                 )
-            )
 
-            # Density contours
-            fig_land.add_trace(
-                go.Histogram2dContour(
-                    x=df["Position"],
-                    y=df["Probability"],
-                    colorscale="Blues",
-                    showscale=False,
-                    opacity=0.3
+                fig_land.add_trace(
+                        go.Scatter(
+                                x=centers[:,0],
+                                y=centers[:,1],
+                                mode="markers",
+                                marker=dict(color="black",size=12,symbol="x"),
+                                name="Cluster Center"
+                        )
                 )
-            )
 
-            # Decision threshold
-            fig_land.add_hline(
-                y=threshold,
-                line_dash="dash",
-                line_color="red",
-                annotation_text="Decision Threshold"
-            )
+                st.plotly_chart(fig_land, use_container_width=True)
 
-            fig_land.update_layout(
-                height=500,
-                xaxis_title="Protein Position",
-                yaxis_title="Epitope Probability",
-                legend_title="Cluster",
-                plot_bgcolor="rgba(0,0,0,0)",
-                paper_bgcolor="rgba(0,0,0,0)",
-                font=dict(size=14)
-            )
-
-            st.plotly_chart(fig_land, use_container_width=True)
 
         # ==========================
-        # EPITOPE DENSITY MAP
+        # EPITOPE DENSITY MAP TAB
         # ==========================
         with tab_density:
 
-            st.markdown("### 🧬 Epitope Density Map")
-            
-        # sliding window density
-        window = 15
-        density = []
+                st.markdown("### 🧬 Epitope Density Map")
 
-        for i in range(len(df)):
-            start = max(0, i - window)
-            end = min(len(df), i + window)
+                window = 15
+                density = []
 
-            region = df.iloc[start:end]
-            ep_count = (region["Probability"] >= threshold).sum()
+                for i in range(len(df)):
 
-            density.append(ep_count / len(region))
+                        start = max(0, i-window)
+                        end = min(len(df), i+window)
 
-        density_df = pd.DataFrame({
-            "Position": df["Position"],
-            "Density": density
-        })
+                        region = df.iloc[start:end]
+                        ep_count = (region["Probability"] >= threshold).sum()
 
-        fig_density = go.Figure()
+                        density.append(ep_count/len(region))
 
-        fig_density.add_trace(
-            go.Bar(
-                x=density_df["Position"],
-                y=density_df["Density"],
-                marker_color="#6366f1"
-            )
-        )
+                density_df = pd.DataFrame({
+                        "Position":df["Position"],
+                        "Density":density
+                })
 
-        fig_density.update_layout(
-            height=300,
-            xaxis_title="Protein Position",
-            yaxis_title="Epitope Density",
-            plot_bgcolor="rgba(0,0,0,0)",
-            paper_bgcolor="rgba(0,0,0,0)"
-        )
+                fig_density = go.Figure()
 
-        st.plotly_chart(fig_density, use_container_width=True)
+                fig_density.add_trace(
+                        go.Bar(
+                                x=density_df["Position"],
+                                y=density_df["Density"],
+                                marker_color="#6366f1"
+                        )
+                )
+
+                fig_density.update_layout(
+                        height=350,
+                        xaxis_title="Protein Position",
+                        yaxis_title="Epitope Density"
+                )
+
+                st.plotly_chart(fig_density,use_container_width=True)
+
 
         # ==========================
-        # 3D EPITOPE LANDSCAPE
+        # 3D LANDSCAPE TAB
         # ==========================
         with tab_3d:
 
-            st.markdown("### 🌐 3D Epitope Landscape")
-            
-        # prepare data
-        plot3d_df = pd.DataFrame({
-            "Position": df["Position"],
-            "Probability": df["Probability"],
-            "Density": density
-        })
+                st.markdown("### 🌐 3D Epitope Landscape")
 
-        fig3d = px.scatter_3d(
-            plot3d_df,
-            x="Position",
-            y="Probability",
-            z="Density",
-            color="Density",
-            color_continuous_scale="viridis",
-            hover_data=["Position","Probability","Density"]
-        )
+                plot3d_df = pd.DataFrame({
+                        "Position":df["Position"],
+                        "Probability":df["Probability"],
+                        "Density":density
+                })
 
-        fig3d.update_layout(
-            height=500,
-            scene=dict(
-                xaxis_title="Protein Position",
-                yaxis_title="Epitope Probability",
-                zaxis_title="Epitope Density"
-            )
-        )
+                fig3d = px.scatter_3d(
+                        plot3d_df,
+                        x="Position",
+                        y="Probability",
+                        z="Density",
+                        color="Density",
+                        color_continuous_scale="viridis"
+                )
 
-        st.plotly_chart(fig3d, use_container_width=True)
-            
+                fig3d.update_layout(
+                        height=500,
+                        scene=dict(
+                                xaxis_title="Position",
+                                yaxis_title="Probability",
+                                zaxis_title="Density"
+                        )
+                )
+
+                st.plotly_chart(fig3d,use_container_width=True)
+
+
         # ==========================
-        # IMMUNOGENIC SCORE PANEL
+        # IMMUNOGENIC SCORE TAB
         # ==========================
+        with tab_score:
 
-        mean_prob = df["Probability"].mean()
-        total_pep = len(df)
-        epi_count = len(df[df["Category"]=="Epitope"])
+                st.markdown("### 🧬 Global Immunogenic Score")
 
-        density = epi_count / total_pep
+                mean_prob = df["Probability"].mean()
+                total_pep = len(df)
+                epi_count = len(df[df["Category"]=="Epitope"])
 
-        score = mean_prob
+                density_score = epi_count/total_pep
 
-        import plotly.graph_objects as go
+                gauge = go.Figure(go.Indicator(
+                        mode="gauge+number",
+                        value=mean_prob,
+                        number={'valueformat':".2f"},
+                        title={'text':"Global Immunogenic Score"},
+                        gauge={
+                                'axis':{'range':[0,1]},
+                                'bar':{'color':"#38bdf8"}
+                        }
+                ))
 
-        gauge = go.Figure(go.Indicator(
-            mode="gauge+number",
-            value=score,
-            number={'valueformat': ".2f"},
-            title={'text': "Global Immunogenic Score"},
-            gauge={
-                'axis': {'range':[0,1]},
-                'steps':[
-                    {'range':[0,0.3],'color':'lightgray'},
-                    {'range':[0.3,0.6],'color':'khaki'},
-                    {'range':[0.6,1],'color':'salmon'}
-                ],
-                'bar':{'color':"#38bdf8"}
-            }
-        ))
+                st.plotly_chart(gauge,use_container_width=True)
 
-        st.plotly_chart(gauge,use_container_width=True)
+                st.metric("Peptides scanned",total_pep)
+                st.metric("Predicted epitopes",epi_count)
+                st.metric("Epitope density",f"{density_score:.2%}")
 
-        st.metric("Peptides scanned", total_pep)
-        st.metric("Predicted epitopes", epi_count)
-        st.metric("Epitope density", f"{density:.2%}")
+
+
         
-        # ==========================
-        # TOP IMMUNOGENIC REGIONS
-        # ==========================
-        st.markdown("### 🧬 Top Immunogenic Regions")
-
-        clusters = []
-        start = None
-        count = 0
-
-        for pos,prob in zip(df["Position"],df["Probability"]):
-
-            if prob >= threshold and start is None:
-                start = pos
-                count = 1
-
-            elif prob >= threshold and start is not None:
-                count += 1
-
-            elif prob < threshold and start is not None:
-                end = pos - 1
-                clusters.append((start,end,count))
-                start = None
-
-        if start is not None:
-            clusters.append((start,df["Position"].iloc[-1],count))
-
-        # Build cluster table
-        cluster_table = []
-
-        for i,(s,e,c) in enumerate(clusters):
-            length = e - s + 1
-            density = c/length
-            cluster_table.append([
-                f"Cluster {i+1}",
-                s,
-                e,
-                round(density,3)
-            ])
-
-        cluster_df = pd.DataFrame(
-            cluster_table,
-            columns=["Region","Start","End","Epitope Density"]
-        )
-
-        if not cluster_df.empty:
-
-            cluster_df = cluster_df.sort_values(
-                by="Epitope Density",
-                ascending=False
-            )
-
-            st.dataframe(
-                cluster_df,
-                use_container_width=True
-            )
-
-        else:
-            st.info("No immunogenic clusters detected.")
-
-        # ==========================
-        # EPITOPE MOTIF MAP (HD)
-        # ==========================
-
-        st.markdown("### 🧬 Epitope Motif Map")
-
-        # Select top epitopes
-        epi_df = df[df["Category"] == "Epitope"] \
-                    .sort_values("Probability", ascending=False) \
-                    .head(40)
-
-        peptides = epi_df["Peptide"].tolist()
-
-        # Amino acid encoding
-        aa_list = list("ACDEFGHIKLMNPQRSTVWY")
-        aa_map = {aa:i for i,aa in enumerate(aa_list)}
-
-        matrix = []
-
-        for pep in peptides:
-            row = []
-            for aa in pep:
-                row.append(aa_map.get(aa,0))
-            matrix.append(row)
-
-        motif_df = pd.DataFrame(matrix)
-
-        motif_df.index = peptides
-        motif_df.columns = [f"P{i}" for i in range(1,10)]
-
-        import plotly.express as px
-
-        fig = px.imshow(
-            motif_df,
-            aspect="auto",
-            color_continuous_scale="viridis",
-            labels=dict(x="Peptide Position", y="Epitope", color="Residue Code")
-        )
-
-        fig.update_layout(
-            height=700,
-            font=dict(size=13),
-            plot_bgcolor="rgba(0,0,0,0)",
-            paper_bgcolor="rgba(0,0,0,0)"
-        )
-
-        st.plotly_chart(fig, use_container_width=True)
-
-with tab2:
-
-    st.markdown("### 🧠 Model Feature Importance")
-
-    feat = pd.DataFrame({
-        "Feature": ["Hydrophobicity", "Net Charge", "Entropy"],
-        "Importance": [0.32, 0.21, 0.17]
-    })
-
-    fig = px.bar(
-        feat,
-        x="Importance",
-        y="Feature",
-        orientation="h",
-        template="plotly_dark"
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
