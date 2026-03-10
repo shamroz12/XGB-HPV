@@ -484,12 +484,12 @@ with tab1:
         # ==========================
         # RESULT TABS
         # ==========================
-        tab_table, tab_prob, tab_landscape, tab_density, tab_3d, tab_score, tab_atlas = st.tabs([
+        tab_table, tab_prob, tab_landscape, tab_density, tab_2d, tab_score, tab_atlas = st.tabs([
                 "📊 Tables",
                 "📈 Probability Plot",
                 "🌍 Epitope Landscape",
                 "🧬 Epitope Density Map",
-                "🌐 3D Epitope Landscape",
+                "🌐 2D Epitope Landscape",
                 "🧬 Immunogenic Score",
                 "🧭 Epitope Atlas"
         ])
@@ -681,44 +681,40 @@ with tab1:
 
 
         # ==========================
-        # 3D LANDSCAPE TAB
+        # 2D EPITOPE LANDSCAPE
         # ==========================
-        with tab_3d:
+        with tab_2d:
 
-                st.markdown("### 🌐 3D Epitope Landscape")
+                st.markdown("### 🌐 Epitope Density Heatmap")
 
-        try:
-
-                plot3d_df = pd.DataFrame({
+                heat_df = pd.DataFrame({
                         "Position": df["Position"],
                         "Probability": df["Probability"],
                         "Density": density
                 })
 
-                fig3d = px.scatter_3d(
-                        plot3d_df,
+                fig_heat = px.density_heatmap(
+                        heat_df,
                         x="Position",
                         y="Probability",
                         z="Density",
-                        color="Density",
+                        nbinsx=60,
+                        nbinsy=40,
                         color_continuous_scale="viridis"
                 )
 
-                fig3d.update_layout(
+                fig_heat.update_layout(
                         height=500,
-                        scene=dict(
-                                xaxis_title="Protein Position",
-                                yaxis_title="Epitope Probability",
-                                zaxis_title="Epitope Density"
-                        )
+                        xaxis_title="Protein Position",
+                        yaxis_title="Epitope Probability",
+                        coloraxis_colorbar=dict(
+                                title="Epitope Density"
+                        ),
+                        plot_bgcolor="white",
+                        paper_bgcolor="white"
                 )
 
-                st.plotly_chart(fig3d, use_container_width=True)
-
-        except:
-
-                st.warning("⚠ 3D visualization requires WebGL. Please open the app in Chrome.")
-
+                st.plotly_chart(fig_heat, use_container_width=True)
 
         # ==========================
         # IMMUNOGENIC SCORE TAB
