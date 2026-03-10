@@ -484,12 +484,12 @@ with tab1:
         # ==========================
         # RESULT TABS
         # ==========================
-        tab_table, tab_prob, tab_landscape, tab_density, tab_hotspot, tab_score, tab_atlas = st.tabs([
+        tab_table, tab_prob, tab_landscape, tab_density, tab_interaction, tab_score, tab_atlas = st.tabs([
                 "📊 Tables",
                 "📈 Probability Plot",
                 "🌍 Epitope Landscape",
                 "🧬 Epitope Density Map",
-                "🌐 Epitope Hotspot Finder",
+                "🌐 Immune Interaction Map",
                 "🧬 Immunogenic Score",
                 "🧭 Epitope Atlas"
         ])
@@ -681,54 +681,86 @@ with tab1:
 
 
         # ==========================
-        # EPITOPE HOTSPOT FINDER
+        # IMMUNE INTERACTION MAP
         # ==========================
-        with tab_hotspot:
+        with tab_interaction:
 
-                st.markdown("### 🔥 Epitope Hotspot Finder")
+                st.markdown("### 🧠 Epitope–Immune Interaction Map")
 
-                window = 20
-                hotspot_score = []
+                # Select top predicted epitopes
+                top_epi = epitope_df.head(10)
 
-                for i in range(len(df)):
+                nodes_x = []
+                nodes_y = []
+                labels = []
 
-                        start = max(0, i-window)
-                        end = min(len(df), i+window)
+                # Epitope nodes
+                for i, row in enumerate(top_epi.itertuples()):
 
-                        region = df.iloc[start:end]
+                        nodes_x.append(i)
+                        nodes_y.append(1)
+                        labels.append(row.Peptide)
 
-                        epi_count = (region["Probability"] >= threshold).sum()
+                # MHC node
+                nodes_x.append(len(top_epi)/2)
+                nodes_y.append(2)
+                labels.append("MHC-I")
 
-                        hotspot_score.append(epi_count)
+                # TCR node
+                nodes_x.append(len(top_epi)/2)
+                nodes_y.append(3)
+                labels.append("TCR")
 
-                hotspot_df = pd.DataFrame({
-                        "Position": df["Position"],
-                        "HotspotScore": hotspot_score
-                })
+                fig_net = go.Figure()
 
-                fig_hot = go.Figure()
+                # Draw connections Epitope → MHC
+                for i in range(len(top_epi)):
 
-                fig_hot.add_trace(
+                        fig_net.add_trace(
+                                go.Scatter(
+                                        x=[nodes_x[i], nodes_x[-2]],
+                                        y=[nodes_y[i], nodes_y[-2]],
+                                        mode="lines",
+                                        line=dict(color="gray"),
+                                        showlegend=False
+                                )
+                        )
+
+                # Draw connection MHC → TCR
+                fig_net.add_trace(
                         go.Scatter(
-                                x=hotspot_df["Position"],
-                                y=hotspot_df["HotspotScore"],
+                                x=[nodes_x[-2], nodes_x[-1]],
+                                y=[nodes_y[-2], nodes_y[-1]],
                                 mode="lines",
-                                line=dict(color="#ef4444", width=3),
-                                fill="tozeroy",
-                                name="Hotspot Score"
+                                line=dict(color="red", width=3),
+                                showlegend=False
                         )
                 )
 
-                fig_hot.update_layout(
+                # Draw nodes
+                fig_net.add_trace(
+                        go.Scatter(
+                                x=nodes_x,
+                                y=nodes_y,
+                                mode="markers+text",
+                                marker=dict(
+                                        size=18,
+                                        color=["#6366f1"]*len(top_epi) + ["#22c55e","#ef4444"]
+                                ),
+                                text=labels,
+                                textposition="bottom center"
+                        )
+                )
+
+                fig_net.update_layout(
                         height=450,
-                        xaxis_title="Protein Position",
-                        yaxis_title="Epitope Cluster Score",
-                        hovermode="x unified",
+                        xaxis=dict(showgrid=False,visible=False),
+                        yaxis=dict(showgrid=False,visible=False),
                         plot_bgcolor="white",
                         paper_bgcolor="white"
                 )
 
-                st.plotly_chart(fig_hot, use_container_width=True)
+                st.plotly_chart(fig_net, use_container_width=True)
             
         # ==========================
         # IMMUNOGENIC SCORE TAB
