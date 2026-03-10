@@ -490,7 +490,8 @@ with tab1:
                 "🌍 Epitope Landscape",
                 "🧬 Epitope Density Map",
                 "🌐 3D Epitope Landscape",
-                "🧬 Immunogenic Score"
+                "🧬 Immunogenic Score",
+                "🧭 Epitope Atlas"
         ])
 
         # ==========================
@@ -742,6 +743,48 @@ with tab1:
                 st.metric("Peptides scanned",total_pep)
                 st.metric("Predicted epitopes",epi_count)
                 st.metric("Epitope density",f"{density_score:.2%}")
+
+        # ==========================
+        # PROTEIN EPITOPE ATLAS
+        # ==========================
+        with tab_atlas:
+
+                st.markdown("### 🧭 Protein Epitope Atlas")
+
+                atlas_df = df.copy()
+
+                atlas_df["Color"] = atlas_df["Category"].map({
+                        "Epitope":"red",
+                        "Non-Epitope":"lightgray"
+                })
+
+                fig_atlas = go.Figure()
+
+                fig_atlas.add_trace(
+                        go.Scatter(
+                                x=atlas_df["Position"],
+                                y=[1]*len(atlas_df),
+                                mode="markers",
+                                marker=dict(
+                                        color=atlas_df["Color"],
+                                        size=10
+                                ),
+                                hovertext=atlas_df["Peptide"],
+                                name="Peptide Window"
+                        )
+                )
+
+                fig_atlas.update_layout(
+                        height=200,
+                        yaxis=dict(
+                                showticklabels=False,
+                                title=""
+                        ),
+                        xaxis_title="Protein Position",
+                        plot_bgcolor="white"
+                )
+
+                st.plotly_chart(fig_atlas, use_container_width=True)
 
 
 
