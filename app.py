@@ -241,6 +241,10 @@ canvas {
         </a>
 
     </div>
+    
+    <div class="hero-footer">
+    © 2026 HPV EPIPRED • Developed by <b>Shamroz Abrar</b>
+    
 </div>
 
 <script>
