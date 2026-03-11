@@ -429,6 +429,36 @@ def extract_features(seq):
     return np.concatenate([pos_encoding, di_features,
         [hydro_frac,arom_frac,pos_frac,neg_frac,net_charge,entropy,avg_weight]])
 
+st.markdown("""
+<style>
+
+/* RESULT SECTION BACKGROUND */
+.result-bg {
+    background:
+        radial-gradient(circle at 20% 30%, rgba(56,189,248,0.15), transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(168,85,247,0.15), transparent 40%),
+        linear-gradient(135deg, #020617 0%, #0f172a 60%, #020617 100%);
+    padding: 30px;
+    border-radius: 18px;
+}
+
+/* TABLE CONTAINER */
+[data-testid="stDataFrame"] {
+    background: rgba(255,255,255,0.04);
+    border-radius: 14px;
+    backdrop-filter: blur(6px);
+}
+
+/* PLOT CONTAINER */
+.stPlotlyChart {
+    background: rgba(255,255,255,0.04);
+    border-radius: 14px;
+    padding: 10px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 # =========================================================
 # SCANNER SECTION (FULL RESTORED VERSION)
 # =========================================================
