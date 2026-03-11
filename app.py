@@ -859,6 +859,6 @@ with tab1:
 
                 st.plotly_chart(fig_atlas, use_container_width=True)
             
-            st.markdown('</div>', unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
 
   
