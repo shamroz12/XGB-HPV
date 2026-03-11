@@ -514,6 +514,8 @@ with tab1:
 
         st.session_state["df"] = df
 
+        st.markdown('<div class="result-bg">', unsafe_allow_html=True)
+
         # ==========================
         # SPLIT TABLES
         # ==========================
@@ -856,5 +858,7 @@ with tab1:
                 )
 
                 st.plotly_chart(fig_atlas, use_container_width=True)
+            
+            st.markdown('</div>', unsafe_allow_html=True)
 
   
