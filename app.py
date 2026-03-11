@@ -4,28 +4,6 @@ st.set_page_config(page_title="HPV EPIPRED", page_icon="🧬", layout="wide")
 st.markdown("""
 <style>
 
-.result-bg{
-    background-image: url("https://raw.githubusercontent.com/shamrozabrar/assets/main/protein_bg.jpg");
-    background-size: cover;
-    background-position: center;
-    padding: 35px;
-    border-radius: 18px;
-}
-
-.result-bg::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    background: rgba(2,6,23,0.75);
-    border-radius:18px;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<style>
-
 .block-container {
     padding-top: 1rem;
     padding-bottom: 1rem;
@@ -133,6 +111,51 @@ div[data-testid="stDataFrame"] div[role="gridcell"]:nth-child(3) {
     background: #c7d2fe;
     border-radius: 10px;
 }
+
+/* ===== RESULTS BACKGROUND ===== */
+
+.result-section{
+    position: relative;
+    background-image: url("https://images.unsplash.com/photo-1532187863486-abf9dbad1b69");
+    background-size: cover;
+    background-position: center;
+    border-radius: 20px;
+    padding: 40px;
+    margin-top: 40px;
+}
+
+/* dark overlay so text is readable */
+
+.result-section::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background: rgba(2,6,23,0.82);
+    border-radius:20px;
+    z-index:0;
+}
+
+/* bring content above overlay */
+
+.result-content{
+    position:relative;
+    z-index:1;
+}
+
+/* glass panels */
+
+[data-testid="stDataFrame"]{
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+}
+
+.stPlotlyChart{
+    background: rgba(255,255,255,0.04);
+    border-radius: 12px;
+    padding: 10px;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -535,9 +558,10 @@ with tab1:
         )
 
         st.session_state["df"] = df
+        
+        st.markdown('<div class="result-section"><div class="result-content">', unsafe_allow_html=True)
 
-        st.markdown('<div class="result-bg">', unsafe_allow_html=True)
-
+       
         # ==========================
         # SPLIT TABLES
         # ==========================
@@ -880,7 +904,6 @@ with tab1:
                 )
 
                 st.plotly_chart(fig_atlas, use_container_width=True)
-            
-                st.markdown('</div>', unsafe_allow_html=True)
 
-  
+                st.markdown('</div></div>', unsafe_allow_html=True)
+            
