@@ -4,6 +4,28 @@ st.set_page_config(page_title="HPV EPIPRED", page_icon="🧬", layout="wide")
 st.markdown("""
 <style>
 
+.result-bg{
+    background-image: url("https://raw.githubusercontent.com/shamrozabrar/assets/main/protein_bg.jpg");
+    background-size: cover;
+    background-position: center;
+    padding: 35px;
+    border-radius: 18px;
+}
+
+.result-bg::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background: rgba(2,6,23,0.75);
+    border-radius:18px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<style>
+
 .block-container {
     padding-top: 1rem;
     padding-bottom: 1rem;
