@@ -798,59 +798,55 @@ with tab1:
         # ==========================
         # EPITOPE LANDSCAPE TAB
         # ==========================
+
         with tab_landscape:
 
-                st.markdown("### 🌍 Epitope Biophysical Landscape")
-                
+                st.markdown("### 🌍 Epitope Immunogenic Landscape")
+
                 st.markdown("""
-        <div class="legend-box">
+                <div class="legend-box">
 
-        <div class="legend-title">🌍 Landscape Interpretation</div>
+                <div class="legend-title">🌍 Landscape Interpretation</div>
 
-        <div class="legend-item">📏 <b>X-axis</b> – Peptide position along the protein sequence</div>
+                <div class="legend-item">📏 <b>X-axis</b> – Peptide position along the protein</div>
 
-        <div class="legend-item">📊 <b>Y-axis</b> – Predicted epitope probability</div>
+                <div class="legend-item">📊 <b>Y-axis</b> – Predicted epitope probability</div>
 
-        <div class="legend-item">🎨 <b>Point Colors</b> – Clusters of peptides with similar immunogenic properties</div>
+                <div class="legend-item">🎨 <b>Point Colors</b> – Cluster assignment of peptides</div>
 
-        <div class="legend-item">✖ <b>Black Cross</b> – Cluster centers identified by the clustering algorithm</div>
+                <div class="legend-item">✖ <b>Black Cross</b> – Cluster center</div>
 
-        </div>
-        """, unsafe_allow_html=True)
+                </div>
+                """, unsafe_allow_html=True)
 
-        hydro = []
-        charge = []
+                X_cluster = df[["Position","Probability"]]
 
-        for pep in df["Peptide"]:
-                feats = extract_features(pep)
-                hydro.append(feats[-7])
-                charge.append(feats[-3])
+                kmeans = KMeans(n_clusters=4, random_state=42)
 
-        landscape_df = pd.DataFrame({
-                "Hydrophobicity": hydro,
-                "NetCharge": charge,
-                "Probability": df["Probability"],
-                "Peptide": df["Peptide"]
-        })
+                df["Cluster"] = kmeans.fit_predict(X_cluster)
 
-        fig_land = px.scatter(
-                landscape_df,
-                x="Hydrophobicity",
-                y="NetCharge",
-                color="Probability",
-                size="Probability",
-                hover_data=["Peptide"],
-                color_continuous_scale="Turbo"
-        )
+                centers = kmeans.cluster_centers_
 
-        fig_land.update_layout(
-                height=500,
-                xaxis_title="Hydrophobicity",
-                yaxis_title="Net Charge"
-        )
+                fig_land = px.scatter(
+                        df,
+                        x="Position",
+                        y="Probability",
+                        color="Cluster",
+                        hover_data=["Peptide"],
+                        color_continuous_scale="viridis"
+                )
 
-        st.plotly_chart(fig_land, use_container_width=True)
+                fig_land.add_trace(
+                        go.Scatter(
+                                x=centers[:,0],
+                                y=centers[:,1],
+                                mode="markers",
+                                marker=dict(color="black",size=12,symbol="x"),
+                                name="Cluster Center"
+                        )
+                )
 
+                st.plotly_chart(fig_land, use_container_width=True)
 
         # ==========================
         # EPITOPE DENSITY MAP TAB
@@ -1132,6 +1128,26 @@ with tab1:
         with tab_competition:
 
                 st.markdown("### ⚔️ Epitope Competition Heatmap")
+
+                st.markdown("""
+        <div class="legend-box">
+
+        <div class="legend-title">⚔️ Epitope Competition Map Guide</div>
+
+        <div class="legend-item">🔴 <b>Nodes</b> – Predicted epitope peptides</div>
+
+        <div class="legend-item">📏 <b>Node Size</b> – Epitope prediction probability</div>
+
+        <div class="legend-item">🔗 <b>Edges</b> – Overlapping peptides competing for MHC-I presentation</div>
+
+        <div class="legend-item">🔥 <b>Dense Networks</b> – Regions where multiple epitopes overlap and may compete</div>
+
+        <div class="legend-item">📍 <b>Isolated Nodes</b> – Unique epitopes with minimal overlap</div>
+
+        <div class="legend-item">🧬 <b>Biological Meaning</b> – Highly connected peptides may dominate antigen presentation</div>
+
+        </div>
+        """, unsafe_allow_html=True)
 
                 window = 10
                 competition_scores = []
