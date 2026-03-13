@@ -1,29 +1,6 @@
 import streamlit as st
 st.set_page_config(page_title="HPV EPIPRED", page_icon="🧬", layout="wide")
 
-# ==============================
-# THEME STATE
-# ==============================
-
-if "theme" not in st.session_state:
-    st.session_state.theme = "dark"
-
-col1, col2 = st.columns([8,2])
-
-with col2:
-    dark_mode = st.toggle(
-        "Dark Mode",
-        value=(st.session_state["theme"]=="dark"),
-        key="theme_toggle"
-    )
-
-if dark_mode:
-    st.session_state.theme = "dark"
-else:
-    st.session_state.theme = "light"
-
-theme = st.session_state.theme
-
 st.markdown("""
 <style>
 
