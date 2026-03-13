@@ -822,9 +822,9 @@ with tab1:
         # ==========================
         with tab_hotspot:
 
-                st.markdown("### 🔥 Epitope Cluster Regions")
+        st.markdown("### 🔥 Epitope Cluster Regions")
 
-                epi_df = df[df["Probability"] >= threshold].copy()
+        epi_df = df[df["Probability"] >= threshold].copy()
 
         clusters = []
         current_cluster = [epi_df.iloc[0]]
@@ -861,8 +861,6 @@ with tab1:
         cluster_df = pd.DataFrame(cluster_results)
 
         st.dataframe(cluster_df, use_container_width=True, hide_index=True)
-        
-
         # ==========================
         # IMMUNOGENICITY FINGERPRINT
         # ==========================
