@@ -618,7 +618,7 @@ with tab1:
         # ==========================
         # RESULT TABS
         # ==========================
-        tab_table, tab_prob, tab_landscape, tab_density, tab_fingerprint, tab_score, tab_atlas, tab_processing = st.tabs([
+        tab_table, tab_prob, tab_landscape, tab_density, tab_fingerprint, tab_score, tab_atlas, tab_competition = st.tabs([
                 "📊 Tables",
                 "📈 Probability Plot",
                 "🌍 Epitope Landscape",
@@ -626,7 +626,7 @@ with tab1:
                 "🌐 Immunogenicity Fingerprint",
                 "🧬 Immunogenic Score",
                 "🧭 Epitope Atlas",
-                "🔥 Antigen Processing"
+                "🔥 Epitope Competition Map"
         ])
 
         # ==========================
@@ -951,74 +951,68 @@ with tab1:
 
                 st.plotly_chart(fig_atlas, use_container_width=True)
 
-
         # ==========================
-        # ANTIGEN PROCESSING TAB
+        # EPITOPE COMPETITION MAP
         # ==========================
 
-        with tab_processing:
+        with tab_competition:
 
-                st.markdown("### ⚙️ Antigen Processing Efficiency")
+                st.markdown("### ⚔️ Epitope Competition Map")
 
-                proteasome_pref = set("LIFYW")
-                tap_pref = set("LIVFWY")
+                window = 10
+                competition_scores = []
 
-                proteasome_scores = []
-                tap_scores = []
+                for i in range(len(df)):
 
-                for pep in df["Peptide"]:
+                        start = max(0, i-window)
+                        end = min(len(df), i+window)
 
-                        score = 0
+                        region = df.iloc[start:end]
 
-                        if pep[0] in proteasome_pref:
-                                score += 1
+                        competition_scores.append(region["Probability"].mean())
 
-                        if pep[-1] in proteasome_pref:
-                                score += 1
+                comp_df = pd.DataFrame({
+                        "Position": df["Position"],
+                        "Competition_Score": competition_scores
+                })
 
-                        proteasome_scores.append(score/2)
+                fig = go.Figure()
 
-                        if pep[-1] in tap_pref:
-                                tap_scores.append(1)
-                        else:
-                                tap_scores.append(0.5)
-
-                df["Proteasome"] = proteasome_scores
-                df["TAP"] = tap_scores
-
-                df["Processing_Score"] = (
-                        0.6 * df["Probability"]
-                        + 0.2 * df["Proteasome"]
-                        + 0.2 * df["TAP"]
+                fig.add_trace(
+                        go.Scatter(
+                                x=comp_df["Position"],
+                                y=comp_df["Competition_Score"],
+                                mode="lines",
+                                line=dict(width=4, color="#ef4444"),
+                                name="Competition Score"
+                        )
                 )
 
-                proc_df = df[[
-                        "Position",
-                        "Peptide",
-                        "Probability",
-                        "Proteasome",
-                        "TAP",
-                        "Processing_Score"
-                ]].copy()
-
-                proc_df["Processing_Score"] = proc_df["Processing_Score"].round(3)
-
-                st.dataframe(
-                        proc_df,
-                        use_container_width=True,
-                        hide_index=True,
-                        height=450
-                )
-
-                st.markdown("### 📊 Processing Score Distribution")
-
-                fig = px.histogram(
-                        proc_df,
-                        x="Processing_Score",
-                        nbins=25
+                fig.update_layout(
+                        height=450,
+                        xaxis_title="Protein Position",
+                        yaxis_title="Epitope Competition Score",
+                        title="Immunogenic Competition Regions"
                 )
 
                 st.plotly_chart(fig, use_container_width=True)
+
+                st.markdown("---")
+
+                st.markdown("### 🏆 Dominant Immunogenic Regions")
+
+                region_df = comp_df.sort_values(
+                        by="Competition_Score",
+                        ascending=False
+                ).head(10)
+
+                region_df.insert(0, "Rank", range(1, len(region_df)+1))
+
+                st.dataframe(
+                        region_df,
+                        use_container_width=True,
+                        hide_index=True
+                )
             
 # ==========================
 # FEATURE NAMES FOR EXPLAINABILITY
