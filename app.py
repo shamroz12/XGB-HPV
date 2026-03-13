@@ -17,7 +17,11 @@ theme = st.session_state.theme
 col1, col2 = st.columns([9,1])
 
 with col2:
-    dark_mode = st.toggle("Dark Mode", value=(st.session_state["theme"]=="dark"))
+    dark_mode = st.toggle(
+        "Dark Mode",
+        value=(st.session_state["theme"]=="dark"),
+        key="theme_toggle"
+    )
 
 if dark_mode:
     st.session_state["theme"] = "dark"
