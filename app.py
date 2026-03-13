@@ -822,9 +822,9 @@ with tab1:
         # ==========================
         with tab_hotspot:
 
-        st.markdown("### 🔥 Epitope Cluster Regions")
+                st.markdown("### 🔥 Epitope Cluster Regions")
 
-        epi_df = df[df["Probability"] >= threshold].copy()
+                epi_df = df[df["Probability"] >= threshold].copy()
 
         clusters = []
         current_cluster = [epi_df.iloc[0]]
