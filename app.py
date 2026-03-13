@@ -955,9 +955,13 @@ with tab1:
         # EPITOPE COMPETITION MAP
         # ==========================
 
+                # ==========================
+        # EPITOPE COMPETITION HEATMAP
+        # ==========================
+
         with tab_competition:
 
-                st.markdown("### ⚔️ Epitope Competition Map")
+                st.markdown("### ⚔️ Epitope Competition Heatmap")
 
                 window = 10
                 competition_scores = []
@@ -976,23 +980,21 @@ with tab1:
                         "Competition_Score": competition_scores
                 })
 
-                fig = go.Figure()
+                # reshape for heatmap
+                heat = comp_df["Competition_Score"].values.reshape(1,-1)
 
-                fig.add_trace(
-                        go.Scatter(
-                                x=comp_df["Position"],
-                                y=comp_df["Competition_Score"],
-                                mode="lines",
-                                line=dict(width=4, color="#ef4444"),
-                                name="Competition Score"
-                        )
+                fig = px.imshow(
+                        heat,
+                        aspect="auto",
+                        color_continuous_scale="RdYlBu_r",
+                        labels=dict(color="Competition Score")
                 )
 
                 fig.update_layout(
-                        height=450,
+                        height=200,
                         xaxis_title="Protein Position",
-                        yaxis_title="Epitope Competition Score",
-                        title="Immunogenic Competition Regions"
+                        yaxis=dict(showticklabels=False),
+                        title="Epitope Competition Across Protein Sequence"
                 )
 
                 st.plotly_chart(fig, use_container_width=True)
@@ -1006,7 +1008,7 @@ with tab1:
                         ascending=False
                 ).head(10)
 
-                region_df.insert(0, "Rank", range(1, len(region_df)+1))
+                region_df.insert(0,"Rank",range(1,len(region_df)+1))
 
                 st.dataframe(
                         region_df,
