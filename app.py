@@ -548,6 +548,30 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<style>
+.legend-box {
+    background: linear-gradient(135deg,#f8fafc,#eef2ff);
+    border-left: 6px solid #6366f1;
+    padding: 16px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.legend-title {
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 8px;
+}
+
+.legend-item {
+    margin-left: 6px;
+    line-height: 1.6;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # =========================================================
 # SCANNER SECTION (FULL RESTORED VERSION)
 # =========================================================
@@ -635,6 +659,23 @@ with tab1:
         with tab_table:
 
                 st.markdown("### 🟢 Predicted Epitopes")
+
+                    st.markdown("""
+        <div class="legend-box">
+
+        <div class="legend-title">📊 Table Description</div>
+
+        <div class="legend-item">📍 <b>Position</b> – Starting index of the peptide in the protein sequence</div>
+
+        <div class="legend-item">🧬 <b>Peptide</b> – Extracted 9-mer amino acid window</div>
+
+        <div class="legend-item">📈 <b>Probability</b> – Machine learning predicted epitope likelihood</div>
+
+        <div class="legend-item">🏷 <b>Category</b> – Epitope classification based on prediction threshold</div>
+
+        </div>
+        """, unsafe_allow_html=True)
+            
 
                 if not epitope_df.empty:
 
