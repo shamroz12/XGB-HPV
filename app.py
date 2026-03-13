@@ -1350,10 +1350,7 @@ with tab1:
         elements.append(Spacer(1,20))
 
         # Save images temporarily for report
-        with open("prob.png","wb") as f: f.write(prob_img)
-        with open("land.png","wb") as f: f.write(landscape_img)
-        with open("dens.png","wb") as f: f.write(density_img)
-
+        
         elements.append(Paragraph("Epitope Probability Plot", styles['Heading2']))
         elements.append(Image("prob.png", width=500, height=250))
 
