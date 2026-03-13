@@ -910,78 +910,60 @@ with tab1:
                 st.metric("Epitope density",f"{density_score:.2%}")
 
         # ==========================
-        # PROTEIN EPITOPE ATLAS
+        # STACKED PROTEIN EPITOPE ATLAS
         # ==========================
 
         with tab_atlas:
 
-                st.markdown("### 🧭 Protein Epitope Atlas")
+                st.markdown("### 🧭 Stacked Protein Epitope Atlas")
 
                 atlas_df = df.copy()
 
+                # assign vertical tracks so overlapping peptides stack
+                tracks = []
+                current_track = 0
+
+                for i in range(len(atlas_df)):
+                        tracks.append(current_track)
+                        current_track = (current_track + 1) % 6
+
+                atlas_df["Track"] = tracks
+
                 atlas_df["Color"] = atlas_df["Category"].map({
-                        "Epitope":"red",
-                        "Non-Epitope":"lightgray"
+                        "Epitope": "red",
+                        "Non-Epitope": "lightgray"
                 })
 
-                # bubble size based on probability
-                atlas_df["Size"] = atlas_df["Probability"] * 30 + 4
+                atlas_df["Size"] = atlas_df["Probability"] * 20 + 4
 
                 fig_atlas = go.Figure()
 
-                # ==========================
-                # BUBBLE ATLAS
-                # ==========================
-
                 fig_atlas.add_trace(
                         go.Scatter(
                                 x=atlas_df["Position"],
-                                y=[1]*len(atlas_df),
+                                y=atlas_df["Track"],
                                 mode="markers",
                                 marker=dict(
-                                        color=atlas_df["Color"],
                                         size=atlas_df["Size"],
+                                        color=atlas_df["Color"],
                                         opacity=0.85
                                 ),
                                 hovertext=atlas_df["Peptide"],
-                                name="Peptide Window"
+                                name="Peptide Windows"
                         )
                 )
 
-                # ==========================
-                # EPITOPE DENSITY OVERLAY
-                # ==========================
-
-                density = np.convolve(
-                        atlas_df["Probability"],
-                        np.ones(8)/8,
-                        mode="same"
-                )
-
-                fig_atlas.add_trace(
-                        go.Scatter(
-                                x=atlas_df["Position"],
-                                y=density,
-                                mode="lines",
-                                line=dict(color="blue", width=3),
-                                name="Epitope Density"
-                        )
-                )
-
-                # ==========================
-                # TOP EPITOPES HIGHLIGHT
-                # ==========================
-
-                top = atlas_df.nlargest(10,"Probability")
+                # highlight top epitopes
+                top = atlas_df.nlargest(10, "Probability")
 
                 fig_atlas.add_trace(
                         go.Scatter(
                                 x=top["Position"],
-                                y=[1.08]*len(top),
+                                y=top["Track"],
                                 mode="markers",
                                 marker=dict(
+                                        size=18,
                                         color="gold",
-                                        size=16,
                                         symbol="star"
                                 ),
                                 hovertext=top["Peptide"],
@@ -989,18 +971,11 @@ with tab1:
                         )
                 )
 
-                # ==========================
-                # LAYOUT
-                # ==========================
-
                 fig_atlas.update_layout(
-                        height=260,
+                        height=420,
                         xaxis_title="Protein Position",
-                        yaxis=dict(
-                                showticklabels=False,
-                                title=""
-                        ),
-                        title="Protein Epitope Atlas"
+                        yaxis_title="Peptide Track",
+                        title="Stacked Epitope Atlas"
                 )
 
                 st.plotly_chart(fig_atlas, use_container_width=True)
