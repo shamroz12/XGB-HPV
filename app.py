@@ -276,6 +276,7 @@ import streamlit.components.v1 as components
 # =========================================================
 st.markdown("""
 <style>
+        
 .block-container { padding-top: 0rem !important; }
 header {visibility: hidden;}
 html { scroll-behavior: smooth; }
