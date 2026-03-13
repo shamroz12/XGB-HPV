@@ -1304,13 +1304,13 @@ with tab1:
         # EXPORT FIGURES
         # ==========================
 
-        prob_img = fig.to_image(format="png")
-        landscape_img = fig_land.to_image(format="png")
-        density_img = fig_density.to_image(format="png")
-        fingerprint_img = fig_radar.to_image(format="png")
-        score_img = gauge.to_image(format="png")
-        atlas_img = fig_atlas.to_image(format="png")
-
+        prob_html = fig.to_html(full_html=False, include_plotlyjs="cdn")
+        landscape_html = fig_land.to_html(full_html=False, include_plotlyjs="cdn")
+        density_html = fig_density.to_html(full_html=False, include_plotlyjs="cdn")
+        fingerprint_html = fig_radar.to_html(full_html=False, include_plotlyjs="cdn")
+        score_html = gauge.to_html(full_html=False, include_plotlyjs="cdn")
+        atlas_html = fig_atlas.to_html(full_html=False, include_plotlyjs="cdn")
+        
         # ==========================
         # EXCEL EXPORT
         # ==========================
@@ -1387,14 +1387,13 @@ with tab1:
                 zip_file.writestr("results.xlsx", excel_buffer.getvalue())
                 zip_file.writestr("report.pdf", pdf_buffer.getvalue())
 
-                zip_file.writestr("probability_plot.png", prob_img)
-                zip_file.writestr("landscape_plot.png", landscape_img)
-                zip_file.writestr("density_map.png", density_img)
-                zip_file.writestr("fingerprint.png", fingerprint_img)
-                zip_file.writestr("immunogenic_score.png", score_img)
-                zip_file.writestr("epitope_atlas.png", atlas_img)
-
-        zip_buffer.seek(0)
+                zip_file.writestr("probability_plot.html", prob_html)
+                zip_file.writestr("landscape_plot.html", landscape_html)
+                zip_file.writestr("density_map.html", density_html)
+                zip_file.writestr("fingerprint.html", fingerprint_html)
+                zip_file.writestr("immunogenic_score.html", score_html)
+                zip_file.writestr("epitope_atlas.html", atlas_html)
+                zip_buffer.seek(0)
 
         st.markdown("### 📦 Download Results")
 
