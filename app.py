@@ -10,10 +10,26 @@ if "theme" not in st.session_state:
 
 theme = st.session_state.theme
 
+# ============================
+# THEME TOGGLE
+# ============================
+
+col1, col2 = st.columns([9,1])
+
+with col2:
+    dark_mode = st.toggle("Dark Mode", value=(st.session_state["theme"]=="dark"))
+
+if dark_mode:
+    st.session_state["theme"] = "dark"
+else:
+    st.session_state["theme"] = "light"
+
+theme = st.session_state["theme"]
+
 st.markdown("""
 <style>
 
-    html, body, [data-testid="stAppViewContainer"]{{
+   html, body, [data-testid="stAppViewContainer"]{{
     background-color: {"#0f172a" if theme=="dark" else "#ffffff"};
     color: {"#e2e8f0" if theme=="dark" else "#1e293b"};
 }}
@@ -24,9 +40,15 @@ textarea{{
 }}
 
 div[data-testid="stDataFrame"]{{
+    background: {"rgba(255,255,255,0.04)" if theme=="dark" else "#f1f5f9"};
+}}
+
+.stPlotlyChart{{
     background: {"rgba(255,255,255,0.04)" if theme=="dark" else "#f8fafc"};
 }}
 
+</style>
+""", unsafe_allow_html=True)
     
 /* ======================================================
 IMPORT PROFESSIONAL FONTS
