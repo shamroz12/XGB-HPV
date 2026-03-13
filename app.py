@@ -983,4 +983,29 @@ with tab1:
 
                 st.plotly_chart(fig_atlas, use_container_width=True)
 
+with tab2:
+
+        st.markdown("### 📊 Model Feature Importance")
+
+        import matplotlib.pyplot as plt
+
+        importance = model.feature_importances_
+
+        feature_names = [f"Feature_{i}" for i in range(len(importance))]
+
+        imp_df = pd.DataFrame({
+                "Feature": feature_names,
+                "Importance": importance
+        }).sort_values(by="Importance", ascending=False).head(20)
+
+        fig = px.bar(
+                imp_df,
+                x="Importance",
+                y="Feature",
+                orientation="h",
+                title="Top Features Driving Epitope Prediction"
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
             
