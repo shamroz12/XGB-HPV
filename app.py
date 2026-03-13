@@ -1305,7 +1305,7 @@ with tab1:
                 )
 
         def section_title(text):
-    return Table(
+            return Table(
         [[text]],
         style=[
             ("BACKGROUND",(0,0),(-1,-1),"#2c3e50"),
