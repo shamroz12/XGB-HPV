@@ -822,12 +822,12 @@ with tab1:
         # ==========================
         with tab_hotspot:
 
-        st.markdown("### 🔥 Epitope Hotspot Regions")
+               st.markdown("### 🔥 Epitope Hotspot Regions")
 
-        hotspot_window = 12
-        hotspots = []
+               hotspot_window = 12
+               hotspots = []
 
-        for i in range(len(df) - hotspot_window):
+               for i in range(len(df) - hotspot_window):
 
                 region = df.iloc[i:i+hotspot_window]
 
