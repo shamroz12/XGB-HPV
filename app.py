@@ -4,11 +4,15 @@ st.set_page_config(page_title="HPV EPIPRED", page_icon="🧬", layout="wide")
 st.markdown("""
 <style>
 
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap');
+/* ============================
+IMPORT PROFESSIONAL FONTS
+============================ */
 
-/* =========================
-GLOBAL FONT
-========================= */
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap');
+
+/* ============================
+GLOBAL APP FONT
+============================ */
 
 html, body, [class*="css"] {
     font-family: 'Inter', sans-serif !important;
@@ -16,9 +20,9 @@ html, body, [class*="css"] {
     line-height: 1.6;
 }
 
-/* =========================
+/* ============================
 HEADINGS
-========================= */
+============================ */
 
 h1, h2, h3 {
     font-family: 'Sora', sans-serif !important;
@@ -30,9 +34,9 @@ h1 { font-size: 44px !important; }
 h2 { font-size: 32px !important; }
 h3 { font-size: 22px !important; }
 
-/* =========================
+/* ============================
 8PX SPACING SYSTEM
-========================= */
+============================ */
 
 .block-container {
     padding-top: 16px;
@@ -43,9 +47,9 @@ h3 { font-size: 22px !important; }
     gap: 16px;
 }
 
-/* =========================
+/* ============================
 BUTTONS
-========================= */
+============================ */
 
 .stButton > button {
     font-family: 'Inter', sans-serif !important;
@@ -60,17 +64,17 @@ BUTTONS
     box-shadow: 0 8px 20px rgba(99,102,241,0.25);
 }
 
-/* =========================
+/* ============================
 DOWNLOAD BUTTON
-========================= */
+============================ */
 
 .stDownloadButton > button {
     border-radius: 12px;
 }
 
-/* =========================
+/* ============================
 TABS
-========================= */
+============================ */
 
 div[data-baseweb="tab-list"] {
     gap: 24px;
@@ -87,21 +91,23 @@ button[data-baseweb="tab"][aria-selected="true"] {
     border-bottom: 3px solid #6366f1 !important;
 }
 
-/* =========================
-INPUTS + SEQUENCE BOX
-========================= */
+/* ============================
+FASTA / SEQUENCE INPUT
+============================ */
 
 textarea, input {
     font-family: 'JetBrains Mono', monospace !important;
     font-size: 15px !important;
+    letter-spacing: 1px;
     border-radius: 12px !important;
 }
 
-/* =========================
-DATAFRAME
-========================= */
+/* ============================
+DATA TABLES
+============================ */
 
 div[data-testid="stDataFrame"] {
+    font-family: 'IBM Plex Sans', sans-serif !important;
     border-radius: 12px;
 }
 
@@ -113,25 +119,25 @@ div[data-testid="stDataFrame"] thead tr th {
     font-weight: 700 !important;
 }
 
-/* Probability column highlight */
+/* Highlight Probability Column */
 
 div[data-testid="stDataFrame"] div[role="gridcell"]:nth-child(3) {
     font-weight: 700 !important;
     color: #6366f1 !important;
 }
 
-/* =========================
+/* ============================
 METRICS
-========================= */
+============================ */
 
 [data-testid="metric-container"] {
     border-radius: 16px;
     padding: 16px;
 }
 
-/* =========================
+/* ============================
 SCROLLBAR
-========================= */
+============================ */
 
 ::-webkit-scrollbar {
     width: 8px;
