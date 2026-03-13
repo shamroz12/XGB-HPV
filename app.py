@@ -148,6 +148,36 @@ SCROLLBAR
     border-radius: 10px;
 }
 
+/* =========================
+CENTERED RESEARCH LAYOUT
+========================= */
+
+.main .block-container {
+    max-width: 1200px;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* Center page */
+
+[data-testid="stAppViewContainer"] {
+    display: flex;
+    justify-content: center;
+}
+
+/* Content container */
+
+.main {
+    width: 100%;
+    max-width: 1200px;
+}
+
+/* Remove extra whitespace */
+
+[data-testid="stVerticalBlock"] {
+    gap: 18px;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
