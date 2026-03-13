@@ -8,7 +8,7 @@ st.set_page_config(page_title="HPV EPIPRED", page_icon="🧬", layout="wide")
 if "theme" not in st.session_state:
     st.session_state.theme = "dark"
 
-col1, col2 = st.columns([9,1])
+col1, col2 = st.columns([8,2])
 
 with col2:
     dark_mode = st.toggle(
@@ -136,7 +136,7 @@ button[data-baseweb="tab"]{
     font-family:'Inter', sans-serif;
     font-size:16px;
     font-weight:600;
-    color:#cbd5e1;
+    color: {"#cbd5e1" if theme=="dark" else "#1e293b"};
 }
 
 button[data-baseweb="tab"][aria-selected="true"]{
@@ -326,8 +326,7 @@ canvas {
 
 .hero-sub {
     font-size:40px;
-    color:#cbd5e1;
-    margin-top:10px;
+    color: {"#cbd5e1" if theme=="dark" else "#1e293b"};
 }
 
 .cta {
