@@ -217,11 +217,11 @@ import math
 from sklearn.cluster import KMeans
 import networkx as nx
 import streamlit.components.v1 as components
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import letter
-import io
 from reportlab.lib import colors
+import io
 
 # =========================================================
 # REMOVE STREAMLIT DEFAULT PADDING
