@@ -560,12 +560,6 @@ tab1, tab2 = st.tabs(["🔬 AI Scanner", "🧠 Model Explainability"])
 # ==========================
 with tab1:
 
-            peptide_length = st.selectbox(
-                "Peptide Length",
-                [8,9,10,11],
-                index=1
-        )
-
     mode = st.radio("Mode", ["Single Sequence","Batch Upload"])
     fasta = ""
 
