@@ -27,13 +27,6 @@ theme = st.session_state.theme
 st.markdown(f"""
 <style>
 
-/* APP BACKGROUND */
-
-html, body, [data-testid="stAppViewContainer"]{{
-    background-color: {"#0f172a" if theme=="dark" else "#ffffff"};
-    color: {"#e2e8f0" if theme=="dark" else "#1e293b"};
-}}
-
 /* INPUT BOX */
 
 textarea{{
@@ -276,8 +269,6 @@ st.markdown("""
 
 html, body, [class*="css"] {
     font-family: 'Inter', sans-serif !important;
-    background-color: #0f172a;
-    color: white;
 }
 
 h1, h2, h3 {
@@ -287,23 +278,9 @@ h1, h2, h3 {
 """, unsafe_allow_html=True)
 
 # =========================================================
-# THEME TOGGLE
-# =========================================================
-
-col1, col2 = st.columns([9,1])
-
-with col2:
-    theme_toggle = st.toggle("Dark Mode", value=(st.session_state.theme == "dark"))
-
-if theme_toggle:
-    st.session_state.theme = "dark"
-else:
-    st.session_state.theme = "light"
-
-# =========================================================
 # HERO BLOCK
 # =========================================================
-components.html("""
+components.html(f"""
 <style>
 .hero-footer{
     position:absolute;
@@ -315,16 +292,14 @@ components.html("""
     letter-spacing:1px;
 }
 
-.hero {
+.hero {{
     position: relative;
     width: 100%;
     height: 100vh;
     overflow: hidden;
     background:
-        radial-gradient(circle at 30% 40%, #3b0764 0%, transparent 45%),
-        radial-gradient(circle at 70% 60%, #1e1b4b 0%, transparent 50%),
-        linear-gradient(135deg, #020617 0%, #0f172a 60%, #020617 100%);
-}
+    {"linear-gradient(135deg,#020617,#0f172a)" if theme=="dark" else "linear-gradient(135deg,#ffffff,#f1f5f9)"};
+}}
 
 canvas {
     position: absolute;
