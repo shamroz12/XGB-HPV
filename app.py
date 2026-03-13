@@ -64,12 +64,12 @@ IMPORT PROFESSIONAL FONTS
 GLOBAL STYLE
 ====================================================== */
 
-html, body, [data-testid="stAppViewContainer"]{
+html, body, [data-testid="stAppViewContainer"]{{
     font-family: 'Inter', sans-serif;
-    background-color:#0f172a;
-    color:#e2e8f0;
+    background-color: {"#0f172a" if theme=="dark" else "#ffffff"};
+    color: {"#e2e8f0" if theme=="dark" else "#1e293b"};
     line-height:1.6;
-}
+}}
 
 
 /* ======================================================
