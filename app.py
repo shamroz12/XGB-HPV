@@ -691,7 +691,8 @@ with tab1:
 
                 st.dataframe(
                         top10[["Rank","Position","Peptide","Length","Probability"]],
-                        use_container_width=True
+                        use_container_width=True,
+                        hide_index=True
                 )
 
 
