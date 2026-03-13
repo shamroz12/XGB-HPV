@@ -4,48 +4,54 @@ st.set_page_config(page_title="HPV EPIPRED", page_icon="🧬", layout="wide")
 st.markdown("""
 <style>
 
-.block-container {
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-}
-
-[data-testid="stVerticalBlock"] {
-    gap: 0.5rem;
-}
-
-h3 {
-    margin-bottom: 0.2rem;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<style>
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap');
 
-/* GLOBAL APP STYLE */
+/* =========================
+GLOBAL FONT
+========================= */
+
 html, body, [class*="css"] {
     font-family: 'Inter', sans-serif !important;
     letter-spacing: -0.2px;
+    line-height: 1.6;
 }
 
-/* HEADINGS */
+/* =========================
+HEADINGS
+========================= */
+
 h1, h2, h3 {
     font-family: 'Sora', sans-serif !important;
     font-weight: 700 !important;
+    margin-bottom: 8px;
 }
 
-h1 { font-size: 48px !important; }
-h2 { font-size: 34px !important; }
-h3 { font-size: 24px !important; }
+h1 { font-size: 44px !important; }
+h2 { font-size: 32px !important; }
+h3 { font-size: 22px !important; }
 
-/* BUTTONS */
+/* =========================
+8PX SPACING SYSTEM
+========================= */
+
+.block-container {
+    padding-top: 16px;
+    padding-bottom: 16px;
+}
+
+[data-testid="stVerticalBlock"] {
+    gap: 16px;
+}
+
+/* =========================
+BUTTONS
+========================= */
+
 .stButton > button {
     font-family: 'Inter', sans-serif !important;
     font-weight: 600;
     border-radius: 12px;
-    padding: 10px 24px;
+    padding: 8px 24px;
     transition: all 0.2s ease;
 }
 
@@ -54,19 +60,26 @@ h3 { font-size: 24px !important; }
     box-shadow: 0 8px 20px rgba(99,102,241,0.25);
 }
 
-/* DOWNLOAD BUTTON */
+/* =========================
+DOWNLOAD BUTTON
+========================= */
+
 .stDownloadButton > button {
     border-radius: 12px;
 }
 
-/* TABS */
+/* =========================
+TABS
+========================= */
+
 div[data-baseweb="tab-list"] {
-    gap: 35px;
+    gap: 24px;
 }
 
 button[data-baseweb="tab"] {
-    font-size: 18px !important;
+    font-size: 16px !important;
     font-weight: 600 !important;
+    padding-bottom: 8px;
     border-bottom: 2px solid transparent !important;
 }
 
@@ -74,35 +87,52 @@ button[data-baseweb="tab"][aria-selected="true"] {
     border-bottom: 3px solid #6366f1 !important;
 }
 
-/* INPUTS + SEQUENCES */
+/* =========================
+INPUTS + SEQUENCE BOX
+========================= */
+
 textarea, input {
     font-family: 'JetBrains Mono', monospace !important;
     font-size: 15px !important;
     border-radius: 12px !important;
 }
 
-/* DATAFRAME */
+/* =========================
+DATAFRAME
+========================= */
+
+div[data-testid="stDataFrame"] {
+    border-radius: 12px;
+}
+
 div[data-testid="stDataFrame"] div[role="grid"] * {
-    font-size: 16px !important;
+    font-size: 15px !important;
 }
 
 div[data-testid="stDataFrame"] thead tr th {
     font-weight: 700 !important;
 }
 
-/* PROBABILITY COLUMN */
+/* Probability column highlight */
+
 div[data-testid="stDataFrame"] div[role="gridcell"]:nth-child(3) {
     font-weight: 700 !important;
     color: #6366f1 !important;
 }
 
-/* METRICS */
+/* =========================
+METRICS
+========================= */
+
 [data-testid="metric-container"] {
     border-radius: 16px;
-    padding: 12px 18px;
+    padding: 16px;
 }
 
-/* SCROLLBAR */
+/* =========================
+SCROLLBAR
+========================= */
+
 ::-webkit-scrollbar {
     width: 8px;
 }
