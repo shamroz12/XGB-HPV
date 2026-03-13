@@ -203,62 +203,6 @@ header{
     visibility:hidden;
 }
 
-theme = st.session_state.theme
-
-if theme == "dark":
-
-    st.markdown("""
-    <style>
-
-    body {
-        background-color:#0f172a;
-        color:#e2e8f0;
-    }
-
-    .stButton > button {
-        background:#6366f1;
-        color:white;
-    }
-
-    textarea {
-        background:#1e293b;
-        color:#e2e8f0;
-    }
-
-    div[data-testid="stDataFrame"]{
-        background:rgba(255,255,255,0.05);
-    }
-
-    </style>
-    """, unsafe_allow_html=True)
-
-else:
-
-    st.markdown("""
-    <style>
-
-    body {
-        background-color:white;
-        color:#1e293b;
-    }
-
-    .stButton > button {
-        background:#4f46e5;
-        color:white;
-    }
-
-    textarea {
-        background:white;
-        color:#1e293b;
-    }
-
-    div[data-testid="stDataFrame"]{
-        background:#f8fafc;
-    }
-
-    </style>
-    """, unsafe_allow_html=True)
-
 import numpy as np
 import pandas as pd
 import joblib
@@ -276,7 +220,6 @@ import streamlit.components.v1 as components
 # =========================================================
 st.markdown("""
 <style>
-        
 .block-container { padding-top: 0rem !important; }
 header {visibility: hidden;}
 html { scroll-behavior: smooth; }
