@@ -4,6 +4,28 @@ st.set_page_config(page_title="HPV EPIPRED", page_icon="🧬", layout="wide")
 st.markdown("""
 <style>
 
+# =========================================================
+# THEME STATE
+# =========================================================
+
+if "theme" not in st.session_state:
+    st.session_state.theme = "dark"
+
+    html, body, [data-testid="stAppViewContainer"]{{
+    background-color: {"#0f172a" if theme=="dark" else "#ffffff"};
+    color: {"#e2e8f0" if theme=="dark" else "#1e293b"};
+}}
+
+textarea{{
+    background: {"#1e293b" if theme=="dark" else "#ffffff"};
+    color: {"#e2e8f0" if theme=="dark" else "#1e293b"};
+}}
+
+div[data-testid="stDataFrame"]{{
+    background: {"rgba(255,255,255,0.04)" if theme=="dark" else "#f8fafc"};
+}}
+
+    
 /* ======================================================
 IMPORT PROFESSIONAL FONTS
 ====================================================== */
@@ -236,6 +258,20 @@ h1, h2, h3 {
 }
 </style>
 """, unsafe_allow_html=True)
+
+# =========================================================
+# THEME TOGGLE
+# =========================================================
+
+col1, col2 = st.columns([9,1])
+
+with col2:
+    theme_toggle = st.toggle("Dark Mode", value=(st.session_state.theme == "dark"))
+
+if theme_toggle:
+    st.session_state.theme = "dark"
+else:
+    st.session_state.theme = "light"
 
 # =========================================================
 # HERO BLOCK
