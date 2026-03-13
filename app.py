@@ -387,7 +387,7 @@ function resize(){
     immune.height = window.innerHeight;
     network.width = window.innerWidth;
     network.height = window.innerHeight;
-}
+}}
 resize();
 window.addEventListener("resize", resize);
 
