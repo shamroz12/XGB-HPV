@@ -223,6 +223,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 import io
 import matplotlib.pyplot as plt
+from reportlab.platypus import Image
 
 # =========================================================
 # REMOVE STREAMLIT DEFAULT PADDING
@@ -1429,52 +1430,52 @@ with tab1:
 
         pdf_buffer.seek(0)
 
-                # ==========================
+        # ==========================
         # ADD PLOTS TO PDF
         # ==========================
 
-        try:
+                # ==========================
+        # GENERATE PLOT IMAGES
+        # ==========================
 
-                # Probability plot
-                fig_prob = fig.to_dict()
-                plt.figure(figsize=(6,3))
-                plt.plot(df["Position"], df["Probability"])
-                plt.axhline(y=threshold, color='red', linestyle='--')
-                plt.xlabel("Protein Position")
-                plt.ylabel("Epitope Probability")
-                plt.title("Epitope Probability Plot")
+        # Probability plot
+        plt.figure(figsize=(6,3))
+        plt.plot(df["Position"], df["Probability"], color="blue")
+        plt.axhline(y=threshold, color="red", linestyle="--")
+        plt.xlabel("Protein Position")
+        plt.ylabel("Epitope Probability")
+        plt.title("Epitope Probability Across Protein")
 
-                prob_path = "prob_plot.png"
-                plt.savefig(prob_path, dpi=300, bbox_inches="tight")
-                plt.close()
-
-                elements.append(Paragraph("<b>Epitope Probability Plot</b>", styles['Heading2']))
-                elements.append(Image(prob_path, width=450, height=220))
-
-                elements.append(Spacer(1,20))
+        prob_plot = "probability_plot.png"
+        plt.savefig(prob_plot, dpi=300, bbox_inches="tight")
+        plt.close()
 
 
-                # Density map
-                plt.figure(figsize=(6,3))
-                plt.bar(density_df["Position"], density_df["Density"])
-                plt.xlabel("Protein Position")
-                plt.ylabel("Epitope Density")
-                plt.title("Epitope Density Map")
+        # Density plot
+        plt.figure(figsize=(6,3))
+        plt.bar(density_df["Position"], density_df["Density"], color="purple")
+        plt.xlabel("Protein Position")
+        plt.ylabel("Epitope Density")
+        plt.title("Epitope Density Map")
 
-                dens_path = "density_plot.png"
-                plt.savefig(dens_path, dpi=300, bbox_inches="tight")
-                plt.close()
+        density_plot = "density_plot.png"
+        plt.savefig(density_plot, dpi=300, bbox_inches="tight")
+        plt.close()
 
-                elements.append(Paragraph("<b>Epitope Density Map</b>", styles['Heading2']))
-                elements.append(Image(dens_path, width=450, height=220))
 
-        except Exception as e:
+        # ==========================
+        # ADD PLOTS TO PDF
+        # ==========================
 
-                elements.append(Paragraph(
-                        "Plots could not be generated in this environment.",
-                        styles['Normal']
-                ))
+        elements.append(Spacer(1,25))
+        elements.append(Paragraph("<b>Epitope Probability Plot</b>", styles['Heading2']))
+        elements.append(Spacer(1,10))
+        elements.append(Image(prob_plot, width=450, height=220))
 
+        elements.append(Spacer(1,25))
+        elements.append(Paragraph("<b>Epitope Density Map</b>", styles['Heading2']))
+        elements.append(Spacer(1,10))
+        elements.append(Image(density_plot, width=450, height=220))
         st.markdown("### 📄 Download Analysis Report")
 
         st.download_button(
