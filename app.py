@@ -27,8 +27,7 @@ div[data-testid="stDataFrame"]{
 IMPORT PROFESSIONAL FONTS
 ====================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&display=swap');
 
 /* ======================================================
 GLOBAL STYLE
@@ -289,11 +288,59 @@ canvas {
 }
 
 .hero-title {
+
+    font-family: 'Orbitron', sans-serif;
     font-size: clamp(64px,8vw,115px);
-    font-family: 'Sora', sans-serif;
-    background: linear-gradient(90deg,#60a5fa,#a78bfa,#22d3ee);
+    font-weight:700;
+    letter-spacing:4px;
+
+    background: linear-gradient(
+        90deg,
+        #60a5fa,
+        #a78bfa,
+        #22d3ee,
+        #60a5fa
+    );
+
+    background-size: 300% 300%;
+
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+
+    animation: gradientMove 6s ease infinite,
+               glowPulse 3s ease-in-out infinite;
+}
+
+@keyframes gradientMove {
+
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+
+}
+
+@keyframes glowPulse {
+
+    0% {
+        text-shadow: 0 0 20px rgba(96,165,250,0.2);
+    }
+
+    50% {
+        text-shadow: 0 0 45px rgba(96,165,250,0.55);
+    }
+
+    100% {
+        text-shadow: 0 0 20px rgba(96,165,250,0.2);
+    }
+
 }
 
 .hero-sub {
