@@ -4,178 +4,193 @@ st.set_page_config(page_title="HPV EPIPRED", page_icon="🧬", layout="wide")
 st.markdown("""
 <style>
 
-/* ============================
+/* ======================================================
 IMPORT PROFESSIONAL FONTS
-============================ */
+====================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap');
 
-/* ============================
-GLOBAL APP FONT
-============================ */
 
-html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif !important;
-    letter-spacing: -0.2px;
-    line-height: 1.6;
+/* ======================================================
+GLOBAL STYLE
+====================================================== */
+
+html, body, [data-testid="stAppViewContainer"]{
+    font-family: 'Inter', sans-serif;
+    background-color:#0f172a;
+    color:#e2e8f0;
+    line-height:1.6;
 }
 
-/* ============================
-HEADINGS
-============================ */
 
-h1, h2, h3 {
-    font-family: 'Sora', sans-serif !important;
-    font-weight: 700 !important;
-    margin-bottom: 8px;
-}
-
-h1 { font-size: 44px !important; }
-h2 { font-size: 32px !important; }
-h3 { font-size: 22px !important; }
-
-/* ============================
-8PX SPACING SYSTEM
-============================ */
-
-.block-container {
-    padding-top: 16px;
-    padding-bottom: 16px;
-}
-
-[data-testid="stVerticalBlock"] {
-    gap: 16px;
-}
-
-/* ============================
-BUTTONS
-============================ */
-
-.stButton > button {
-    font-family: 'Inter', sans-serif !important;
-    font-weight: 600;
-    border-radius: 12px;
-    padding: 8px 24px;
-    transition: all 0.2s ease;
-}
-
-.stButton > button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(99,102,241,0.25);
-}
-
-/* ============================
-DOWNLOAD BUTTON
-============================ */
-
-.stDownloadButton > button {
-    border-radius: 12px;
-}
-
-/* ============================
-TABS
-============================ */
-
-div[data-baseweb="tab-list"] {
-    gap: 24px;
-}
-
-button[data-baseweb="tab"] {
-    font-size: 16px !important;
-    font-weight: 600 !important;
-    padding-bottom: 8px;
-    border-bottom: 2px solid transparent !important;
-}
-
-button[data-baseweb="tab"][aria-selected="true"] {
-    border-bottom: 3px solid #6366f1 !important;
-}
-
-/* ============================
-FASTA / SEQUENCE INPUT
-============================ */
-
-textarea, input {
-    font-family: 'JetBrains Mono', monospace !important;
-    font-size: 15px !important;
-    letter-spacing: 1px;
-    border-radius: 12px !important;
-}
-
-/* ============================
-DATA TABLES
-============================ */
-
-div[data-testid="stDataFrame"] {
-    font-family: 'IBM Plex Sans', sans-serif !important;
-    border-radius: 12px;
-}
-
-div[data-testid="stDataFrame"] div[role="grid"] * {
-    font-size: 15px !important;
-}
-
-div[data-testid="stDataFrame"] thead tr th {
-    font-weight: 700 !important;
-}
-
-/* Highlight Probability Column */
-
-div[data-testid="stDataFrame"] div[role="gridcell"]:nth-child(3) {
-    font-weight: 700 !important;
-    color: #6366f1 !important;
-}
-
-/* ============================
-METRICS
-============================ */
-
-[data-testid="metric-container"] {
-    border-radius: 16px;
-    padding: 16px;
-}
-
-/* ============================
-SCROLLBAR
-============================ */
-
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #c7d2fe;
-    border-radius: 10px;
-}
-
-/* =========================
+/* ======================================================
 CENTERED RESEARCH LAYOUT
-========================= */
+====================================================== */
 
-.main .block-container {
-    max-width: 1200px;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
+.main .block-container{
+    max-width:1200px;
+    padding-top:2rem;
+    padding-bottom:2rem;
 }
 
-/* Center page */
-
-[data-testid="stAppViewContainer"] {
-    display: flex;
-    justify-content: center;
+[data-testid="stVerticalBlock"]{
+    gap:16px;
 }
 
-/* Content container */
 
-.main {
-    width: 100%;
-    max-width: 1200px;
+/* ======================================================
+HEADINGS
+====================================================== */
+
+h1,h2,h3{
+    font-family:'Sora', sans-serif;
+    font-weight:700;
 }
 
-/* Remove extra whitespace */
+h1{font-size:44px;}
+h2{font-size:32px;}
+h3{font-size:22px;}
 
-[data-testid="stVerticalBlock"] {
-    gap: 18px;
+
+/* ======================================================
+BUTTONS
+====================================================== */
+
+.stButton > button{
+    font-family:'Inter', sans-serif;
+    font-weight:600;
+    border-radius:12px;
+    padding:8px 22px;
+    background:#6366f1;
+    color:white;
+    border:none;
+    transition:all .2s ease;
+}
+
+.stButton > button:hover{
+    transform:translateY(-2px);
+    box-shadow:0 6px 20px rgba(99,102,241,0.35);
+}
+
+
+/* ======================================================
+DOWNLOAD BUTTON
+====================================================== */
+
+.stDownloadButton > button{
+    border-radius:12px;
+}
+
+
+/* ======================================================
+TABS
+====================================================== */
+
+div[data-baseweb="tab-list"]{
+    gap:22px;
+}
+
+button[data-baseweb="tab"]{
+    font-family:'Inter', sans-serif;
+    font-size:16px;
+    font-weight:600;
+    color:#cbd5e1;
+}
+
+button[data-baseweb="tab"][aria-selected="true"]{
+    border-bottom:3px solid #6366f1;
+    color:white;
+}
+
+
+/* ======================================================
+INPUTS & FASTA SEQUENCES
+====================================================== */
+
+textarea, input{
+    font-family:'JetBrains Mono', monospace;
+    font-size:15px;
+    letter-spacing:1px;
+    border-radius:12px;
+}
+
+
+/* ======================================================
+DATA TABLES
+====================================================== */
+
+div[data-testid="stDataFrame"]{
+    font-family:'IBM Plex Sans', sans-serif;
+    border-radius:14px;
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.05);
+}
+
+
+/* Table header */
+
+div[data-testid="stDataFrame"] thead th{
+    font-weight:700;
+}
+
+
+/* Row hover */
+
+div[data-testid="stDataFrame"] tbody tr:hover{
+    background:rgba(255,255,255,0.05);
+}
+
+
+/* Highlight probability column */
+
+div[data-testid="stDataFrame"] div[role="gridcell"]:nth-child(3){
+    color:#818cf8;
+    font-weight:700;
+}
+
+
+/* ======================================================
+METRICS
+====================================================== */
+
+[data-testid="metric-container"]{
+    background:rgba(255,255,255,0.03);
+    border-radius:14px;
+    padding:14px;
+}
+
+
+/* ======================================================
+PLOT CONTAINERS
+====================================================== */
+
+.stPlotlyChart{
+    background:rgba(255,255,255,0.03);
+    border-radius:14px;
+    padding:10px;
+}
+
+
+/* ======================================================
+SCROLLBAR
+====================================================== */
+
+::-webkit-scrollbar{
+    width:8px;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#6366f1;
+    border-radius:10px;
+}
+
+
+/* ======================================================
+REMOVE STREAMLIT HEADER
+====================================================== */
+
+header{
+    visibility:hidden;
 }
 
 </style>
