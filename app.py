@@ -24,27 +24,27 @@ else:
 
 theme = st.session_state.theme
 
-st.markdown(f"""
+st.markdown("""
 <style>
 
 /* INPUT BOX */
 
-textarea{{
+textarea{
     background-color: {"#1e293b" if theme=="dark" else "#ffffff"};
     color: {"#e2e8f0" if theme=="dark" else "#1e293b"};
-}}
+}
 
 /* DATA TABLE */
 
-div[data-testid="stDataFrame"]{{
+div[data-testid="stDataFrame"]{
     background: {"rgba(255,255,255,0.04)" if theme=="dark" else "#f1f5f9"};
-}}
+}
 
 /* PLOT CONTAINER */
 
-.stPlotlyChart{{
+.stPlotlyChart{
     background: {"rgba(255,255,255,0.04)" if theme=="dark" else "#ffffff"};
-}}
+}
 
 /* ======================================================
 IMPORT PROFESSIONAL FONTS
@@ -57,12 +57,12 @@ IMPORT PROFESSIONAL FONTS
 GLOBAL STYLE
 ====================================================== */
 
-html, body, [data-testid="stAppViewContainer"]{{
+html, body, [data-testid="stAppViewContainer"]{
     font-family: 'Inter', sans-serif;
     background-color: {"#0f172a" if theme=="dark" else "#ffffff"};
     color: {"#e2e8f0" if theme=="dark" else "#1e293b"};
     line-height:1.6;
-}}
+}
 
 
 /* ======================================================
@@ -280,7 +280,7 @@ h1, h2, h3 {
 # =========================================================
 # HERO BLOCK
 # =========================================================
-components.html(f"""
+components.html("""
 <style>
 .hero-footer{
     position:absolute;
@@ -292,14 +292,14 @@ components.html(f"""
     letter-spacing:1px;
 }
 
-.hero {{
+.hero {
     position: relative;
     width: 100%;
     height: 100vh;
     overflow: hidden;
     background:
     {"linear-gradient(135deg,#020617,#0f172a)" if theme=="dark" else "linear-gradient(135deg,#ffffff,#f1f5f9)"};
-}}
+}
 
 canvas {
     position: absolute;
@@ -345,14 +345,14 @@ canvas {
 }
 
 /* Bounce effect */
-@keyframes bounce {{
-    0%,100% {{
+@keyframes bounce {
+    0%,100% {
         transform: translateY(0);
-    }}
-    50% {{
+    }
+    50% {
         transform: translateY(8px);
-    }}
-}}
+    }
+}
 </style>
 
 <div class="hero">
@@ -387,7 +387,7 @@ function resize(){
     immune.height = window.innerHeight;
     network.width = window.innerWidth;
     network.height = window.innerHeight;
-}}
+}
 resize();
 window.addEventListener("resize", resize);
 
