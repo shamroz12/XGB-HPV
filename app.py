@@ -217,6 +217,11 @@ import math
 from sklearn.cluster import KMeans
 import networkx as nx
 import streamlit.components.v1 as components
+import io
+import zipfile
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.pagesizes import letter
 
 # =========================================================
 # REMOVE STREAMLIT DEFAULT PADDING
@@ -1293,6 +1298,127 @@ with tab1:
                         region_df,
                         use_container_width=True,
                         hide_index=True
+                )
+
+        # ==========================
+        # EXPORT FIGURES
+        # ==========================
+
+        prob_img = fig.to_image(format="png")
+        landscape_img = fig_land.to_image(format="png")
+        density_img = fig_density.to_image(format="png")
+        fingerprint_img = fig_radar.to_image(format="png")
+        score_img = gauge.to_image(format="png")
+        atlas_img = fig_atlas.to_image(format="png")
+
+        # ==========================
+        # EXCEL EXPORT
+        # ==========================
+
+        excel_buffer = io.BytesIO()
+
+        with pd.ExcelWriter(excel_buffer, engine="xlsxwriter") as writer:
+
+                df.to_excel(writer, sheet_name="All Predictions", index=False)
+                epitope_df.to_excel(writer, sheet_name="Epitopes", index=False)
+                non_df.to_excel(writer, sheet_name="Non_Epitopes", index=False)
+
+        excel_buffer.seek(0)
+
+        # ==========================
+        # PDF REPORT
+        # ==========================
+
+        pdf_buffer = io.BytesIO()
+
+        styles = getSampleStyleSheet()
+        elements = []
+
+        elements.append(Paragraph("HPV EPIPRED Analysis Report", styles['Title']))
+        elements.append(Spacer(1,20))
+
+        elements.append(Paragraph("Prediction Summary", styles['Heading2']))
+        elements.append(Spacer(1,10))
+
+        summary = f"""
+        Total peptides analysed: {len(df)} <br/>
+        Predicted epitopes: {len(epitope_df)} <br/>
+        Non-epitopes: {len(non_df)}
+        """
+
+        elements.append(Paragraph(summary, styles['Normal']))
+        elements.append(Spacer(1,20))
+
+        # Save images temporarily for report
+        with open("prob.png","wb") as f: f.write(prob_img)
+        with open("land.png","wb") as f: f.write(landscape_img)
+        with open("dens.png","wb") as f: f.write(density_img)
+
+        elements.append(Paragraph("Epitope Probability Plot", styles['Heading2']))
+        elements.append(Image("prob.png", width=500, height=250))
+
+        elements.append(Spacer(1,20))
+
+        elements.append(Paragraph("Epitope Landscape", styles['Heading2']))
+        elements.append(Image("land.png", width=500, height=250))
+
+        elements.append(Spacer(1,20))
+
+        elements.append(Paragraph("Epitope Density Map", styles['Heading2']))
+        elements.append(Image("dens.png", width=500, height=250))
+
+        doc = SimpleDocTemplate(pdf_buffer, pagesize=letter)
+        doc.build(elements)
+
+        pdf_buffer.seek(0)
+
+        # ==========================
+        # ZIP PACKAGE
+        # ==========================
+
+        zip_buffer = io.BytesIO()
+
+        with zipfile.ZipFile(zip_buffer,"w") as zip_file:
+
+                zip_file.writestr("predictions.csv", df.to_csv(index=False))
+                zip_file.writestr("epitopes.csv", epitope_df.to_csv(index=False))
+                zip_file.writestr("non_epitopes.csv", non_df.to_csv(index=False))
+
+                zip_file.writestr("results.xlsx", excel_buffer.getvalue())
+                zip_file.writestr("report.pdf", pdf_buffer.getvalue())
+
+                zip_file.writestr("probability_plot.png", prob_img)
+                zip_file.writestr("landscape_plot.png", landscape_img)
+                zip_file.writestr("density_map.png", density_img)
+                zip_file.writestr("fingerprint.png", fingerprint_img)
+                zip_file.writestr("immunogenic_score.png", score_img)
+                zip_file.writestr("epitope_atlas.png", atlas_img)
+
+        zip_buffer.seek(0)
+
+        st.markdown("### 📦 Download Results")
+
+        c1,c2,c3 = st.columns(3)
+
+        with c1:
+                st.download_button(
+                        "📄 PDF Report",
+                        pdf_buffer,
+                        "hpv_epipred_report.pdf"
+                )
+
+        with c2:
+                st.download_button(
+                        "📊 Excel File",
+                        excel_buffer,
+                        "hpv_epipred_results.xlsx"
+                )
+
+        with c3:
+                st.download_button(
+                        "📦 Complete Package",
+                        zip_buffer,
+                        "hpv_epipred_results.zip"
                 )
             
 # ==========================
