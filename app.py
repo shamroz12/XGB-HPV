@@ -184,9 +184,6 @@ SCROLLBAR
     border-radius:10px;
 }
 
-</style>
-""", unsafe_allow_html=True)
-
 /* ======================================================
 REMOVE STREAMLIT HEADER
 ====================================================== */
@@ -194,6 +191,9 @@ REMOVE STREAMLIT HEADER
 header{
     visibility:hidden;
 }
+
+</style>
+""", unsafe_allow_html=True)
 
 import numpy as np
 import pandas as pd
