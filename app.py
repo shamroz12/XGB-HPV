@@ -618,15 +618,15 @@ with tab1:
         # ==========================
         # RESULT TABS
         # ==========================
-        tab_table, tab_prob, tab_landscape, tab_density, tab_hotspot, tab_fingerprint, tab_score, tab_atlas = st.tabs([
+        tab_table, tab_prob, tab_landscape, tab_density, tab_fingerprint, tab_score, tab_atlas, tab_processing = st.tabs([
                 "📊 Tables",
                 "📈 Probability Plot",
                 "🌍 Epitope Landscape",
                 "🧬 Epitope Density Map",
-                "🔥 Epitope Hotspot",
                 "🌐 Immunogenicity Fingerprint",
                 "🧬 Immunogenic Score",
-                "🧭 Epitope Atlas"
+                "🧭 Epitope Atlas",
+                "🔥 Antigen Processing"
         ])
 
         # ==========================
@@ -996,6 +996,74 @@ with tab1:
                 st.plotly_chart(fig_atlas, use_container_width=True)
 
 
+        # ==========================
+        # ANTIGEN PROCESSING TAB
+        # ==========================
+
+        with tab_processing:
+
+                st.markdown("### ⚙️ Antigen Processing Efficiency")
+
+                proteasome_pref = set("LIFYW")
+                tap_pref = set("LIVFWY")
+
+                proteasome_scores = []
+                tap_scores = []
+
+                for pep in df["Peptide"]:
+
+                        score = 0
+
+                        if pep[0] in proteasome_pref:
+                                score += 1
+
+                        if pep[-1] in proteasome_pref:
+                                score += 1
+
+                        proteasome_scores.append(score/2)
+
+                        if pep[-1] in tap_pref:
+                                tap_scores.append(1)
+                        else:
+                                tap_scores.append(0.5)
+
+                df["Proteasome"] = proteasome_scores
+                df["TAP"] = tap_scores
+
+                df["Processing_Score"] = (
+                        0.6 * df["Probability"]
+                        + 0.2 * df["Proteasome"]
+                        + 0.2 * df["TAP"]
+                )
+
+                proc_df = df[[
+                        "Position",
+                        "Peptide",
+                        "Probability",
+                        "Proteasome",
+                        "TAP",
+                        "Processing_Score"
+                ]].copy()
+
+                proc_df["Processing_Score"] = proc_df["Processing_Score"].round(3)
+
+                st.dataframe(
+                        proc_df,
+                        use_container_width=True,
+                        hide_index=True,
+                        height=450
+                )
+
+                st.markdown("### 📊 Processing Score Distribution")
+
+                fig = px.histogram(
+                        proc_df,
+                        x="Processing_Score",
+                        nbins=25
+                )
+
+                st.plotly_chart(fig, use_container_width=True)
+            
 # ==========================
 # FEATURE NAMES FOR EXPLAINABILITY
 # ==========================
