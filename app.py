@@ -509,9 +509,18 @@ function drawNetwork(){
             n.y += dyMouse * 0.002;
         }
 
+        let pulse = 2 + Math.sin(Date.now()*0.005 + n.x) * 1.2;
         nctx.beginPath();
-        nctx.arc(n.x,n.y,2,0,Math.PI*2);
-        nctx.fillStyle="rgba(34,211,238,0.8)";
+        nctx.arc(n.x,n.y,pulse,0,Math.PI*2);
+        let glow = nctx.createRadialGradient(
+            n.x,n.y,0,
+            n.x,n.y,pulse*4
+        );
+
+        glow.addColorStop(0,"rgba(34,211,238,0.9)");
+        glow.addColorStop(1,"rgba(34,211,238,0)");
+
+        nctx.fillStyle=glow;
         nctx.fill();
     });
 
