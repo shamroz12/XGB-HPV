@@ -136,7 +136,7 @@ button[data-baseweb="tab"]{
     font-family:'Inter', sans-serif;
     font-size:16px;
     font-weight:600;
-    color: {"#cbd5e1" if theme=="dark" else "#1e293b"};
+    color:#cbd5e1;
 }
 
 button[data-baseweb="tab"][aria-selected="true"]{
@@ -298,7 +298,9 @@ components.html("""
     height: 100vh;
     overflow: hidden;
     background:
-    {"linear-gradient(135deg,#020617,#0f172a)" if theme=="dark" else "linear-gradient(135deg,#ffffff,#f1f5f9)"};
+        radial-gradient(circle at 30% 40%, #3b0764 0%, transparent 45%),
+        radial-gradient(circle at 70% 60%, #1e1b4b 0%, transparent 50%),
+        linear-gradient(135deg, #020617 0%, #0f172a 60%, #020617 100%);
 }
 
 canvas {
@@ -326,9 +328,8 @@ canvas {
 
 .hero-sub {
     font-size:40px;
-    color: {"#cbd5e1" if theme=="dark" else "#1e293b"};
+    color:#cbd5e1;
 }
-
 .cta {
     margin-top: 60px;          /* pushes it lower */
     font-size: 20px;
