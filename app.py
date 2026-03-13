@@ -912,6 +912,7 @@ with tab1:
         # ==========================
         # PROTEIN EPITOPE ATLAS
         # ==========================
+
         with tab_atlas:
 
                 st.markdown("### 🧭 Protein Epitope Atlas")
@@ -923,7 +924,14 @@ with tab1:
                         "Non-Epitope":"lightgray"
                 })
 
+                # bubble size based on probability
+                atlas_df["Size"] = atlas_df["Probability"] * 30 + 4
+
                 fig_atlas = go.Figure()
+
+                # ==========================
+                # BUBBLE ATLAS
+                # ==========================
 
                 fig_atlas.add_trace(
                         go.Scatter(
@@ -932,30 +940,72 @@ with tab1:
                                 mode="markers",
                                 marker=dict(
                                         color=atlas_df["Color"],
-                                        size=10
+                                        size=atlas_df["Size"],
+                                        opacity=0.85
                                 ),
                                 hovertext=atlas_df["Peptide"],
                                 name="Peptide Window"
                         )
                 )
 
+                # ==========================
+                # EPITOPE DENSITY OVERLAY
+                # ==========================
+
+                density = np.convolve(
+                        atlas_df["Probability"],
+                        np.ones(8)/8,
+                        mode="same"
+                )
+
+                fig_atlas.add_trace(
+                        go.Scatter(
+                                x=atlas_df["Position"],
+                                y=density,
+                                mode="lines",
+                                line=dict(color="blue", width=3),
+                                name="Epitope Density"
+                        )
+                )
+
+                # ==========================
+                # TOP EPITOPES HIGHLIGHT
+                # ==========================
+
+                top = atlas_df.nlargest(10,"Probability")
+
+                fig_atlas.add_trace(
+                        go.Scatter(
+                                x=top["Position"],
+                                y=[1.08]*len(top),
+                                mode="markers",
+                                marker=dict(
+                                        color="gold",
+                                        size=16,
+                                        symbol="star"
+                                ),
+                                hovertext=top["Peptide"],
+                                name="Top Epitopes"
+                        )
+                )
+
+                # ==========================
+                # LAYOUT
+                # ==========================
+
                 fig_atlas.update_layout(
-                        height=200,
+                        height=260,
+                        xaxis_title="Protein Position",
                         yaxis=dict(
                                 showticklabels=False,
                                 title=""
                         ),
-                        xaxis_title="Protein Position",
-                        plot_bgcolor="white"
+                        title="Protein Epitope Atlas"
                 )
 
                 st.plotly_chart(fig_atlas, use_container_width=True)
-
+        
         # ==========================
-        # EPITOPE COMPETITION MAP
-        # ==========================
-
-                # ==========================
         # EPITOPE COMPETITION HEATMAP
         # ==========================
 
