@@ -8,12 +8,6 @@ st.set_page_config(page_title="HPV EPIPRED", page_icon="🧬", layout="wide")
 if "theme" not in st.session_state:
     st.session_state.theme = "dark"
 
-theme = st.session_state.theme
-
-# ============================
-# THEME TOGGLE
-# ============================
-
 col1, col2 = st.columns([9,1])
 
 with col2:
@@ -24,13 +18,13 @@ with col2:
     )
 
 if dark_mode:
-    st.session_state["theme"] = "dark"
+    st.session_state.theme = "dark"
 else:
-    st.session_state["theme"] = "light"
+    st.session_state.theme = "light"
 
-theme = st.session_state["theme"]
+theme = st.session_state.theme
 
-st.markdown("""
+st.markdown(f"""
 <style>
 
    html, body, [data-testid="stAppViewContainer"]{{
