@@ -822,48 +822,45 @@ with tab1:
         # ==========================
         with tab_hotspot:
 
-               st.markdown("### 🔥 Epitope Hotspot Regions")
+        st.markdown("### 🔥 Epitope Cluster Regions")
 
-               hotspot_window = 12
-               hotspots = []
+        epi_df = df[df["Probability"] >= threshold].copy()
 
-               for i in range(len(df) - hotspot_window):
+        clusters = []
+        current_cluster = [epi_df.iloc[0]]
 
-                region = df.iloc[i:i+hotspot_window]
+        for i in range(1, len(epi_df)):
 
-                epi_count = (region["Probability"] >= threshold).sum()
+                prev_pos = epi_df.iloc[i-1]["Position"]
+                curr_pos = epi_df.iloc[i]["Position"]
 
-                if epi_count >= 3:
+                if curr_pos - prev_pos <= 2:
+                        current_cluster.append(epi_df.iloc[i])
+                else:
+                        clusters.append(current_cluster)
+                        current_cluster = [epi_df.iloc[i]]
 
-                        hotspots.append({
-                                "Start": region["Position"].iloc[0],
-                                "End": region["Position"].iloc[-1],
-                                "Epitope_Count": epi_count,
-                                "Mean_Probability": region["Probability"].mean()
-                        })
+        clusters.append(current_cluster)
 
-        hotspot_df = pd.DataFrame(hotspots)
+        cluster_results = []
 
-        if not hotspot_df.empty:
+        for c in clusters:
 
-                st.dataframe(
-                        hotspot_df,
-                        use_container_width=True,
-                        hide_index=True
-                )
+                positions = [x["Position"] for x in c]
+                probs = [x["Probability"] for x in c]
+                peps = [x["Peptide"] for x in c]
 
-                fig_hot = px.scatter(
-                        hotspot_df,
-                        x="Start",
-                        y="Mean_Probability",
-                        size="Epitope_Count",
-                        title="Epitope Hotspot Regions Along Protein"
-                )
+                cluster_results.append({
+                        "Start": min(positions),
+                        "End": max(positions),
+                        "Peptide_Count": len(c),
+                        "Best_Epitope": peps[np.argmax(probs)],
+                        "Max_Probability": max(probs)
+                })
 
-                st.plotly_chart(fig_hot, use_container_width=True)
+        cluster_df = pd.DataFrame(cluster_results)
 
-        else:
-                st.info("No strong epitope hotspot regions detected.")
+        st.dataframe(cluster_df, use_container_width=True, hide_index=True)
         
 
         # ==========================
