@@ -623,7 +623,7 @@ with tab1:
                 "📈 Probability Plot",
                 "🌍 Epitope Landscape",
                 "🧬 Epitope Density Map",
-                "🔥 Epitope Hotspots",
+                "🔥 Epitope Hotspot",
                 "🌐 Immunogenicity Fingerprint",
                 "🧬 Immunogenic Score",
                 "🧭 Epitope Atlas"
