@@ -660,7 +660,7 @@ with tab1:
 
                 st.markdown("### 🟢 Predicted Epitopes")
 
-                    st.markdown("""
+                st.markdown("""
         <div class="legend-box">
 
         <div class="legend-title">📊 Table Description</div>
