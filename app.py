@@ -1,15 +1,17 @@
 import streamlit as st
 st.set_page_config(page_title="HPV EPIPRED", page_icon="🧬", layout="wide")
 
-st.markdown("""
-<style>
-
-# =========================================================
+# ==============================
 # THEME STATE
-# =========================================================
+# ==============================
 
 if "theme" not in st.session_state:
     st.session_state.theme = "dark"
+
+theme = st.session_state.theme
+
+st.markdown("""
+<style>
 
     html, body, [data-testid="stAppViewContainer"]{{
     background-color: {"#0f172a" if theme=="dark" else "#ffffff"};
