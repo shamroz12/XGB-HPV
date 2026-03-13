@@ -960,6 +960,7 @@ with tab1:
 
                 st.plotly_chart(fig_atlas, use_container_width=True)
 
+
 # ==========================
 # FEATURE NAMES FOR EXPLAINABILITY
 # ==========================
@@ -967,31 +968,29 @@ with tab1:
 pos_features = []
 
 for pos in range(1,10):
-        for aa in aa_list:
-                pos_features.append(f"Position{pos}_{aa}")
+    for aa in aa_list:
+        pos_features.append(f"Position{pos}_{aa}")
 
 di_features = [f"Dipeptide_{dp}" for dp in dipeptides]
 
 bio_features = [
-        "Hydrophobicity",
-        "Aromaticity",
-        "Positive_Charge",
-        "Negative_Charge",
-        "Net_Charge",
-        "Entropy",
-        "Avg_Molecular_Weight"
+    "Hydrophobicity",
+    "Aromaticity",
+    "Positive_Charge",
+    "Negative_Charge",
+    "Net_Charge",
+    "Entropy",
+    "Avg_Molecular_Weight"
 ]
 
 feature_names = pos_features + di_features + bio_features
+
+
 with tab2:
 
         st.markdown("### 📊 Model Feature Importance")
 
-        import matplotlib.pyplot as plt
-
         importance = model.feature_importances_
-
-        feature_names = [f"Feature_{i}" for i in range(len(importance))]
 
         imp_df = pd.DataFrame({
                 "Feature": feature_names,
@@ -1003,9 +1002,7 @@ with tab2:
                 x="Importance",
                 y="Feature",
                 orientation="h",
-                title="Top Features Driving Epitope Prediction"
+                title="Top Biological Features Driving Epitope Prediction"
         )
 
         st.plotly_chart(fig, use_container_width=True)
-
-            
