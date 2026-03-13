@@ -732,6 +732,22 @@ with tab1:
         with tab_prob:
 
                 st.markdown("### 📈 Epitope Probability Across Protein Sequence")
+                
+                st.markdown("""
+        <div class="legend-box">
+
+        <div class="legend-title">📈 Plot Interpretation</div>
+
+        <div class="legend-item">🔵 <b>Light Blue Line</b> – Raw prediction probability for each peptide</div>
+
+        <div class="legend-item">🔷 <b>Dark Blue Line</b> – Smoothed immunogenic signal across sequence</div>
+
+        <div class="legend-item">🚨 <b>Red Dashed Line</b> – Threshold used to classify epitopes</div>
+
+        <div class="legend-item">⛰ <b>Probability Peaks</b> – Regions with strong predicted immune recognition</div>
+
+        </div>
+        """, unsafe_allow_html=True)
 
                 window = 12
                 smooth_prob = np.convolve(
@@ -785,6 +801,22 @@ with tab1:
         with tab_landscape:
 
                 st.markdown("### 🌍 Epitope Biophysical Landscape")
+                
+                st.markdown("""
+        <div class="legend-box">
+
+        <div class="legend-title">🌍 Landscape Interpretation</div>
+
+        <div class="legend-item">📏 <b>X-axis</b> – Peptide position along the protein sequence</div>
+
+        <div class="legend-item">📊 <b>Y-axis</b> – Predicted epitope probability</div>
+
+        <div class="legend-item">🎨 <b>Point Colors</b> – Clusters of peptides with similar immunogenic properties</div>
+
+        <div class="legend-item">✖ <b>Black Cross</b> – Cluster centers identified by the clustering algorithm</div>
+
+        </div>
+        """, unsafe_allow_html=True)
 
         hydro = []
         charge = []
@@ -826,6 +858,20 @@ with tab1:
         with tab_density:
 
                 st.markdown("### 🧬 Epitope Density Map")
+                    
+                st.markdown("""
+        <div class="legend-box">
+
+        <div class="legend-title">🧬 Density Map Guide</div>
+
+        <div class="legend-item">📦 <b>Bars</b> – Sliding window regions across the protein</div>
+
+        <div class="legend-item">📊 <b>Bar Height</b> – Fraction of predicted epitopes within that region</div>
+
+        <div class="legend-item">🔥 <b>High Density</b> – Indicates potential immunogenic hotspot regions</div>
+
+        </div>
+        """, unsafe_allow_html=True)
 
                 window = 15
                 density = []
@@ -869,6 +915,24 @@ with tab1:
         with tab_fingerprint:
 
                 st.markdown("### 🧬 Protein Immunogenicity Fingerprint")
+
+                st.markdown("""
+        <div class="legend-box">
+
+        <div class="legend-title">🧬 Fingerprint Metrics</div>
+
+        <div class="legend-item">🤖 <b>ML Immunogenicity</b> – Average predicted epitope probability</div>
+
+        <div class="legend-item">📍 <b>Epitope Density</b> – Fraction of peptides classified as epitopes</div>
+
+        <div class="legend-item">🧪 <b>Hydrophobicity</b> – Fraction of hydrophobic amino acids</div>
+
+        <div class="legend-item">🧠 <b>Entropy</b> – Sequence diversity across peptides</div>
+
+        <div class="legend-item">⚡ <b>Net Charge</b> – Balance of positive and negative residues</div>
+
+        </div>
+        """, unsafe_allow_html=True)
 
                 # Global metrics
                 mean_prob = df["Probability"].mean()
@@ -932,6 +996,21 @@ with tab1:
 
                 st.markdown("### 🧬 Global Immunogenic Score")
 
+                st.markdown("""
+        <div class="legend-box">
+
+        <div class="legend-title">🧬 Score Explanation</div>
+
+        <div class="legend-item">🎯 <b>Gauge Value</b> – Mean predicted epitope probability</div>
+
+        <div class="legend-item">🧬 <b>Total Peptides</b> – Number of peptide windows analyzed</div>
+
+        <div class="legend-item">🔥 <b>Predicted Epitopes</b> – Peptides above classification threshold</div>
+
+        <div class="legend-item">📊 <b>Epitope Density</b> – Percentage of peptides predicted as epitopes</div>
+
+        </div>
+        """, unsafe_allow_html=True)
                 mean_prob = df["Probability"].mean()
                 total_pep = len(df)
                 epi_count = len(df[df["Category"]=="Epitope"])
@@ -962,6 +1041,26 @@ with tab1:
         with tab_atlas:
 
                 st.markdown("### 🧭 Stacked Protein Epitope Atlas")
+
+                st.markdown("""
+        <div class="legend-box">
+
+        <div class="legend-title">🧭 Atlas Visualization Guide</div>
+
+        <div class="legend-item">🔴 <b>Red Circles</b> – Predicted epitope peptides</div>
+
+        <div class="legend-item">⚪ <b>Grey Circles</b> – Non-epitope peptide windows</div>
+
+        <div class="legend-item">⭐ <b>Gold Stars</b> – Top high-confidence epitopes</div>
+
+        <div class="legend-item">📏 <b>X-axis</b> – Protein sequence position</div>
+
+        <div class="legend-item">📚 <b>Y-axis Tracks</b> – Stacked peptide windows to show overlaps</div>
+
+        <div class="legend-item">📦 <b>Bubble Size</b> – Epitope prediction probability</div>
+
+        </div>
+        """, unsafe_allow_html=True)
 
                 atlas_df = df.copy()
 
