@@ -1132,23 +1132,35 @@ with tab1:
                 st.markdown("""
         <div class="legend-box">
 
-        <div class="legend-title">⚔️ Epitope Competition Map Guide</div>
+        <div class="legend-title">⚔️ Epitope Competition Heatmap Guide</div>
 
-        <div class="legend-item">🔴 <b>Nodes</b> – Predicted epitope peptides</div>
+        <div class="legend-item">
+        <span style="color:#3b82f6;font-weight:700;">■ Blue regions</span> – Low epitope competition
+        </div>
 
-        <div class="legend-item">📏 <b>Node Size</b> – Epitope prediction probability</div>
+        <div class="legend-item">
+        <span style="color:#facc15;font-weight:700;">■ Yellow regions</span> – Moderate overlap of predicted epitopes
+        </div>
 
-        <div class="legend-item">🔗 <b>Edges</b> – Overlapping peptides competing for MHC-I presentation</div>
+        <div class="legend-item">
+        <span style="color:#ef4444;font-weight:700;">■ Red regions</span> – High epitope competition / dense overlapping peptides
+        </div>
 
-        <div class="legend-item">🔥 <b>Dense Networks</b> – Regions where multiple epitopes overlap and may compete</div>
+        <div class="legend-item">
+        <b>X-axis</b> – Protein sequence position
+        </div>
 
-        <div class="legend-item">📍 <b>Isolated Nodes</b> – Unique epitopes with minimal overlap</div>
+        <div class="legend-item">
+        <b>Color intensity</b> – Degree of overlap between predicted epitope windows
+        </div>
 
-        <div class="legend-item">🧬 <b>Biological Meaning</b> – Highly connected peptides may dominate antigen presentation</div>
+        <div class="legend-item">
+        <b>Biological interpretation</b> – Red zones represent regions where multiple peptides compete for MHC-I presentation and may indicate immunodominant hotspots
+        </div>
 
         </div>
         """, unsafe_allow_html=True)
-
+            
                 window = 10
                 competition_scores = []
 
