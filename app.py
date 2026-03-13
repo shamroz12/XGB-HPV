@@ -222,6 +222,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 import io
+import matplotlib.pyplot as plt
 
 # =========================================================
 # REMOVE STREAMLIT DEFAULT PADDING
@@ -1427,6 +1428,52 @@ with tab1:
         doc.build(elements)
 
         pdf_buffer.seek(0)
+
+                # ==========================
+        # ADD PLOTS TO PDF
+        # ==========================
+
+        try:
+
+                # Probability plot
+                fig_prob = fig.to_dict()
+                plt.figure(figsize=(6,3))
+                plt.plot(df["Position"], df["Probability"])
+                plt.axhline(y=threshold, color='red', linestyle='--')
+                plt.xlabel("Protein Position")
+                plt.ylabel("Epitope Probability")
+                plt.title("Epitope Probability Plot")
+
+                prob_path = "prob_plot.png"
+                plt.savefig(prob_path, dpi=300, bbox_inches="tight")
+                plt.close()
+
+                elements.append(Paragraph("<b>Epitope Probability Plot</b>", styles['Heading2']))
+                elements.append(Image(prob_path, width=450, height=220))
+
+                elements.append(Spacer(1,20))
+
+
+                # Density map
+                plt.figure(figsize=(6,3))
+                plt.bar(density_df["Position"], density_df["Density"])
+                plt.xlabel("Protein Position")
+                plt.ylabel("Epitope Density")
+                plt.title("Epitope Density Map")
+
+                dens_path = "density_plot.png"
+                plt.savefig(dens_path, dpi=300, bbox_inches="tight")
+                plt.close()
+
+                elements.append(Paragraph("<b>Epitope Density Map</b>", styles['Heading2']))
+                elements.append(Image(dens_path, width=450, height=220))
+
+        except Exception as e:
+
+                elements.append(Paragraph(
+                        "Plots could not be generated in this environment.",
+                        styles['Normal']
+                ))
 
         st.markdown("### 📄 Download Analysis Report")
 
