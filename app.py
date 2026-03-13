@@ -27,24 +27,32 @@ theme = st.session_state.theme
 st.markdown(f"""
 <style>
 
-   html, body, [data-testid="stAppViewContainer"]{{
+/* APP BACKGROUND */
+
+html, body, [data-testid="stAppViewContainer"]{{
     background-color: {"#0f172a" if theme=="dark" else "#ffffff"};
     color: {"#e2e8f0" if theme=="dark" else "#1e293b"};
 }}
 
+/* INPUT BOX */
+
 textarea{{
-    background: {"#1e293b" if theme=="dark" else "#ffffff"};
+    background-color: {"#1e293b" if theme=="dark" else "#ffffff"};
     color: {"#e2e8f0" if theme=="dark" else "#1e293b"};
 }}
+
+/* DATA TABLE */
 
 div[data-testid="stDataFrame"]{{
     background: {"rgba(255,255,255,0.04)" if theme=="dark" else "#f1f5f9"};
 }}
 
+/* PLOT CONTAINER */
+
 .stPlotlyChart{{
-    background: {"rgba(255,255,255,0.04)" if theme=="dark" else "#f8fafc"};
+    background: {"rgba(255,255,255,0.04)" if theme=="dark" else "#ffffff"};
 }}
- 
+
 /* ======================================================
 IMPORT PROFESSIONAL FONTS
 ====================================================== */
