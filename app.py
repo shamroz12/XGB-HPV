@@ -46,10 +46,7 @@ div[data-testid="stDataFrame"]{{
 .stPlotlyChart{{
     background: {"rgba(255,255,255,0.04)" if theme=="dark" else "#f8fafc"};
 }}
-
-</style>
-""", unsafe_allow_html=True)
-    
+ 
 /* ======================================================
 IMPORT PROFESSIONAL FONTS
 ====================================================== */
