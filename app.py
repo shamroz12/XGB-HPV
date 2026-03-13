@@ -1002,7 +1002,7 @@ with tab2:
                 x="Importance",
                 y="Feature",
                 orientation="h",
-                title="Top Biological Features Driving Epitope Prediction"
+                title="Top Sequence Features Influencing MHC-I Epitope Prediction"
         )
 
         st.plotly_chart(fig, use_container_width=True)
