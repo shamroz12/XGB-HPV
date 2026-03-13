@@ -960,6 +960,29 @@ with tab1:
 
                 st.plotly_chart(fig_atlas, use_container_width=True)
 
+# ==========================
+# FEATURE NAMES FOR EXPLAINABILITY
+# ==========================
+
+pos_features = []
+
+for pos in range(1,10):
+        for aa in aa_list:
+                pos_features.append(f"Position{pos}_{aa}")
+
+di_features = [f"Dipeptide_{dp}" for dp in dipeptides]
+
+bio_features = [
+        "Hydrophobicity",
+        "Aromaticity",
+        "Positive_Charge",
+        "Negative_Charge",
+        "Net_Charge",
+        "Entropy",
+        "Avg_Molecular_Weight"
+]
+
+feature_names = pos_features + di_features + bio_features
 with tab2:
 
         st.markdown("### 📊 Model Feature Importance")
