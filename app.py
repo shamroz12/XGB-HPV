@@ -743,35 +743,40 @@ with tab1:
         # ==========================
         with tab_landscape:
 
-                st.markdown("### 🌍 Epitope Immunogenic Landscape")
+        st.markdown("### 🌍 Epitope Biophysical Landscape")
 
-                X_cluster = df[["Position","Probability"]]
+        hydro = []
+        charge = []
 
-                kmeans = KMeans(n_clusters=4, random_state=42)
-                df["Cluster"] = kmeans.fit_predict(X_cluster)
+        for pep in df["Peptide"]:
+                feats = extract_features(pep)
+                hydro.append(feats[-7])
+                charge.append(feats[-3])
 
-                centers = kmeans.cluster_centers_
+        landscape_df = pd.DataFrame({
+                "Hydrophobicity": hydro,
+                "NetCharge": charge,
+                "Probability": df["Probability"],
+                "Peptide": df["Peptide"]
+        })
 
-                fig_land = px.scatter(
-                        df,
-                        x="Position",
-                        y="Probability",
-                        color="Cluster",
-                        hover_data=["Peptide"],
-                        color_continuous_scale="viridis"
-                )
+        fig_land = px.scatter(
+                landscape_df,
+                x="Hydrophobicity",
+                y="NetCharge",
+                color="Probability",
+                size="Probability",
+                hover_data=["Peptide"],
+                color_continuous_scale="Turbo"
+        )
 
-                fig_land.add_trace(
-                        go.Scatter(
-                                x=centers[:,0],
-                                y=centers[:,1],
-                                mode="markers",
-                                marker=dict(color="black",size=12,symbol="x"),
-                                name="Cluster Center"
-                        )
-                )
+        fig_land.update_layout(
+                height=500,
+                xaxis_title="Hydrophobicity",
+                yaxis_title="Net Charge"
+        )
 
-                st.plotly_chart(fig_land, use_container_width=True)
+        st.plotly_chart(fig_land, use_container_width=True)
 
 
         # ==========================
