@@ -591,6 +591,7 @@ with tab1:
                         st.dataframe(
                                 epi_show,
                                 use_container_width=True,
+                                hide_index=True,
                                 height=350
                         )
 
