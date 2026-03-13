@@ -113,12 +113,6 @@ button[data-baseweb="tab"]{
     font-family:'Inter', sans-serif;
     font-size:16px;
     font-weight:600;
-    color: """ + ("#cbd5e1" if theme=="dark" else "#1e293b") + """;
-}
-
-button[data-baseweb="tab"][aria-selected="true"]{
-    border-bottom:3px solid #6366f1;
-    color:white;
 }
 
 /* ======================================================
