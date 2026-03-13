@@ -1380,33 +1380,50 @@ with tab1:
         # ADD PLOTS
         # ==========================
 
-        try:
+        # ==========================
+        # EMBED PROBABILITY PLOT
+        # ==========================
 
-                prob_png = fig.to_image(format="png")
-                landscape_png = fig_land.to_image(format="png")
+        prob_buffer = io.BytesIO()
 
-                with open("prob_plot.png","wb") as f:
-                        f.write(prob_png)
+        plt.figure(figsize=(6,3))
+        plt.plot(df["Position"], df["Probability"], color="navy")
+        plt.axhline(y=threshold, color="red", linestyle="--")
+        plt.xlabel("Protein Position")
+        plt.ylabel("Epitope Probability")
+        plt.title("Epitope Probability Across Protein")
 
-                with open("land_plot.png","wb") as f:
-                        f.write(landscape_png)
+        plt.savefig(prob_buffer, format="png", dpi=300, bbox_inches="tight")
+        plt.close()
 
-                elements.append(Paragraph("<b>Epitope Probability Plot</b>", styles['Heading2']))
-                elements.append(Image("prob_plot.png", width=450, height=220))
+        prob_buffer.seek(0)
 
-                elements.append(Spacer(1,20))
+        elements.append(Spacer(1,20))
+        elements.append(Paragraph("<b>Epitope Probability Plot</b>", styles['Heading2']))
+        elements.append(Image(prob_buffer, width=450, height=220))
 
-                elements.append(Paragraph("<b>Epitope Landscape</b>", styles['Heading2']))
-                elements.append(Image("land_plot.png", width=450, height=220))
 
-        except:
-                elements.append(Paragraph(
-                        "Plots could not be embedded in this environment.",
-                        styles['Normal']
-                ))
+        # ==========================
+        # EMBED DENSITY MAP
+        # ==========================
 
-        elements.append(Spacer(1,40))
+        density_buffer = io.BytesIO()
 
+        plt.figure(figsize=(6,3))
+        plt.bar(density_df["Position"], density_df["Density"], color="purple")
+        plt.xlabel("Protein Position")
+        plt.ylabel("Epitope Density")
+        plt.title("Epitope Density Map")
+
+        plt.savefig(density_buffer, format="png", dpi=300, bbox_inches="tight")
+        plt.close()
+
+        density_buffer.seek(0)
+
+        elements.append(Spacer(1,20))
+        elements.append(Paragraph("<b>Epitope Density Map</b>", styles['Heading2']))
+        elements.append(Image(density_buffer, width=450, height=220))
+        
         # ==========================
         # FOOTER
         # ==========================
@@ -1426,43 +1443,7 @@ with tab1:
 
         pdf_buffer.seek(0)
 
-        # ==========================
-        # CREATE PROBABILITY PLOT
-        # ==========================
-
-        prob_buffer = io.BytesIO()
-
-        plt.figure(figsize=(6,3))
-        plt.plot(df["Position"], df["Probability"], color="blue")
-        plt.axhline(y=threshold, color="red", linestyle="--")
-        plt.xlabel("Protein Position")
-        plt.ylabel("Epitope Probability")
-        plt.title("Epitope Probability Across Protein")
-
-        plt.savefig(prob_buffer, format="png", dpi=300, bbox_inches="tight")
-        plt.close()
-
-        prob_buffer.seek(0)
-
-
-        # ==========================
-        # CREATE DENSITY PLOT
-        # ==========================
-
-        density_buffer = io.BytesIO()
-
-        plt.figure(figsize=(6,3))
-        plt.bar(density_df["Position"], density_df["Density"], color="purple")
-        plt.xlabel("Protein Position")
-        plt.ylabel("Epitope Density")
-        plt.title("Epitope Density Map")
-
-        plt.savefig(density_buffer, format="png", dpi=300, bbox_inches="tight")
-        plt.close()
-
-        density_buffer.seek(0)
-
-
+        
         # ==========================
         # ADD PLOTS TO PDF
         # ==========================
