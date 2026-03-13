@@ -184,6 +184,8 @@ SCROLLBAR
     border-radius:10px;
 }
 
+</style>
+""", unsafe_allow_html=True)
 
 /* ======================================================
 REMOVE STREAMLIT HEADER
