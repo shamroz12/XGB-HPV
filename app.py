@@ -674,7 +674,8 @@ with tab1:
                         st.dataframe(
                                 non_show,
                                 use_container_width=True,
-                                height=350
+                                height=350,
+                                hide_index=True
                         )
 
                 else:
