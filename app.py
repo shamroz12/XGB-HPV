@@ -1306,10 +1306,6 @@ with tab1:
         # GENERATE PDF REPORT
         # ==========================
 
-                # ==========================
-        # ADVANCED PDF REPORT
-        # ==========================
-
         pdf_buffer = io.BytesIO()
 
         styles = getSampleStyleSheet()
@@ -1431,14 +1427,11 @@ with tab1:
         pdf_buffer.seek(0)
 
         # ==========================
-        # ADD PLOTS TO PDF
+        # CREATE PROBABILITY PLOT
         # ==========================
 
-                # ==========================
-        # GENERATE PLOT IMAGES
-        # ==========================
+        prob_buffer = io.BytesIO()
 
-        # Probability plot
         plt.figure(figsize=(6,3))
         plt.plot(df["Position"], df["Probability"], color="blue")
         plt.axhline(y=threshold, color="red", linestyle="--")
@@ -1446,21 +1439,28 @@ with tab1:
         plt.ylabel("Epitope Probability")
         plt.title("Epitope Probability Across Protein")
 
-        prob_plot = "probability_plot.png"
-        plt.savefig(prob_plot, dpi=300, bbox_inches="tight")
+        plt.savefig(prob_buffer, format="png", dpi=300, bbox_inches="tight")
         plt.close()
 
+        prob_buffer.seek(0)
 
-        # Density plot
+
+        # ==========================
+        # CREATE DENSITY PLOT
+        # ==========================
+
+        density_buffer = io.BytesIO()
+
         plt.figure(figsize=(6,3))
         plt.bar(density_df["Position"], density_df["Density"], color="purple")
         plt.xlabel("Protein Position")
         plt.ylabel("Epitope Density")
         plt.title("Epitope Density Map")
 
-        density_plot = "density_plot.png"
-        plt.savefig(density_plot, dpi=300, bbox_inches="tight")
+        plt.savefig(density_buffer, format="png", dpi=300, bbox_inches="tight")
         plt.close()
+
+        density_buffer.seek(0)
 
 
         # ==========================
@@ -1470,12 +1470,13 @@ with tab1:
         elements.append(Spacer(1,25))
         elements.append(Paragraph("<b>Epitope Probability Plot</b>", styles['Heading2']))
         elements.append(Spacer(1,10))
-        elements.append(Image(prob_plot, width=450, height=220))
+        elements.append(Image(prob_buffer, width=450, height=220))
 
         elements.append(Spacer(1,25))
         elements.append(Paragraph("<b>Epitope Density Map</b>", styles['Heading2']))
         elements.append(Spacer(1,10))
-        elements.append(Image(density_plot, width=450, height=220))
+        elements.append(Image(density_buffer, width=450, height=220))
+        
         st.markdown("### 📄 Download Analysis Report")
 
         st.download_button(
