@@ -224,6 +224,8 @@ from reportlab.lib import colors
 import io
 import matplotlib.pyplot as plt
 from reportlab.platypus import Image
+from reportlab.lib.units import inch
+from reportlab.platypus import PageBreak
 
 # =========================================================
 # REMOVE STREAMLIT DEFAULT PADDING
@@ -1302,6 +1304,21 @@ with tab1:
                         hide_index=True
                 )
 
+        def section_title(text):
+    return Table(
+        [[text]],
+        style=[
+            ("BACKGROUND",(0,0),(-1,-1),"#2c3e50"),
+            ("TEXTCOLOR",(0,0),(-1,-1),"white"),
+            ("FONTNAME",(0,0),(-1,-1),"Helvetica-Bold"),
+            ("FONTSIZE",(0,0),(-1,-1),14),
+            ("ALIGN",(0,0),(-1,-1),"LEFT"),
+            ("LEFTPADDING",(0,0),(-1,-1),10),
+            ("TOPPADDING",(0,0),(-1,-1),6),
+            ("BOTTOMPADDING",(0,0),(-1,-1),6),
+        ]
+    )
+    
         # ==========================
         # GENERATE PDF REPORT
         # ==========================
@@ -1331,8 +1348,8 @@ with tab1:
         # SUMMARY
         # ==========================
 
-        elements.append(Paragraph("<b>Prediction Summary</b>", styles['Heading2']))
-        elements.append(Spacer(1,10))
+        elements.append(Paragraph("<b>Prediction Summary</b>"))
+        elements.append(Spacer(1,12))
 
         summary_data = [
                 ["Metric","Value"],
@@ -1366,19 +1383,18 @@ with tab1:
 
         top_table = Table(top_table_data)
 
-        top_table.setStyle(TableStyle([
-                ("BACKGROUND",(0,0),(-1,0),colors.lightblue),
-                ("GRID",(0,0),(-1,-1),1,colors.grey),
-                ("FONTNAME",(0,0),(-1,0),"Helvetica-Bold"),
-                ("ALIGN",(0,0),(-1,-1),"CENTER")
+        summary_table.setStyle(TableStyle([
+    ("BACKGROUND",(0,0),(-1,0),"#2980b9"),
+    ("TEXTCOLOR",(0,0),(-1,0),"white"),
+    ("GRID",(0,0),(-1,-1),0.5,"grey"),
+    ("FONTNAME",(0,0),(-1,0),"Helvetica-Bold"),
+    ("ALIGN",(0,0),(-1,-1),"CENTER"),
         ]))
 
         elements.append(top_table)
         elements.append(Spacer(1,30))
 
-        # ==========================
-        # ADD PLOTS
-        # ==========================
+        elements.append(PageBreak())
 
         # ==========================
         # EMBED PROBABILITY PLOT
