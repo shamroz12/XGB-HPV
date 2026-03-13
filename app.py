@@ -222,6 +222,8 @@ import zipfile
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import letter
+import plotly.io as pio
+pio.kaleido.scope.chromium_args = ("--no-sandbox",)
 
 # =========================================================
 # REMOVE STREAMLIT DEFAULT PADDING
