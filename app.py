@@ -469,6 +469,9 @@ drawImmune();
 // =============================
 
 let nodes=[];
+let mouseX=0;
+let mouseY=0;
+
 for(let i=0;i<70;i++){
     nodes.push({
         x:Math.random()*window.innerWidth,
@@ -478,15 +481,33 @@ for(let i=0;i<70;i++){
     });
 }
 
+// track mouse position
+window.addEventListener("mousemove", e=>{
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+});
+
 function drawNetwork(){
+
     nctx.clearRect(0,0,network.width,network.height);
 
     nodes.forEach(n=>{
+
         n.x+=n.vx;
         n.y+=n.vy;
 
         if(n.x<0||n.x>network.width) n.vx*=-1;
         if(n.y<0||n.y>network.height) n.vy*=-1;
+
+        // mouse attraction effect
+        let dxMouse = mouseX - n.x;
+        let dyMouse = mouseY - n.y;
+        let distMouse = Math.sqrt(dxMouse*dxMouse + dyMouse*dyMouse);
+
+        if(distMouse < 200){
+            n.x += dxMouse * 0.002;
+            n.y += dyMouse * 0.002;
+        }
 
         nctx.beginPath();
         nctx.arc(n.x,n.y,2,0,Math.PI*2);
@@ -496,14 +517,17 @@ function drawNetwork(){
 
     for(let i=0;i<nodes.length;i++){
         for(let j=i+1;j<nodes.length;j++){
+
             let dx=nodes[i].x-nodes[j].x;
             let dy=nodes[i].y-nodes[j].y;
             let dist=Math.sqrt(dx*dx+dy*dy);
 
             if(dist<140){
+
                 nctx.beginPath();
                 nctx.moveTo(nodes[i].x,nodes[i].y);
                 nctx.lineTo(nodes[j].x,nodes[j].y);
+
                 nctx.strokeStyle="rgba(34,211,238,0.15)";
                 nctx.stroke();
             }
@@ -512,6 +536,7 @@ function drawNetwork(){
 
     requestAnimationFrame(drawNetwork);
 }
+
 drawNetwork();
 
 </script>
