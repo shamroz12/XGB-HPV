@@ -345,14 +345,14 @@ canvas {
 }
 
 /* Bounce effect */
-@keyframes bounce {
-    0%,100% {
+@keyframes bounce {{
+    0%,100% {{
         transform: translateY(0);
-    }
-    50% {
+    }}
+    50% {{
         transform: translateY(8px);
-    }
-}
+    }}
+}}
 </style>
 
 <div class="hero">
