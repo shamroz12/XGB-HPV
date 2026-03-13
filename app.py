@@ -618,11 +618,12 @@ with tab1:
         # ==========================
         # RESULT TABS
         # ==========================
-        tab_table, tab_prob, tab_landscape, tab_density, tab_fingerprint, tab_score, tab_atlas = st.tabs([
+        tab_table, tab_prob, tab_landscape, tab_density, tab_hotspot, tab_fingerprint, tab_score, tab_atlas = st.tabs([
                 "📊 Tables",
                 "📈 Probability Plot",
                 "🌍 Epitope Landscape",
                 "🧬 Epitope Density Map",
+                "🔥 Epitope Hotspots",
                 "🌐 Immunogenicity Fingerprint",
                 "🧬 Immunogenic Score",
                 "🧭 Epitope Atlas"
@@ -815,6 +816,55 @@ with tab1:
                 )
 
                 st.plotly_chart(fig_density,use_container_width=True)
+
+        # ==========================
+        # EPITOPE HOTSTOP TAB
+        # ==========================
+        with tab_hotspot:
+
+        st.markdown("### 🔥 Epitope Hotspot Regions")
+
+        hotspot_window = 12
+        hotspots = []
+
+        for i in range(len(df) - hotspot_window):
+
+                region = df.iloc[i:i+hotspot_window]
+
+                epi_count = (region["Probability"] >= threshold).sum()
+
+                if epi_count >= 3:
+
+                        hotspots.append({
+                                "Start": region["Position"].iloc[0],
+                                "End": region["Position"].iloc[-1],
+                                "Epitope_Count": epi_count,
+                                "Mean_Probability": region["Probability"].mean()
+                        })
+
+        hotspot_df = pd.DataFrame(hotspots)
+
+        if not hotspot_df.empty:
+
+                st.dataframe(
+                        hotspot_df,
+                        use_container_width=True,
+                        hide_index=True
+                )
+
+                fig_hot = px.scatter(
+                        hotspot_df,
+                        x="Start",
+                        y="Mean_Probability",
+                        size="Epitope_Count",
+                        title="Epitope Hotspot Regions Along Protein"
+                )
+
+                st.plotly_chart(fig_hot, use_container_width=True)
+
+        else:
+                st.info("No strong epitope hotspot regions detected.")
+        
 
         # ==========================
         # IMMUNOGENICITY FINGERPRINT
