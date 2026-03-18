@@ -262,9 +262,10 @@ components.html("""
 <style>
 st.markdown("""
 <style>
+st.markdown("""
+<style>
 
 /* GLOBAL PAGE FOOTER */
-
 .global-footer{
     position:fixed;
     bottom:0;
@@ -285,15 +286,22 @@ st.markdown("""
 }
 
 /* Footer title */
-
 .footer-title{
     font-weight:700;
     font-size:15px;
     color:#0f172a;
 }
 
-</style>
-""", unsafe_allow_html=True)
+/* HERO BACKGROUND */
+.hero{
+    position:relative;
+    width:100%;
+    height:100vh;
+    overflow:hidden;
+    background:
+        radial-gradient(circle at 30% 40%, #3b0764 0%, transparent 45%),
+        radial-gradient(circle at 70% 60%, #1e3a8a 0%, transparent 45%);
+}
 
 .hero {
     position: relative;
