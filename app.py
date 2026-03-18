@@ -444,7 +444,7 @@ canvas {
     </div>
 
     <div class="inst">
-        Developed independently during research training at
+        Developed independently during dissertation work at
         <b>Translational Health Science and Technology Institute (THSTI)</b>
     </div>
 
