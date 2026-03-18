@@ -269,12 +269,11 @@ st.markdown("""
     position:fixed;
     bottom:0;
     left:0;
-
     width:100%;
 
-    background:linear-gradient(90deg,#020617,#0f172a);
+    background:#ffffff;
 
-    color:white;
+    color:#1e293b;   /* dark professional text */
 
     text-align:center;
 
@@ -286,50 +285,31 @@ st.markdown("""
 
     z-index:9999;
 
-    border-top:1px solid rgba(255,255,255,0.08);
+    border-top:1px solid #e2e8f0;   /* light divider */
 
-    backdrop-filter:blur(6px);
 }
 
-/* Footer text styling */
+/* Footer title */
 
 .footer-title{
     font-weight:700;
     font-size:15px;
+    color:#0f172a;
 }
 
+/* institute text */
+
 .footer-small{
-    opacity:0.85;
     font-size:13px;
+    color:#475569;
 }
+
+/* disclaimer */
 
 .footer-italic{
     font-style:italic;
-    opacity:0.7;
     font-size:12px;
-}
-
-.hero-footer .copyright{
-    font-weight:700;
-    font-size:17px;
-    margin-bottom:6px;
-}
-
-.hero-footer .inst{
-    font-size:14px;
-    opacity:0.9;
-}
-
-.hero-footer .parent{
-    font-size:14px;
-    color:#cbd5e1;
-}
-
-.hero-footer .disclaimer{
-    margin-top:6px;
-    font-size:13px;
-    font-style:italic;
-    color:#94a3b8;
+    color:#64748b;
 }
 
 .hero {
