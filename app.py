@@ -272,19 +272,15 @@ st.markdown("""
     width:100%;
 
     background:#ffffff;
-
     color:#1e293b;
 
     text-align:center;
-
     padding:14px 10px;
 
     font-family:'Inter', sans-serif;
-
     font-size:14px;
 
     z-index:9999;
-
     border-top:1px solid #e2e8f0;
 }
 
@@ -296,20 +292,8 @@ st.markdown("""
     color:#0f172a;
 }
 
-/* institute text */
-
-.footer-small{
-    font-size:13px;
-    color:#475569;
-}
-
-/* disclaimer */
-
-.footer-italic{
-    font-style:italic;
-    font-size:12px;
-    color:#64748b;
-}
+</style>
+""", unsafe_allow_html=True)
 
 .hero {
     position: relative;
