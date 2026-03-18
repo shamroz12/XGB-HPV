@@ -260,15 +260,6 @@ h1, h2, h3 {
 # =========================================================
 components.html("""
 <style>
-.hero-footer::before{
-    content:"";
-    display:block;
-    height:1px;
-    width:60%;
-    margin:0 auto 10px auto;
-    background:linear-gradient(90deg,transparent,#38bdf8,transparent);
-}
-
 .hero-footer{
     position:absolute;
     bottom:30px;
