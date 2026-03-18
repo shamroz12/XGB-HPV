@@ -398,7 +398,15 @@ canvas {
     </div>
     
     <div class="hero-footer">
-    © 2026 HPV EPIPRED • Developed by <b>Shamroz Abrar</b>
+
+© 2026 <b>Shamroz Abrar</b>
+Developed independently by the author during research training at
+Translational Health Science and Technology Institute (THSTI)
+
+Parent Institution: Thapar Institute of Engineering and Technology
+Department of Biotechnology
+
+For research use only
     
 </div>
 
