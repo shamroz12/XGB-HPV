@@ -400,6 +400,7 @@ canvas {
     <div class="hero-footer">
 
 © 2026 <b>Shamroz Abrar</b>
+
 Developed independently by the author during research training at
 Translational Health Science and Technology Institute (THSTI)
 
