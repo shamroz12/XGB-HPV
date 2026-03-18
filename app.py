@@ -273,20 +273,19 @@ st.markdown("""
 
     background:#ffffff;
 
-    color:#1e293b;   /* dark professional text */
+    color:#1e293b;
 
     text-align:center;
 
     padding:14px 10px;
 
-    font-family:'Inter',sans-serif;
+    font-family:'Inter', sans-serif;
 
     font-size:14px;
 
     z-index:9999;
 
-    border-top:1px solid #e2e8f0;   /* light divider */
-
+    border-top:1px solid #e2e8f0;
 }
 
 /* Footer title */
@@ -311,6 +310,9 @@ st.markdown("""
     font-size:12px;
     color:#64748b;
 }
+
+</style>
+""", unsafe_allow_html=True)
 
 .hero {
     position: relative;
@@ -1566,7 +1568,7 @@ with tab2:
 
         st.plotly_chart(fig, use_container_width=True)
 
-        st.markdown("""
+      st.markdown("""
 <div class="global-footer">
 
 <div class="footer-title">
