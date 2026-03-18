@@ -260,31 +260,53 @@ h1, h2, h3 {
 # =========================================================
 components.html("""
 <style>
-.hero-footer{
-    position:absolute;
-    bottom:30px;
-    left:50%;
-    transform:translateX(-50%);
+st.markdown("""
+<style>
 
-    width:90%;
-    max-width:850px;
+/* GLOBAL PAGE FOOTER */
+
+.global-footer{
+    position:fixed;
+    bottom:0;
+    left:0;
+
+    width:100%;
+
+    background:linear-gradient(90deg,#020617,#0f172a);
+
+    color:white;
 
     text-align:center;
 
-    padding:18px 26px;
+    padding:14px 10px;
 
-    background:rgba(10,15,40,0.45);
-    backdrop-filter:blur(8px);
+    font-family:'Inter',sans-serif;
 
-    border-radius:14px;
+    font-size:14px;
 
-    color:#ffffff;
+    z-index:9999;
 
-    font-family:'Inter', sans-serif;
+    border-top:1px solid rgba(255,255,255,0.08);
 
-    line-height:1.7;
+    backdrop-filter:blur(6px);
+}
 
-    box-shadow:0 10px 30px rgba(0,0,0,0.35);
+/* Footer text styling */
+
+.footer-title{
+    font-weight:700;
+    font-size:15px;
+}
+
+.footer-small{
+    opacity:0.85;
+    font-size:13px;
+}
+
+.footer-italic{
+    font-style:italic;
+    opacity:0.7;
+    font-size:12px;
 }
 
 .hero-footer .copyright{
@@ -436,29 +458,6 @@ canvas {
         </a>
 
     </div>
-    
-    <div class="hero-footer">
-
-    <div class="copyright">
-        © 2026 Shamroz Abrar | All Rights Reserved.
-    </div>
-
-    <div class="inst">
-        Developed independently during dissertation work at
-        <b>Translational Health Science and Technology Institute (THSTI)</b>
-    </div>
-
-    <div class="parent">
-        Parent Institution:Department of Biotechnology, 
-        <b>Thapar Institute of Engineering and Technology</b>  
-        
-    </div>
-
-    <div class="disclaimer">
-        For research use only
-    </div>
-
-</div>
 
 <script>
 const immune = document.getElementById("immune");
@@ -1586,3 +1585,27 @@ with tab2:
         )
 
         st.plotly_chart(fig, use_container_width=True)
+
+        st.markdown("""
+<div class="global-footer">
+
+<div class="footer-title">
+© 2026 Shamroz Abrar | All Rights Reserved
+</div>
+
+<div class="footer-small">
+Developed independently during dissertation work at
+<b>Translational Health Science and Technology Institute (THSTI)</b>
+</div>
+
+<div class="footer-small">
+Parent Institution: Department of Biotechnology,
+<b>Thapar Institute of Engineering and Technology</b>
+</div>
+
+<div class="footer-italic">
+For research use only
+</div>
+
+</div>
+""", unsafe_allow_html=True)
