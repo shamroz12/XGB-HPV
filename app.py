@@ -440,7 +440,7 @@ canvas {
     <div class="hero-footer">
 
     <div class="copyright">
-        © 2026 Shamroz Abrar
+        © 2026 Shamroz Abrar | All RIGHTS RESERVED.
     </div>
 
     <div class="inst">
