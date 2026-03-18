@@ -262,42 +262,31 @@ h1, h2, h3 {
 st.markdown("""
 <style>
 
-/* GLOBAL PAGE FOOTER */
-.global-footer{
-    position:fixed;
-    bottom:0;
-    left:0;
-    width:100%;
+.hero-footer{
+    position:absolute;
+    bottom:30px;
+    left:50%;
+    transform:translateX(-50%);
 
-    background:#ffffff;
-    color:#1e293b;
+    width:90%;
+    max-width:850px;
 
     text-align:center;
-    padding:14px 10px;
+
+    padding:18px 26px;
+
+    background:rgba(10,15,40,0.45);
+    backdrop-filter:blur(8px);
+
+    border-radius:14px;
+
+    color:#ffffff;
 
     font-family:'Inter', sans-serif;
-    font-size:14px;
 
-    z-index:9999;
-    border-top:1px solid #e2e8f0;
-}
+    line-height:1.7;
 
-/* Footer title */
-.footer-title{
-    font-weight:700;
-    font-size:15px;
-    color:#0f172a;
-}
-
-/* HERO BACKGROUND */
-.hero{
-    position:relative;
-    width:100%;
-    height:100vh;
-    overflow:hidden;
-    background:
-        radial-gradient(circle at 30% 40%, #3b0764 0%, transparent 45%),
-        radial-gradient(circle at 70% 60%, #1e3a8a 0%, transparent 45%);
+    box-shadow:0 10px 30px rgba(0,0,0,0.35);
 }
 
 .hero {
@@ -425,6 +414,26 @@ canvas {
             <span class="arrow">↓</span> Launch Scanner
         </a>
 
+    </div>
+
+<div class="hero-footer">
+
+    <div class="copyright">
+        © 2026 Shamroz Abrar
+    </div>
+
+    <div class="inst">
+        Developed independently during research training at
+        <b>Translational Health Science and Technology Institute (THSTI)</b>
+    </div>
+
+    <div class="parent">
+        Parent Institution: <b>Thapar Institute of Engineering and Technology</b>  
+        — Department of Biotechnology
+    </div>
+
+    <div class="disclaimer">
+        For research use only
     </div>
 
 <script>
@@ -1554,26 +1563,3 @@ with tab2:
 
         st.plotly_chart(fig, use_container_width=True)
 
-st.markdown("""
-<div class="global-footer">
-
-<div class="footer-title">
-© 2026 Shamroz Abrar | All Rights Reserved
-</div>
-
-<div class="footer-small">
-Developed independently during dissertation work at
-<b>Translational Health Science and Technology Institute (THSTI)</b>
-</div>
-
-<div class="footer-small">
-Parent Institution: Department of Biotechnology,
-<b>Thapar Institute of Engineering and Technology</b>
-</div>
-
-<div class="footer-italic">
-For research use only
-</div>
-
-</div>
-""", unsafe_allow_html=True)
