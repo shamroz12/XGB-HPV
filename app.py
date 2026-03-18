@@ -311,9 +311,6 @@ st.markdown("""
     color:#64748b;
 }
 
-</style>
-""", unsafe_allow_html=True)
-
 .hero {
     position: relative;
     width: 100%;
