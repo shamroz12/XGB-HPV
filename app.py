@@ -263,13 +263,24 @@ components.html("""
 .hero-footer{
     position:absolute;
     bottom:20px;
-    width:100%;
-    text-align:center;
-    font-size:20px;
-    color:#94a3b8;
-    letter-spacing:1px;
-}
+    left:50%;
+    transform:translateX(-50%);
+    
+    width:90%;
+    max-width:900px;
 
+    text-align:center;
+
+    font-size:16px;
+    line-height:1.6;
+
+    color:#ffffff;   /* white text */
+
+    word-wrap:break-word;
+    white-space:normal;
+
+    font-family:'Inter', sans-serif;
+}
 .hero {
     position: relative;
     width: 100%;
@@ -399,16 +410,16 @@ canvas {
     
     <div class="hero-footer">
 
-© 2026 <b>Shamroz Abrar</b>
+    <b>© 2026 Shamroz Abrar</b><br>
 
-Developed independently by the author during research training at
-Translational Health Science and Technology Institute (THSTI)
+    Developed independently by the author during research training at  
+    Translational Health Science and Technology Institute (THSTI)<br>
 
-Parent Institution: Thapar Institute of Engineering and Technology
-Department of Biotechnology
+    Parent Institution: Thapar Institute of Engineering and Technology  
+    Department of Biotechnology<br>
 
-For research use only
-    
+    <i>For research use only</i>
+
 </div>
 
 <script>
