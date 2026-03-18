@@ -1554,7 +1554,7 @@ with tab2:
 
         st.plotly_chart(fig, use_container_width=True)
 
-      st.markdown("""
+st.markdown("""
 <div class="global-footer">
 
 <div class="footer-title">
