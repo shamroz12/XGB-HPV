@@ -260,27 +260,65 @@ h1, h2, h3 {
 # =========================================================
 components.html("""
 <style>
+.hero-footer::before{
+    content:"";
+    display:block;
+    height:1px;
+    width:60%;
+    margin:0 auto 10px auto;
+    background:linear-gradient(90deg,transparent,#38bdf8,transparent);
+}
+
 .hero-footer{
     position:absolute;
-    bottom:20px;
+    bottom:30px;
     left:50%;
     transform:translateX(-50%);
-    
+
     width:90%;
-    max-width:900px;
+    max-width:850px;
 
     text-align:center;
 
-    font-size:16px;
-    line-height:1.6;
+    padding:18px 26px;
 
-    color:#ffffff;   /* white text */
+    background:rgba(10,15,40,0.45);
+    backdrop-filter:blur(8px);
 
-    word-wrap:break-word;
-    white-space:normal;
+    border-radius:14px;
+
+    color:#ffffff;
 
     font-family:'Inter', sans-serif;
+
+    line-height:1.7;
+
+    box-shadow:0 10px 30px rgba(0,0,0,0.35);
 }
+
+.hero-footer .copyright{
+    font-weight:700;
+    font-size:17px;
+    margin-bottom:6px;
+}
+
+.hero-footer .inst{
+    font-size:14px;
+    opacity:0.9;
+}
+
+.hero-footer .parent{
+    font-size:14px;
+    color:#cbd5e1;
+}
+
+.hero-footer .disclaimer{
+    margin-top:6px;
+    font-size:13px;
+    font-style:italic;
+    color:#94a3b8;
+}
+
 .hero {
     position: relative;
     width: 100%;
@@ -410,15 +448,24 @@ canvas {
     
     <div class="hero-footer">
 
-    <b>© 2026 Shamroz Abrar</b><br>
+    <div class="copyright">
+        © 2026 Shamroz Abrar
+    </div>
 
-    Developed independently by the author during research training at  
-    Translational Health Science and Technology Institute (THSTI)<br>
+    <div class="inst">
+        Developed independently during research training at
+        <b>Translational Health Science and Technology Institute (THSTI)</b>
+    </div>
 
-    Parent Institution: Department of Biotechnology
-    Thapar Institute of Engineering and Technology<br>
+    <div class="parent">
+        Parent Institution:Department of Biotechnology, 
+        <b>Thapar Institute of Engineering and Technology</b>  
+        
+    </div>
 
-    <i>For research use only</i>
+    <div class="disclaimer">
+        For research use only
+    </div>
 
 </div>
 
