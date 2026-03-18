@@ -415,8 +415,8 @@ canvas {
     Developed independently by the author during research training at  
     Translational Health Science and Technology Institute (THSTI)<br>
 
-    Parent Institution: Thapar Institute of Engineering and Technology  
-    Department of Biotechnology<br>
+    Parent Institution: Department of Biotechnology
+    Thapar Institute of Engineering and Technology<br>
 
     <i>For research use only</i>
 
