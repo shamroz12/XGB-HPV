@@ -258,36 +258,8 @@ h1, h2, h3 {
 # =========================================================
 # HERO BLOCK
 # =========================================================
-
-st.markdown("""
+components.html("""
 <style>
-
-.hero-footer{
-    position:absolute;
-    bottom:30px;
-    left:50%;
-    transform:translateX(-50%);
-
-    width:90%;
-    max-width:850px;
-
-    text-align:center;
-
-    padding:18px 26px;
-
-    background:rgba(10,15,40,0.45);
-    backdrop-filter:blur(8px);
-
-    border-radius:14px;
-
-    color:#ffffff;
-
-    font-family:'Inter', sans-serif;
-
-    line-height:1.7;
-
-    box-shadow:0 10px 30px rgba(0,0,0,0.35);
-}
 
 .hero {
     position: relative;
@@ -414,26 +386,6 @@ canvas {
             <span class="arrow">↓</span> Launch Scanner
         </a>
 
-    </div>
-
-<div class="hero-footer">
-
-    <div class="copyright">
-        © 2026 Shamroz Abrar
-    </div>
-
-    <div class="inst">
-        Developed independently during research training at
-        <b>Translational Health Science and Technology Institute (THSTI)</b>
-    </div>
-
-    <div class="parent">
-        Parent Institution: <b>Thapar Institute of Engineering and Technology</b>  
-        — Department of Biotechnology
-    </div>
-
-    <div class="disclaimer">
-        For research use only
     </div>
 
 <script>
