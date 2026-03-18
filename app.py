@@ -260,8 +260,7 @@ h1, h2, h3 {
 # =========================================================
 components.html("""
 <style>
-st.markdown("""
-<style>
+
 st.markdown("""
 <style>
 
