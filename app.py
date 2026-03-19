@@ -718,6 +718,16 @@ with tab1:
         # ==========================
         # RESULT TABS
         # ==========================
+
+        # ==========================
+        # FILTER CONTROLS
+        # ==========================
+        st.markdown("### 🎯 Filter Results")
+
+        min_prob = st.slider("Minimum Probability Threshold", 0.0, 1.0, 0.26, 0.01)
+        top_n = st.slider("Top N Epitopes", 5, 50, 20)
+
+        df = df[df["Probability"] >= min_prob]
         tab_table, tab_prob, tab_landscape, tab_density, tab_fingerprint, tab_score, tab_atlas, tab_competition = st.tabs([
                 "📊 Tables",
                 "📈 Probability Plot",
