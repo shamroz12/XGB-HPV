@@ -729,11 +729,7 @@ with tab1:
             by="Probability", ascending=False
         )
 
-        # ==========================
-        # GLOBAL RESULT CONTAINER
-        # ==========================
-        st.markdown('<div class="fade-in">', unsafe_allow_html=True)
-        
+                
         # ==========================
         # RESULT TABS
         # ==========================
@@ -752,8 +748,6 @@ with tab1:
         # TABLE TAB
         # ==========================
         with tab_table:
-
-                st.markdown('<div class="glass-card">', unsafe_allow_html=True)
 
                 st.markdown("### 🟢 Predicted Epitopes")
 
@@ -821,8 +815,7 @@ with tab1:
                         use_container_width=True,
                         hide_index=True
                 )
-        st.markdown('</div>', unsafe_allow_html=True)
-
+       
         # ==========================
         # PROBABILITY PLOT TAB
         # ==========================
@@ -1447,8 +1440,7 @@ with tab1:
         elements.append(Paragraph("<b>Epitope Density Map</b>", styles['Heading2']))
         elements.append(Image(density_buffer, width=450, height=220))
         
-        st.markdown('</div>', unsafe_allow_html=True)
-        
+      
         # ==========================
         # ADD PLOTS TO PDF
         # ==========================
