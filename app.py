@@ -1445,6 +1445,7 @@ with tab1:
         elements.append(Paragraph("<b>Epitope Density Map</b>", styles['Heading2']))
         elements.append(Image(density_buffer, width=450, height=220))
         
+        st.markdown('</div>', unsafe_allow_html=True)
         
         # ==========================
         # ADD PLOTS TO PDF
@@ -1459,9 +1460,6 @@ with tab1:
         elements.append(Paragraph("<b>Epitope Density Map</b>", styles['Heading2']))
         elements.append(Spacer(1,10))
         elements.append(Image(density_buffer, width=450, height=220))
-        
-                
-        st.markdown('</div>', unsafe_allow_html=True)
         
         st.markdown("### 📄 Download Analysis Report")
 
