@@ -203,6 +203,20 @@ header{
     visibility:hidden;
 }
 
+/* ==========================
+GLASS CARD SYSTEM
+========================== */
+
+.glass-card {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(12px);
+    border-radius: 18px;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+    margin-bottom: 20px;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
