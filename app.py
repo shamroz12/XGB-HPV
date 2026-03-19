@@ -753,6 +753,8 @@ with tab1:
         # ==========================
         with tab_table:
 
+                st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+
                 st.markdown("### 🟢 Predicted Epitopes")
 
                 st.markdown("""
@@ -819,7 +821,7 @@ with tab1:
                         use_container_width=True,
                         hide_index=True
                 )
-
+        st.markdown('</div>', unsafe_allow_html=True)
 
         # ==========================
         # PROBABILITY PLOT TAB
